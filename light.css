@@ -32,3 +32,9 @@
     padding-top: 6px;
     padding-bottom: 6px;
 }
+
+.gnome-mosaic-resize-hint {
+    background: #ededed;
+    padding: 12px;
+    border-radius: 32px;
+}

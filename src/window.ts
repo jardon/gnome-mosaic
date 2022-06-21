@@ -423,7 +423,7 @@ export class ShellWindow {
 
         this.update_border_style();
         if (this.ext.settings.active_hint()) {
-            let border = this.border;
+            const border = this.border;
 
             const permitted = () => {
                 return (

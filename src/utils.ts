@@ -89,6 +89,31 @@ export function is_dark(color: string): boolean {
     return L <= 0.179;
 }
 
+export function hex_to_rgba(hex: string, alphaOverride?: number): string {
+    hex = hex.replace(/^#/, '');
+
+    // Parse shorthand hex like #RGB or #RGBA
+    if (hex.length === 3 || hex.length === 4) {
+        hex = hex
+            .split('')
+            .map(c => c + c)
+            .join('');
+    }
+
+    if (hex.length !== 6 && hex.length !== 8) {
+        throw new Error(`Invalid hex color: ${hex}`);
+    }
+
+    const r = parseInt(hex.slice(0, 2), 16);
+    const g = parseInt(hex.slice(2, 4), 16);
+    const b = parseInt(hex.slice(4, 6), 16);
+    const a = hex.length === 8 ? parseInt(hex.slice(6, 8), 16) / 255 : 1;
+
+    const finalAlpha = typeof alphaOverride === 'number' ? alphaOverride : a;
+
+    return `rgba(${r}, ${g}, ${b}, ${finalAlpha.toFixed(3)})`;
+}
+
 /** Utility function for running a process in the background and fetching its standard output as a string. */
 export function async_process(
     argv: Array<string>,
