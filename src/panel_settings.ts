@@ -308,13 +308,13 @@ function show_title(ext: Ext): any {
     return t;
 }
 
-function toggle(desc: string, active: boolean, connect: (toggle: any) => void): any {
+function toggle(desc: string, active: boolean, connect: (toggle: any, state: boolean) => void): any {
     let toggle = new PopupSwitchMenuItem(desc, active);
 
     toggle.label.set_y_align(Clutter.ActorAlign.CENTER);
 
-    toggle.connect('toggled', () => {
-        connect(toggle);
+    toggle.connect('toggled', (_: any, state: boolean) => {
+        connect(toggle, state);
         return true;
     });
 
@@ -322,7 +322,13 @@ function toggle(desc: string, active: boolean, connect: (toggle: any) => void): 
 }
 
 function tiled(ext: Ext): any {
-    let t = toggle(_('Tile Windows'), null != ext.auto_tiler, () => ext.toggle_tiling());
+    let t = toggle(_('Tile Windows'), null != ext.auto_tiler, (_, shouldTile) => {
+        if (shouldTile) {
+            ext.auto_tile_on();
+        } else {
+            ext.auto_tile_off();
+        }
+    });
     return t;
 }
 
