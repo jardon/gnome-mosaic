@@ -1,4 +1,4 @@
-<img src="icons/logo.svg" alt="GNOME Mosaic Logo" align="center" />
+<img src="icons/logo.svg" alt="GNOME Mosaic Logo" style="display: block; margin-left: auto; margin-right: auto; width: 60%; height: auto;" />
 
 
 # GNOME Mosaic
