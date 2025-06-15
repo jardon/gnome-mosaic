@@ -13,7 +13,7 @@ imports.searchPath.push(SCRIPT_DIR);
 
 import * as config from './config.js';
 
-const WM_CLASS_ID = 'pop-shell-exceptions';
+const WM_CLASS_ID = 'gnome-mosaic-exceptions';
 
 interface SelectWindow {
     tag: 0;

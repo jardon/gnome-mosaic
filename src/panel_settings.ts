@@ -34,8 +34,8 @@ export class Indicator {
 
         const path = get_current_path();
         ext.button = this.button;
-        ext.button_gio_icon_auto_on = Gio.icon_new_for_string(`${path}/icons/pop-shell-auto-on-symbolic.svg`);
-        ext.button_gio_icon_auto_off = Gio.icon_new_for_string(`${path}/icons/pop-shell-auto-off-symbolic.svg`);
+        ext.button_gio_icon_auto_on = Gio.icon_new_for_string(`${path}/icons/gnome-mosaic-auto-on-symbolic.svg`);
+        ext.button_gio_icon_auto_off = Gio.icon_new_for_string(`${path}/icons/gnome-mosaic-auto-off-symbolic.svg`);
 
         let button_icon_auto_on = new St.Icon({
             gicon: ext.button_gio_icon_auto_on,
@@ -113,7 +113,7 @@ function menu_separator(text: any): any {
 function settings_button(menu: any): any {
     let item = new PopupMenuItem(_('View All'));
     item.connect('activate', () => {
-        let path: string | null = GLib.find_program_in_path('pop-shell-shortcuts');
+        let path: string | null = GLib.find_program_in_path('gnome-mosaic-shortcuts');
         if (path) {
             spawn([path]);
         } else {
@@ -160,7 +160,7 @@ function shortcuts(menu: any): any {
     let item = new PopupBaseMenuItem();
     item.add_child(widget);
     item.connect('activate', () => {
-        let path: string | null = GLib.find_program_in_path('pop-shell-shortcuts');
+        let path: string | null = GLib.find_program_in_path('gnome-mosaic-shortcuts');
         if (path) {
             spawn([path]);
         } else {

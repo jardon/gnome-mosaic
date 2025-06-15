@@ -106,7 +106,7 @@ export class Ext extends Ecs.System<ExtEvent> {
     // Widgets
 
     /** An overlay which shows a preview of where a window will be moved */
-    overlay: St.Widget = new St.BoxLayout({ style_class: 'pop-shell-overlay', visible: false });
+    overlay: St.Widget = new St.BoxLayout({ style_class: 'gnome-mosaic-overlay', visible: false });
 
     /** The application launcher, focus search, and calculator dialog */
     window_search: Launcher = new launcher.Launcher(this);
@@ -2701,7 +2701,7 @@ export default class PopShellExtension extends Extension {
 
         if (!indicator) {
             indicator = new PanelSettings.Indicator(ext);
-            panel.addToStatusArea('pop-shell', indicator.button);
+            panel.addToStatusArea('gnome-mosaic', indicator.button);
         }
 
         ext.keybindings.enable(ext.keybindings.global).enable(ext.keybindings.window_focus);
@@ -2825,14 +2825,14 @@ let default_getcaption_workspace: any;
 
 /**
  * Decorates the default gnome-shell workspace/overview handling
- * of skip_task_bar. And have those window types included in pop-shell.
+ * of skip_task_bar. And have those window types included in gnome-mosaic.
  * Should only be called on extension#enable()
  *
  * NOTE to future maintainer:
  * Skip taskbar has been left out by upstream for a reason. And the
  * Shell.WindowTracker seems to skip handling skip taskbar windows, so they are
  * null or undefined. GNOME 40+ and lower version checking should be done to
- * constantly support having them within pop-shell.
+ * constantly support having them within gnome-mosaic.
  *
  * Known skip taskbars ddterm, conky, guake, minimized to tray apps, etc.
  *
@@ -2976,7 +2976,7 @@ function _show_skip_taskbar_windows(ext: Ext) {
 }
 
 /**
- * This is the cleanup/restore of the decorator for skip_taskbar when pop-shell
+ * This is the cleanup/restore of the decorator for skip_taskbar when gnome-mosaic
  * is disabled.
  * Should only be called on extension#disable()
  *

@@ -278,7 +278,7 @@ export class Launcher extends search.Search {
     }
 
     load_desktop_files() {
-        log.warn('pop-shell: deprecated function called (launcher::load_desktop_files)');
+        log.warn('gnome-mosaic: deprecated function called (launcher::load_desktop_files)');
     }
 
     locate_by_app_info(info: any): null | ShellWindow {

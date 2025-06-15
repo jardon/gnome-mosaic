@@ -6,7 +6,7 @@ import * as ModalDialog from 'resource:///org/gnome/shell/ui/modalDialog.js';
 
 export class AddExceptionDialog {
     dialog: Shell.ModalDialog = new ModalDialog.ModalDialog({
-        styleClass: 'pop-shell-search modal-dialog',
+        styleClass: 'gnome-mosaic-search modal-dialog',
         destroyOnClose: false,
         shellReactive: true,
         shouldFadeIn: false,

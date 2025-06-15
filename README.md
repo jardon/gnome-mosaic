@@ -1,10 +1,12 @@
-# Pop Shell
+![GNOME Mosaic Logo](icons/logo.svg)
 
-Pop Shell is a keyboard-driven layer for GNOME Shell which allows for quick and sensible navigation and management of windows. The core feature of Pop Shell is the addition of advanced tiling window management — a feature that has been highly sought within our community. For many — ourselves included — i3wm has become the leading competitor to the GNOME desktop.
+# GNOME Mosaic
+
+GNOME Mosaic is a keyboard-driven layer for GNOME Shell which allows for quick and sensible navigation and management of windows. The core feature of GNOME Mosaic is the addition of advanced tiling window management — a feature that has been highly sought within our community. For many — ourselves included — i3wm has become the leading competitor to the GNOME desktop.
 
 Tiling window management in GNOME is virtually nonexistent, which makes the desktop awkward to interact with when your needs exceed that of two windows at a given time. Luckily, GNOME Shell is an extensible desktop with the foundations that make it possible to implement a tiling window manager on top of the desktop.
 
-Therefore, we see an opportunity here to advance the usability of the GNOME desktop to better accommodate the needs of our community with Pop Shell. Advanced tiling window management is a must for the desktop, so we've merged i3-like tiling window management with the GNOME desktop for the best of both worlds.
+Therefore, we see an opportunity here to advance the usability of the GNOME desktop to better accommodate the needs of our community with GNOME Mosaic. Advanced tiling window management is a must for the desktop, so we've merged i3-like tiling window management with the GNOME desktop for the best of both worlds.
 
 [![](./screenshot.webp)](https://raw.githubusercontent.com/pop-os/shell/master/screenshot.webp)
 
@@ -12,7 +14,6 @@ Therefore, we see an opportunity here to advance the usability of the GNOME desk
 
 ## Table of Contents
 
-- [The Proposal](#the-proposal): Possible upstreaming into GNOME
 - [The Problem](#the-problem): Why we need this in GNOME
 - [Installation](#installation): For those wanting to install this on their distribution
 - The Solution:
@@ -24,9 +25,9 @@ Therefore, we see an opportunity here to advance the usability of the GNOME desk
 
 ## The Proposal
 
-A proposal for integration of the tiling window management features from Pop Shell into GNOME is currently under development. It will be created as a GitLab issue on GNOME Shell for future discussion, once we have invested our time into producing a functioning prototype, and learned what does and does not work in practice.
+A proposal for integration of the tiling window management features from GNOME Mosaic into GNOME is currently under development. It will be created as a GitLab issue on GNOME Shell for future discussion, once we have invested our time into producing a functioning prototype, and learned what does and does not work in practice.
 
-Ideally, the features explored in Pop Shell will be available for any environment using Mutter — far extending the half-monitor tiling capability currently present. By starting out as a shell extension, anyone using GNOME Shell can install this onto their system, without having to install a Pop-specific fork of GNOME on their system.
+Ideally, the features explored in GNOME Mosaic will be available for any environment using Mutter — far extending the half-monitor tiling capability currently present. By starting out as a shell extension, anyone using GNOME Shell can install this onto their system, without having to install a Pop-specific fork of GNOME on their system.
 
 ---
 
@@ -62,32 +63,13 @@ There are additionally those who do want the traditional stacking window managem
 
 ## Installation
 
-Use the branch corresponding to your GNOME Shell version (`git checkout branch_name`):
-
-- **GNOME 3.36 through 41:** Use the `master_focal` branch.
-- **GNOME 42 through 44:** Use the `master_jammy` branch.
-- **GNOME 45:** Use the `master_mantic` branch.
-- **GNOME 46+:** Use the `master_noble` branch.
-
 GNU Make and TypeScript are also required to build the project.
 
 Proper functionality of the shell requires modifying GNOME's default keyboard shortcuts. For a local installation, run `make local-install`.
 
 If you want to uninstall the extension, you may invoke `make uninstall`, and then open the "Keyboard Shortcuts" panel in GNOME Settings to select the "Reset All.." button in the header bar.
 
-> Note that if you are packaging for your Linux distribution, many features in Pop Shell will not work out of the box because they require changes to GNOME's default keyboard shortcuts. A local install is necessary if you aren't packaging your GNOME session with these default keyboard shortcuts unset or changed.
-
-### Packaging status
-
-- [Fedora](https://src.fedoraproject.org/rpms/gnome-shell-extension-pop-shell/): `sudo dnf install gnome-shell-extension-pop-shell xprop`
-- [Gentoo](https://packages.gentoo.org/packages/gnome-extra/gnome-shell-extension-pop-shell): `emerge gnome-shell-extension-pop-shell`
-- [openSUSE Tumbleweed](https://build.opensuse.org/package/show/openSUSE:Factory/gnome-shell-extension-pop-shell): `sudo zypper install gnome-shell-extension-pop-shell`
-- [Arch Linux](https://aur.archlinux.org/packages/?O=0&K=gnome-shell-extension-pop-shell) (Using Yay as AUR helper):
-    - `yay -S gnome-shell-extension-pop-shell`
-    - For precompiled binary version: `yay -S gnome-shell-extension-pop-shell-bin`
-    - For GitHub repository version: `yay -S gnome-shell-extension-pop-shell-git`
-
----
+> Note that if you are packaging for your Linux distribution, many features in GNOME Mosaic will not work out of the box because they require changes to GNOME's default keyboard shortcuts. A local install is necessary if you aren't packaging your GNOME session with these default keyboard shortcuts unset or changed.
 
 ## Shared Features
 
@@ -143,9 +125,9 @@ When not in window management mode, pressing `Super` + `<Direction>` will shift 
 
 Switching focus to the left will calculate from the center of the east side of the focused window to the center of the west side of all other windows. The window with the least distance is the window we pick.
 
-### Launcher
+<!-- ### Launcher
 
-Pop Shell provides an integrated launcher which interfaces directly with our [pop-launcher](https://github.com/pop-os/launcher) service. JSON IPC is used to communicate between the shell and the launcher in an asynchronous fashion. This functionality was separated from the shell due to performance and maintainability issues. The new launcher is written in Rust and fully async. The launcher has extensive features that would be useful for implementing desktop launchers beyond a shell extension.
+GNOME Mosaic provides an integrated launcher which interfaces directly with our [pop-launcher](https://github.com/pop-os/launcher) service. JSON IPC is used to communicate between the shell and the launcher in an asynchronous fashion. This functionality was separated from the shell due to performance and maintainability issues. The new launcher is written in Rust and fully async. The launcher has extensive features that would be useful for implementing desktop launchers beyond a shell extension. -->
 
 ### Inner and Outer Gaps
 
@@ -153,13 +135,13 @@ Gaps improve the aesthetics of tiled windows and make it easier to grab the edge
 
 ### Hiding Window Title Bars
 
-Windows with server-side decorations may have their title bars completely hidden, resulting in additional screen real estate for your applications, and a visually cleaner environment. This feature can be toggled in the extension's popup menu. Windows can be moved with the mouse by holding `Super` when clicking and dragging a window to another location, or using the keyboard shortcuts native to pop-shell. Windows may be closed by pressing `Super` + `Q`, and maximized with `Super` + `M`.
+Windows with server-side decorations may have their title bars completely hidden, resulting in additional screen real estate for your applications, and a visually cleaner environment. This feature can be toggled in the extension's popup menu. Windows can be moved with the mouse by holding `Super` when clicking and dragging a window to another location, or using the keyboard shortcuts native to gnome-mosaic. Windows may be closed by pressing `Super` + `Q`, and maximized with `Super` + `M`.
 
 ---
 
 ## Floating Mode
 
-This is the default mode of Pop Shell, which combines traditional stacking window management, with optional tiling window management features.
+This is the default mode of GNOME Mosaic, which combines traditional stacking window management, with optional tiling window management features.
 
 ### Display Grid
 
@@ -184,14 +166,14 @@ Disabled by default, this mode manages windows using a tree-based tiling window 
   - See [#customizing the window float list](#customizing-the-floating-window-list)
 
 ### Customizing the Floating Window List
-There is file `$XDG_CONFIG_HOME/pop-shell/config.json` where you can add the following structure:
+There is file `$XDG_CONFIG_HOME/gnome-mosaic/config.json` where you can add the following structure:
 ```
 {
   class: "<WM_CLASS String from xprop>",
   title: "<Optional Window Title>"
 }
 ```
-For example, doing `xprop` on GNOME Settings (or GNOME Control Center), the WM_CLASS values are `gnome-control-center` and `Gnome-control-center`. Use the second value (Gnome-control-center), which pop-shell will read. The `title` field is optional.
+For example, doing `xprop` on GNOME Settings (or GNOME Control Center), the WM_CLASS values are `gnome-control-center` and `Gnome-control-center`. Use the second value (Gnome-control-center), which gnome-mosaic will read. The `title` field is optional.
 
 After applying changes in `config.json`, you can reload the tiling if it doesn't work the first time.
 
@@ -206,8 +188,6 @@ Please install the following as dependencies when developing:
 - `npm install typescript@latest`
 
 While working on the shell, you can recompile, reconfigure, reinstall, and restart GNOME Shell with logging with `make debug`. Note that this only works reliably in X11 sessions, since Wayland will exit to the login screen on restarting the shell.
-
-[Discussions welcome on Pop Chat](https://chat.pop-os.org/pop-os/channels/development)
 
 ## License
 

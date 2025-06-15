@@ -2,8 +2,8 @@
     "name": "Pop Shell",
     "description": "Pop Shell",
     "version": 2,
-    "uuid": "pop-shell@system76.com",
-    "settings-schema": "org.gnome.shell.extensions.pop-shell",
+    "uuid": "jarred.wilson12@gmail.com",
+    "settings-schema": "org.gnome.shell.extensions.gnome-mosaic",
     "shell-version": [
         "45",
         "46",

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schemalist gettext-domain="pop-shell">
-    <schema id="org.gnome.shell.extensions.pop-shell" path="/org/gnome/shell/extensions/pop-shell/">
+<schemalist gettext-domain="gnome-mosaic">
+    <schema id="org.gnome.shell.extensions.gnome-mosaic" path="/org/gnome/shell/extensions/gnome-mosaic/">
         <!-- Appearance Options -->
         <key type="b" name="active-hint">
             <default>false</default>

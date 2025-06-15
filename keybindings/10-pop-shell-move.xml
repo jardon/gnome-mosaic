@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<KeyListEntries group="system" schema="org.gnome.shell.extensions.pop-shell" name="Move, resize, and swap windows">
+<KeyListEntries group="system" schema="org.gnome.shell.extensions.gnome-mosaic" name="Move, resize, and swap windows">
   <KeyListEntry name="tile-accept" description="Apply changes"/>
   <KeyListEntry name="tile-enter" description="Adjustment mode"/>
   <KeyListEntry name="tile-move-down" description="Move window down"/>

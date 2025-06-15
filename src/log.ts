@@ -21,7 +21,7 @@ export function log_level() {
 }
 
 export function log(text: string) {
-    (globalThis as any).log('pop-shell: ' + text);
+    (globalThis as any).log('gnome-mosaic: ' + text);
 }
 
 export function error(text: string) {
