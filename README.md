@@ -1,4 +1,5 @@
-![GNOME Mosaic Logo](icons/logo.svg)
+<img src="icons/logo.svg" alt="GNOME Mosaic Logo" align="center" />
+
 
 # GNOME Mosaic
 
