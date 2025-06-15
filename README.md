@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="icons/logo.svg" alt="GNOME Mosaic" width="192" height="192"/>
+  <img src="icons/mosaic-logo.svg" alt="GNOME Mosaic" width="192" height="192"/>
   <br>
   GNOME Mosaic
 </h1>
