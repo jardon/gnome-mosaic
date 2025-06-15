@@ -1,7 +1,8 @@
-<img src="icons/logo.svg" alt="GNOME Mosaic Logo" style="display: block; margin-left: auto; margin-right: auto; width: 40%; height: auto;" />
-
-
-# GNOME Mosaic
+<h1 align="center">
+  <img src="icons/logo.svg" alt="GNOME Mosaic" width="192" height="192"/>
+  <br>
+  GNOME Mosaic
+</h1>
 
 GNOME Mosaic is a keyboard-driven layer for GNOME Shell which allows for quick and sensible navigation and management of windows. The core feature of GNOME Mosaic is the addition of advanced tiling window management — a feature that has been highly sought within our community. For many — ourselves included — i3wm has become the leading competitor to the GNOME desktop.
 
