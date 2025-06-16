@@ -1,7 +1,7 @@
 import Gio from 'gi://Gio';
 
 const IFACE: string = `<node>
-  <interface name="com.System76.PopShell">
+  <interface name="com.github.jardon.Mosaic">
     <method name="FocusLeft"/>
     <method name="FocusRight"/>
     <method name="FocusUp"/>
@@ -39,7 +39,7 @@ export class Service {
         this.dbus = Gio.DBusExportedObject.wrapJSObject(IFACE, this);
 
         const onBusAcquired = (conn: any) => {
-            this.dbus.export(conn, '/com/System76/PopShell');
+            this.dbus.export(conn, '/com/github/jardon/Mosaic');
         };
 
         function onNameAcquired() {}
@@ -48,7 +48,7 @@ export class Service {
 
         this.id = Gio.bus_own_name(
             Gio.BusType.SESSION,
-            'com.System76.PopShell',
+            'com.github.jardon.Mosaic',
             Gio.BusNameOwnerFlags.NONE,
             onBusAcquired,
             onNameAcquired,

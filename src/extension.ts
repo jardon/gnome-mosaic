@@ -106,7 +106,7 @@ export class Ext extends Ecs.System<ExtEvent> {
     // Widgets
 
     /** An overlay which shows a preview of where a window will be moved */
-    overlay: St.Widget = new St.BoxLayout({ style_class: 'pop-shell-overlay', visible: false });
+    overlay: St.Widget = new St.BoxLayout({ style_class: 'gnome-mosaic-overlay', visible: false });
 
     /** The application launcher, focus search, and calculator dialog */
     window_search: Launcher = new launcher.Launcher(this);
@@ -2665,12 +2665,12 @@ let ext: Ext | null = null;
 let indicator: Indicator | null = null;
 
 declare global {
-  var popShellExtension: any;
+  var MosaicExtension: any;
 }
 
-export default class PopShellExtension extends Extension {
+export default class MosaicExtension extends Extension {
     enable() {
-        globalThis.popShellExtension  = this;
+        globalThis.MosaicExtension  = this;
         log.info('enable');
 
         if (!ext) {
@@ -2701,7 +2701,7 @@ export default class PopShellExtension extends Extension {
 
         if (!indicator) {
             indicator = new PanelSettings.Indicator(ext);
-            panel.addToStatusArea('pop-shell', indicator.button);
+            panel.addToStatusArea('gnome-mosaic', indicator.button);
         }
 
         ext.keybindings.enable(ext.keybindings.global).enable(ext.keybindings.window_focus);
@@ -2719,7 +2719,7 @@ export default class PopShellExtension extends Extension {
                 return;
             }
 
-            delete globalThis.popShellExtension;
+            delete globalThis.MosaicExtension;
             ext.injections_remove();
             ext.signals_remove();
             ext.exit_modes();
@@ -2788,7 +2788,7 @@ function load_theme(style: Style): string | any {
                 existing_theme.unload_stylesheet(s);
             }
 
-            // Merge theme update with pop shell styling
+            // Merge theme update with GNOME Mosaic styling
             existing_theme.load_stylesheet(STYLESHEETS[pop_stylesheet]);
 
             // Perform theme update
@@ -2825,14 +2825,14 @@ let default_getcaption_workspace: any;
 
 /**
  * Decorates the default gnome-shell workspace/overview handling
- * of skip_task_bar. And have those window types included in pop-shell.
+ * of skip_task_bar. And have those window types included in gnome-mosaic.
  * Should only be called on extension#enable()
  *
  * NOTE to future maintainer:
  * Skip taskbar has been left out by upstream for a reason. And the
  * Shell.WindowTracker seems to skip handling skip taskbar windows, so they are
  * null or undefined. GNOME 40+ and lower version checking should be done to
- * constantly support having them within pop-shell.
+ * constantly support having them within gnome-mosaic.
  *
  * Known skip taskbars ddterm, conky, guake, minimized to tray apps, etc.
  *
@@ -2976,7 +2976,7 @@ function _show_skip_taskbar_windows(ext: Ext) {
 }
 
 /**
- * This is the cleanup/restore of the decorator for skip_taskbar when pop-shell
+ * This is the cleanup/restore of the decorator for skip_taskbar when gnome-mosaic
  * is disabled.
  * Should only be called on extension#disable()
  *

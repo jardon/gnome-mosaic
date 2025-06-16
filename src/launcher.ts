@@ -228,7 +228,7 @@ export class Launcher extends search.Search {
 
         if (!app) {
             log.error(`GNOME Shell cannot find desktop entry for ${desktop_entry_id}`);
-            log.error(`pop-launcher will use Gio.DesktopAppInfo instead`);
+            log.error(`mosaic-launcher will use Gio.DesktopAppInfo instead`);
 
             const dapp = Gio.DesktopAppInfo.new_from_filename(entry.path);
 
@@ -278,7 +278,7 @@ export class Launcher extends search.Search {
     }
 
     load_desktop_files() {
-        log.warn('pop-shell: deprecated function called (launcher::load_desktop_files)');
+        log.warn('gnome-mosaic: deprecated function called (launcher::load_desktop_files)');
     }
 
     locate_by_app_info(info: any): null | ShellWindow {
@@ -342,15 +342,15 @@ export class Launcher extends search.Search {
 
     start_services() {
         if (this.service === null) {
-            log.debug('starting pop-launcher service');
-            const ipc = utils.async_process_ipc(['pop-launcher']);
+            log.debug('starting mosaic-launcher service');
+            const ipc = utils.async_process_ipc(['mosaic-launcher']);
             this.service = ipc ? new service.LauncherService(ipc, (resp) => this.on_response(resp)) : null;
         }
     }
 
     stop_services(_ext: Ext) {
         if (this.service !== null) {
-            log.info(`stopping pop-launcher services`);
+            log.info(`stopping mosaic-launcher services`);
             this.service.exit();
             this.service = null;
         }

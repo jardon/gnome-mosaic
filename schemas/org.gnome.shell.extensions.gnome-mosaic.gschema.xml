@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<schemalist gettext-domain="pop-shell">
-    <schema id="org.gnome.shell.extensions.pop-shell" path="/org/gnome/shell/extensions/pop-shell/">
+<schemalist gettext-domain="gnome-mosaic">
+    <schema id="org.gnome.shell.extensions.gnome-mosaic" path="/org/gnome/shell/extensions/gnome-mosaic/">
         <!-- Appearance Options -->
         <key type="b" name="active-hint">
             <default>false</default>
@@ -243,32 +243,32 @@
 
         <!-- Workspace Management -->
 
-        <key type="as" name="pop-workspace-down">
+        <key type="as" name="mosaic-workspace-down">
             <default><![CDATA[['<Super><Shift>Down','<Super><Shift>KP_Down','<Super><Shift>j']]]></default>
             <summary>Move window to the lower workspace</summary>
         </key>
 
-        <key type="as" name="pop-workspace-up">
+        <key type="as" name="mosaic-workspace-up">
             <default><![CDATA[['<Super><Shift>Up','<Super><Shift>KP_Up','<Super><Shift>k']]]></default>
             <summary>Move window to the upper workspace</summary>
         </key>
 
-        <key type="as" name="pop-monitor-down">
+        <key type="as" name="mosaic-monitor-down">
             <default><![CDATA[['<Super><Shift><Primary>Down','<Super><Shift><Primary>KP_Down','<Super><Shift><Primary>j']]]></default>
             <summary>Move window to the lower monitor</summary>
         </key>
 
-        <key type="as" name="pop-monitor-up">
+        <key type="as" name="mosaic-monitor-up">
             <default><![CDATA[['<Super><Shift><Primary>Up','<Super><Shift><Primary>KP_Up','<Super><Shift><Primary>k']]]></default>
             <summary>Move window to the upper monitor</summary>
         </key>
 
-        <key type="as" name="pop-monitor-left">
+        <key type="as" name="mosaic-monitor-left">
             <default><![CDATA[['<Super><Shift>Left','<Super><Shift>KP_Left','<Super><Shift>h']]]></default>
             <summary>Move window to the leftward monitor</summary>
         </key>
 
-        <key type="as" name="pop-monitor-right">
+        <key type="as" name="mosaic-monitor-right">
             <default><![CDATA[['<Super><Shift>Right','<Super><Shift>KP_Right','<Super><Shift>l']]]></default>
             <summary>Move window to the rightward monitor</summary>
         </key>

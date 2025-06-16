@@ -67,7 +67,7 @@ export class LauncherService {
                 try {
                     stream.close(null);
                 } catch (why) {
-                    log.error(`failed to close pop-launcher stream: ${why}`);
+                    log.error(`failed to close mosaic-launcher stream: ${why}`);
                 }
             };
 
@@ -97,7 +97,7 @@ export class LauncherService {
         try {
             this.service.stdin.write_all(message + '\n', null);
         } catch (why) {
-            log.error(`failed to send request to pop-launcher: ${why}`);
+            log.error(`failed to send request to mosaic-launcher: ${why}`);
         }
     }
 }

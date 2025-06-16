@@ -29,7 +29,7 @@ function getExtensionPath(uuid: string) {
 }
 
 function getSettings(schema: string) {
-    let extensionPath = getExtensionPath('pop-shell@system76.com');
+    let extensionPath = getExtensionPath('gnome-mosaic@jardon.github.com');
     if (!extensionPath) throw new Error('getSettings() can only be called when extension is available');
 
     // The following will load a custom path for a user defined gsettings/schemas folder
@@ -48,11 +48,11 @@ function getSettings(schema: string) {
     return new Gio.Settings({ settings_schema: schemaObj });
 }
 /**
- * Launch a Gtk.ColorChooserDialog. And then save the color RGBA/alpha values in GSettings of Pop-Shell.
+ * Launch a Gtk.ColorChooserDialog. And then save the color RGBA/alpha values in GSettings of gnome-mosaic.
  * Using the settings.connect('changed') mechanism, the extension is able to listen to when the color changes in realtime.
  */
 function launch_color_dialog() {
-    let popshell_settings = getSettings('org.gnome.shell.extensions.pop-shell');
+    let mosaic_settings = getSettings('org.gnome.shell.extensions.gnome-mosaic');
 
     let color_dialog = new Gtk.ColorChooserDialog({
         title: 'Choose Color',
@@ -62,7 +62,7 @@ function launch_color_dialog() {
 
     // Use the new spec format for Gtk.Color thru Gdk.RGBA
     let rgba = new Gdk.RGBA();
-    if (rgba.parse(popshell_settings.get_string('hint-color-rgba'))) {
+    if (rgba.parse(mosaic_settings.get_string('hint-color-rgba'))) {
         color_dialog.set_rgba(rgba);
     } else {
         rgba.parse(DEFAULT_HINT_COLOR);
@@ -76,7 +76,7 @@ function launch_color_dialog() {
     } else if (response === Gtk.ResponseType.OK) {
         // save the selected RGBA to GSettings
         // TODO, save alpha instead of always 1.0
-        popshell_settings.set_string('hint-color-rgba', color_dialog.get_rgba().to_string());
+        mosaic_settings.set_string('hint-color-rgba', color_dialog.get_rgba().to_string());
         Gio.Settings.sync();
         color_dialog.destroy();
     }

@@ -1,9 +1,9 @@
 {
-    "name": "Pop Shell",
-    "description": "Pop Shell",
+    "name": "Mosaic",
+    "description": "Window tiler extension for GNOME desktops.",
     "version": 2,
-    "uuid": "pop-shell@system76.com",
-    "settings-schema": "org.gnome.shell.extensions.pop-shell",
+    "uuid": "gnome-mosaic@jardon.github.com",
+    "settings-schema": "org.gnome.shell.extensions.gnome-mosaic",
     "shell-version": [
         "45",
         "46",
