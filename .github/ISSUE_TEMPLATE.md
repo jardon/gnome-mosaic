@@ -1,7 +1,3 @@
-<!--
-If this is a bug, please use the template below. If this is a question or general discussion topic, please start a conversation in our chat https://chat.pop-os.org/ or post on our subreddit https://reddit.com/r/pop_os - as those are the proper forums for that type of discussion.
--->
-
 **(1) Issue/Bug Description:**
 
 
