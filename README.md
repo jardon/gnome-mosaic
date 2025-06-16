@@ -25,14 +25,6 @@ Therefore, we see an opportunity here to advance the usability of the GNOME desk
 - [Developers](#developers): Guide for getting started with development
 ---
 
-## The Proposal
-
-A proposal for integration of the tiling window management features from Mosaic into GNOME is currently under development. It will be created as a GitLab issue on GNOME Shell for future discussion, once we have invested our time into producing a functioning prototype, and learned what does and does not work in practice.
-
-Ideally, the features explored in Mosaic will be available for any environment using Mutter — far extending the half-monitor tiling capability currently present. By starting out as a shell extension, anyone using GNOME Shell can install this onto their system, without having to install a Pop-specific fork of GNOME on their system.
-
----
-
 ## The Problem
 
 So, why is this a problem for us, and why do so many of our users switch to i3wm?
