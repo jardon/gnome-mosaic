@@ -1,14 +1,14 @@
 <h1 align="center">
-  <img src="icons/mosaic-logo.svg" alt="GNOME Mosaic" width="192" height="192"/>
+  <img src="icons/mosaic-logo.svg" alt="Mosaic" width="192" height="192"/>
   <br>
-  GNOME Mosaic
+  Mosaic
 </h1>
 
-GNOME Mosaic is a keyboard-driven layer for GNOME Shell which allows for quick and sensible navigation and management of windows. The core feature of GNOME Mosaic is the addition of advanced tiling window management — a feature that has been highly sought within our community. For many — ourselves included — i3wm has become the leading competitor to the GNOME desktop.
+Mosaic is a keyboard-driven layer for GNOME Shell which allows for quick and sensible navigation and management of windows. The core feature of Mosaic is the addition of advanced tiling window management — a feature that has been highly sought within our community. For many — ourselves included — i3wm has become the leading competitor to the GNOME desktop.
 
 Tiling window management in GNOME is virtually nonexistent, which makes the desktop awkward to interact with when your needs exceed that of two windows at a given time. Luckily, GNOME Shell is an extensible desktop with the foundations that make it possible to implement a tiling window manager on top of the desktop.
 
-Therefore, we see an opportunity here to advance the usability of the GNOME desktop to better accommodate the needs of our community with GNOME Mosaic. Advanced tiling window management is a must for the desktop, so we've merged i3-like tiling window management with the GNOME desktop for the best of both worlds.
+Therefore, we see an opportunity here to advance the usability of the GNOME desktop to better accommodate the needs of our community with Mosaic. Advanced tiling window management is a must for the desktop, so we've merged i3-like tiling window management with the GNOME desktop for the best of both worlds.
 
 [![](./screenshot.webp)](https://raw.githubusercontent.com/pop-os/shell/master/screenshot.webp)
 
@@ -27,9 +27,9 @@ Therefore, we see an opportunity here to advance the usability of the GNOME desk
 
 ## The Proposal
 
-A proposal for integration of the tiling window management features from GNOME Mosaic into GNOME is currently under development. It will be created as a GitLab issue on GNOME Shell for future discussion, once we have invested our time into producing a functioning prototype, and learned what does and does not work in practice.
+A proposal for integration of the tiling window management features from Mosaic into GNOME is currently under development. It will be created as a GitLab issue on GNOME Shell for future discussion, once we have invested our time into producing a functioning prototype, and learned what does and does not work in practice.
 
-Ideally, the features explored in GNOME Mosaic will be available for any environment using Mutter — far extending the half-monitor tiling capability currently present. By starting out as a shell extension, anyone using GNOME Shell can install this onto their system, without having to install a Pop-specific fork of GNOME on their system.
+Ideally, the features explored in Mosaic will be available for any environment using Mutter — far extending the half-monitor tiling capability currently present. By starting out as a shell extension, anyone using GNOME Shell can install this onto their system, without having to install a Pop-specific fork of GNOME on their system.
 
 ---
 
@@ -71,7 +71,7 @@ Proper functionality of the shell requires modifying GNOME's default keyboard sh
 
 If you want to uninstall the extension, you may invoke `make uninstall`, and then open the "Keyboard Shortcuts" panel in GNOME Settings to select the "Reset All.." button in the header bar.
 
-> Note that if you are packaging for your Linux distribution, many features in GNOME Mosaic will not work out of the box because they require changes to GNOME's default keyboard shortcuts. A local install is necessary if you aren't packaging your GNOME session with these default keyboard shortcuts unset or changed.
+> Note that if you are packaging for your Linux distribution, many features in Mosaic will not work out of the box because they require changes to GNOME's default keyboard shortcuts. A local install is necessary if you aren't packaging your GNOME session with these default keyboard shortcuts unset or changed.
 
 ## Shared Features
 
@@ -129,7 +129,7 @@ Switching focus to the left will calculate from the center of the east side of t
 
 <!-- ### Launcher
 
-GNOME Mosaic provides an integrated launcher which interfaces directly with our [pop-launcher](https://github.com/pop-os/launcher) service. JSON IPC is used to communicate between the shell and the launcher in an asynchronous fashion. This functionality was separated from the shell due to performance and maintainability issues. The new launcher is written in Rust and fully async. The launcher has extensive features that would be useful for implementing desktop launchers beyond a shell extension. -->
+Mosaic provides an integrated launcher which interfaces directly with our [pop-launcher](https://github.com/pop-os/launcher) service. JSON IPC is used to communicate between the shell and the launcher in an asynchronous fashion. This functionality was separated from the shell due to performance and maintainability issues. The new launcher is written in Rust and fully async. The launcher has extensive features that would be useful for implementing desktop launchers beyond a shell extension. -->
 
 ### Inner and Outer Gaps
 
@@ -143,7 +143,7 @@ Windows with server-side decorations may have their title bars completely hidden
 
 ## Floating Mode
 
-This is the default mode of GNOME Mosaic, which combines traditional stacking window management, with optional tiling window management features.
+This is the default mode of Mosaic, which combines traditional stacking window management, with optional tiling window management features.
 
 ### Display Grid
 
