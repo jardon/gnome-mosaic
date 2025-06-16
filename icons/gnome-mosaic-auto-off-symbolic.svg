@@ -50,7 +50,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title>Pop Symbolic Icon Theme</dc:title>
+        <dc:title>GNOME Mosaic Symbolic Icon Theme</dc:title>
         <cc:license
            rdf:resource="http://creativecommons.org/licenses/by-sa/4.0/" />
       </cc:Work>
@@ -72,7 +72,7 @@
     </rdf:RDF>
   </metadata>
   <title
-     id="title8473">Pop Symbolic Icon Theme</title>
+     id="title8473">GNOME Mosaic Symbolic Icon Theme</title>
   <defs
      id="defs7386">
     <linearGradient
