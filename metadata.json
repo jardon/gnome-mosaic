@@ -1,6 +1,6 @@
 {
-    "name": "Pop Shell",
-    "description": "Pop Shell",
+    "name": "GNOME Mosaic",
+    "description": "GNOME Mosaic",
     "version": 2,
     "uuid": "gnome-mosaic@jardon.github.com",
     "settings-schema": "org.gnome.shell.extensions.gnome-mosaic",

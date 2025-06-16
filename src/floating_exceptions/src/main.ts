@@ -317,7 +317,7 @@ function println(message: string) {
 /** Initialize GTK and start the application */
 function main() {
     GLib.set_prgname(WM_CLASS_ID);
-    GLib.set_application_name('Pop Shell Floating Window Exceptions');
+    GLib.set_application_name('GNOME Mosaic Floating Window Exceptions');
 
     Gtk.init(null);
 

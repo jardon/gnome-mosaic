@@ -30,7 +30,7 @@ export class Indicator {
     entry_gaps: any;
 
     constructor(ext: Ext) {
-        this.button = new Button(0.0, _('Pop Shell Settings'));
+        this.button = new Button(0.0, _('GNOME Mosaic Settings'));
 
         const path = get_current_path();
         ext.button = this.button;

@@ -9,7 +9,7 @@ shortcut_applied() {
         return 0
     fi
 
-    read -p "Pop shell will override your default shortcuts. Are you sure? (y/n) " CONT
+    read -p "GNOME Mosaic will override your default shortcuts. Are you sure? (y/n) " CONT
     if test "$CONT" = "y"; then
         touch "./.confirm_shortcut_change"
         return 1
@@ -115,5 +115,5 @@ if gnome-extensions list | grep native-window; then
     gnome-extensions enable $(gnome-extensions list | grep native-window)
 fi
 
-# Workspaces spanning displays works better with Pop Shell
+# Workspaces spanning displays works better with GNOME Mosaic
 dconf write /org/gnome/mutter/workspaces-only-on-primary false

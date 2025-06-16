@@ -22,14 +22,14 @@ If this is a bug, please use the template below. If this is a question or genera
 
 
 
-**(6) Pop Shell version (run `apt policy gnome-mosaic` or provide the latest commit if building locally):**
+**(6) GNOME Mosaic version (run `apt policy gnome-mosaic` or provide the latest commit if building locally):**
 <!--
 Use triple back ticks ```<value here>``` to paste the apt policy gnome-mosaic value, so it formats nicely
 -->
 
 
 
-**(7) Where was Pop Shell installed from:**
+**(7) Where was GNOME Mosaic installed from:**
 
 
 

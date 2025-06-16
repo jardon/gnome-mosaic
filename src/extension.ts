@@ -2788,7 +2788,7 @@ function load_theme(style: Style): string | any {
                 existing_theme.unload_stylesheet(s);
             }
 
-            // Merge theme update with pop shell styling
+            // Merge theme update with GNOME Mosaic styling
             existing_theme.load_stylesheet(STYLESHEETS[pop_stylesheet]);
 
             // Perform theme update
