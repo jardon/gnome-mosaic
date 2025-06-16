@@ -29,7 +29,7 @@ function getExtensionPath(uuid: string) {
 }
 
 function getSettings(schema: string) {
-    let extensionPath = getExtensionPath('jarred.wilson12@gmail.com');
+    let extensionPath = getExtensionPath('gnome-mosaic@jardon.github.com');
     if (!extensionPath) throw new Error('getSettings() can only be called when extension is available');
 
     // The following will load a custom path for a user defined gsettings/schemas folder

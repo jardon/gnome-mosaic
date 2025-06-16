@@ -49,10 +49,10 @@ depcheck:
 	fi
 
 enable:
-	gnome-extensions enable "jarred.wilson12@gmail.com"
+	gnome-extensions enable "gnome-mosaic@jardon.github.com"
 
 disable:
-	gnome-extensions disable "jarred.wilson12@gmail.com"
+	gnome-extensions disable "gnome-mosaic@jardon.github.com"
 
 listen:
 	journalctl -o cat -n 0 -f "$$(which gnome-shell)" | grep -v warning
