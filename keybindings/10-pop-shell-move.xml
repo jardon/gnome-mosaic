@@ -10,12 +10,12 @@
   <KeyListEntry name="tile-move-left-global" description="Move window left outside management mode"/>
   <KeyListEntry name="tile-move-right-global" description="Move window right outside management mode"/>
   <KeyListEntry name="tile-move-up-global" description="Move window up outside management mode"/>
-  <KeyListEntry name="pop-workspace-down" description="Move window to lower workspace"/>
-  <KeyListEntry name="pop-workspace-up" description="Move window to upper workspace"/>
-  <KeyListEntry name="pop-monitor-down" description="Move window to lower monitor"/>
-  <KeyListEntry name="pop-monitor-left" description="Move window to leftward monitor"/>
-  <KeyListEntry name="pop-monitor-right" description="Move window to rightward monitor"/>
-  <KeyListEntry name="pop-monitor-up" description="Move window to upper monitor"/>
+  <KeyListEntry name="mosaic-workspace-down" description="Move window to lower workspace"/>
+  <KeyListEntry name="mosaic-workspace-up" description="Move window to upper workspace"/>
+  <KeyListEntry name="mosaic-monitor-down" description="Move window to lower monitor"/>
+  <KeyListEntry name="mosaic-monitor-left" description="Move window to leftward monitor"/>
+  <KeyListEntry name="mosaic-monitor-right" description="Move window to rightward monitor"/>
+  <KeyListEntry name="mosaic-monitor-up" description="Move window to upper monitor"/>
   <KeyListEntry name="tile-reject" description="Cancel changes"/>
   <KeyListEntry name="tile-resize-left" description="Resize window smaller"/>
   <KeyListEntry name="tile-resize-right" description="Resize window larger"/>
