@@ -52,7 +52,7 @@ function getSettings(schema: string) {
  * Using the settings.connect('changed') mechanism, the extension is able to listen to when the color changes in realtime.
  */
 function launch_color_dialog() {
-    let popshell_settings = getSettings('org.gnome.shell.extensions.gnome-mosaic');
+    let mosaic_settings = getSettings('org.gnome.shell.extensions.gnome-mosaic');
 
     let color_dialog = new Gtk.ColorChooserDialog({
         title: 'Choose Color',
@@ -62,7 +62,7 @@ function launch_color_dialog() {
 
     // Use the new spec format for Gtk.Color thru Gdk.RGBA
     let rgba = new Gdk.RGBA();
-    if (rgba.parse(popshell_settings.get_string('hint-color-rgba'))) {
+    if (rgba.parse(mosaic_settings.get_string('hint-color-rgba'))) {
         color_dialog.set_rgba(rgba);
     } else {
         rgba.parse(DEFAULT_HINT_COLOR);
@@ -76,7 +76,7 @@ function launch_color_dialog() {
     } else if (response === Gtk.ResponseType.OK) {
         // save the selected RGBA to GSettings
         // TODO, save alpha instead of always 1.0
-        popshell_settings.set_string('hint-color-rgba', color_dialog.get_rgba().to_string());
+        mosaic_settings.set_string('hint-color-rgba', color_dialog.get_rgba().to_string());
         Gio.Settings.sync();
         color_dialog.destroy();
     }

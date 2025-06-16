@@ -2665,12 +2665,12 @@ let ext: Ext | null = null;
 let indicator: Indicator | null = null;
 
 declare global {
-  var popShellExtension: any;
+  var MosaicExtension: any;
 }
 
-export default class PopShellExtension extends Extension {
+export default class MosaicExtension extends Extension {
     enable() {
-        globalThis.popShellExtension  = this;
+        globalThis.MosaicExtension  = this;
         log.info('enable');
 
         if (!ext) {
@@ -2719,7 +2719,7 @@ export default class PopShellExtension extends Extension {
                 return;
             }
 
-            delete globalThis.popShellExtension;
+            delete globalThis.MosaicExtension;
             ext.injections_remove();
             ext.signals_remove();
             ext.exit_modes();

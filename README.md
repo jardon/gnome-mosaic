@@ -121,7 +121,7 @@ Switching focus to the left will calculate from the center of the east side of t
 
 <!-- ### Launcher
 
-Mosaic provides an integrated launcher which interfaces directly with our [pop-launcher](https://github.com/pop-os/launcher) service. JSON IPC is used to communicate between the shell and the launcher in an asynchronous fashion. This functionality was separated from the shell due to performance and maintainability issues. The new launcher is written in Rust and fully async. The launcher has extensive features that would be useful for implementing desktop launchers beyond a shell extension. -->
+Mosaic provides an integrated launcher which interfaces directly with our [mosaic-launcher](https://github.com/pop-os/launcher) service. JSON IPC is used to communicate between the shell and the launcher in an asynchronous fashion. This functionality was separated from the shell due to performance and maintainability issues. The new launcher is written in Rust and fully async. The launcher has extensive features that would be useful for implementing desktop launchers beyond a shell extension. -->
 
 ### Inner and Outer Gaps
 
