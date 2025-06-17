@@ -6,8 +6,8 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 import Meta from 'gi://Meta';
-const { Ok, Err } = result;
-const { Error } = error;
+const {Ok, Err} = result;
+const {Error} = error;
 
 export function is_wayland(): boolean {
     return Meta.is_wayland_compositor();
@@ -21,7 +21,9 @@ export function unblock_signal(object: GObject.Object, signal: SignalID) {
     GObject.signal_handler_unblock(object, signal);
 }
 
-export function read_to_string(path: string): result.Result<string, error.Error> {
+export function read_to_string(
+    path: string
+): result.Result<string, error.Error> {
     const file = Gio.File.new_for_path(path);
     try {
         const [ok, contents] = file.load_contents(null);
@@ -31,7 +33,9 @@ export function read_to_string(path: string): result.Result<string, error.Error>
             return Err(new Error(`failed to load contents of ${path}`));
         }
     } catch (e) {
-        return Err(new Error(String(e)).context(`failed to load contents of ${path}`));
+        return Err(
+            new Error(String(e)).context(`failed to load contents of ${path}`)
+        );
     }
 }
 
@@ -58,7 +62,10 @@ export function is_dark(color: string): boolean {
     // handle rgba(255,255,255,1.0) format
     if (color.indexOf('rgb') >= 0) {
         // starts with parsed value from Gdk.RGBA
-        color = color.replace('rgba', 'rgb').replace('rgb(', '').replace(')', ''); // make it 255, 255, 255, 1
+        color = color
+            .replace('rgba', 'rgb')
+            .replace('rgb(', '')
+            .replace(')', ''); // make it 255, 255, 255, 1
         // log.debug(`util color: ${color}`);
         let colors = color.split(',');
         r = parseInt(colors[0].trim());
@@ -72,7 +79,7 @@ export function is_dark(color: string): boolean {
     }
 
     let uicolors = [r / 255, g / 255, b / 255];
-    let c = uicolors.map((col) => {
+    let c = uicolors.map(col => {
         if (col <= 0.03928) {
             return col / 12.92;
         }
@@ -83,12 +90,16 @@ export function is_dark(color: string): boolean {
 }
 
 /** Utility function for running a process in the background and fetching its standard output as a string. */
-export function async_process(argv: Array<string>, input = null, cancellable: null | any = null): Promise<string> {
+export function async_process(
+    argv: Array<string>,
+    input = null,
+    cancellable: null | any = null
+): Promise<string> {
     let flags = Gio.SubprocessFlags.STDOUT_PIPE;
 
     if (input !== null) flags |= Gio.SubprocessFlags.STDIN_PIPE;
 
-    let proc = new Gio.Subprocess({ argv, flags });
+    let proc = new Gio.Subprocess({argv, flags});
     proc.init(cancellable);
 
     proc.wait_async(null, (source: any, res: any) => {
@@ -99,14 +110,18 @@ export function async_process(argv: Array<string>, input = null, cancellable: nu
     });
 
     return new Promise((resolve, reject) => {
-        proc.communicate_utf8_async(input, cancellable, (proc: any, res: any) => {
-            try {
-                let bytes = proc.communicate_utf8_finish(res)[1];
-                resolve(bytes.toString());
-            } catch (e) {
-                reject(e);
+        proc.communicate_utf8_async(
+            input,
+            cancellable,
+            (proc: any, res: any) => {
+                try {
+                    let bytes = proc.communicate_utf8_finish(res)[1];
+                    resolve(bytes.toString());
+                } catch (e) {
+                    reject(e);
+                }
             }
-        });
+        );
     });
 }
 
@@ -118,7 +133,7 @@ export type AsyncIPC = {
 };
 
 export function async_process_ipc(argv: Array<string>): AsyncIPC | null {
-    const { SubprocessLauncher, SubprocessFlags } = Gio;
+    const {SubprocessLauncher, SubprocessFlags} = Gio;
 
     const launcher = new SubprocessLauncher({
         flags: SubprocessFlags.STDIN_PIPE | SubprocessFlags.STDOUT_PIPE,
@@ -150,7 +165,7 @@ export function async_process_ipc(argv: Array<string>): AsyncIPC | null {
         cancellable.cancel();
     });
 
-    return { child, stdin, stdout, cancellable };
+    return {child, stdin, stdout, cancellable};
 }
 
 export function map_eq<K, V>(map1: Map<K, V>, map2: Map<K, V>) {

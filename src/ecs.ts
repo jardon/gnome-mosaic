@@ -9,7 +9,7 @@
 /// - The first 32-bit integer is the index.
 /// - The second 32-bit integer is the generation.
 
-import { Executor } from './executor.js';
+import {Executor} from './executor.js';
 
 export type Entity = [number, number];
 

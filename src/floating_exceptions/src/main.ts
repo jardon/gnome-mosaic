@@ -6,7 +6,9 @@ import Gtk from 'gi://Gtk?version=3.0';
 import Pango from 'gi://Pango';
 
 /** The directory that this script is executed from. */
-const SCRIPT_DIR = GLib.path_get_dirname(new Error().stack.split(':')[0].slice(1));
+const SCRIPT_DIR = GLib.path_get_dirname(
+    new Error().stack.split(':')[0].slice(1)
+);
 
 /** Add our directory so we can import modules from it. */
 imports.searchPath.push(SCRIPT_DIR);
@@ -58,7 +60,10 @@ function exceptions_button(): any {
     description.set_xalign(0);
     description.get_style_context().add_class('dim-label');
 
-    let icon = Gtk.Image.new_from_icon_name('go-next-symbolic', Gtk.IconSize.BUTTON);
+    let icon = Gtk.Image.new_from_icon_name(
+        'go-next-symbolic',
+        Gtk.IconSize.BUTTON
+    );
     icon.set_hexpand(true);
     icon.set_halign(Gtk.Align.END);
 
@@ -86,11 +91,13 @@ export class MainView implements View {
     constructor() {
         let select = Gtk.Button.new_with_label('Select');
         select.set_halign(Gtk.Align.CENTER);
-        select.connect('clicked', () => this.callback({ tag: 0 }));
+        select.connect('clicked', () => this.callback({tag: 0}));
         select.set_margin_bottom(12);
 
         let exceptions = exceptions_button();
-        exceptions.connect('clicked', () => this.callback({ tag: 1, view: ViewNum.Exceptions }));
+        exceptions.connect('clicked', () =>
+            this.callback({tag: 1, view: ViewNum.Exceptions})
+        );
 
         this.list = Gtk.ListBox.new();
         this.list.set_selection_mode(Gtk.SelectionMode.NONE);
@@ -122,12 +129,17 @@ export class MainView implements View {
     }
 
     add_rule(wmclass: string | undefined, wmtitle: string | undefined) {
-        let label = Gtk.Label.new(wmtitle === undefined ? wmclass : `${wmclass} / ${wmtitle}`);
+        let label = Gtk.Label.new(
+            wmtitle === undefined ? wmclass : `${wmclass} / ${wmtitle}`
+        );
         label.set_xalign(0);
         label.set_hexpand(true);
         label.set_ellipsize(Pango.EllipsizeMode.END);
 
-        let button = Gtk.Button.new_from_icon_name('edit-delete', Gtk.IconSize.BUTTON);
+        let button = Gtk.Button.new_from_icon_name(
+            'edit-delete',
+            Gtk.IconSize.BUTTON
+        );
         button.set_valign(Gtk.Align.CENTER);
 
         let widget = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 24);
@@ -139,7 +151,7 @@ export class MainView implements View {
 
         button.connect('clicked', () => {
             widget.destroy();
-            this.callback({ tag: 3, wmclass, wmtitle });
+            this.callback({tag: 3, wmclass, wmtitle});
         });
 
         this.list.add(widget);
@@ -157,7 +169,9 @@ export class ExceptionsView implements View {
         desc_title.set_use_markup(true);
         desc_title.set_xalign(0);
 
-        let desc_desc = Gtk.Label.new('Updated based on validated user reports.');
+        let desc_desc = Gtk.Label.new(
+            'Updated based on validated user reports.'
+        );
         desc_desc.set_xalign(0);
         desc_desc.get_style_context().add_class('dim-label');
         desc_desc.set_margin_bottom(6);
@@ -180,8 +194,14 @@ export class ExceptionsView implements View {
         this.widget.add(exceptions_frame);
     }
 
-    add_rule(wmclass: string | undefined, wmtitle: string | undefined, enabled: boolean) {
-        let label = Gtk.Label.new(wmtitle === undefined ? wmclass : `${wmclass} / ${wmtitle}`);
+    add_rule(
+        wmclass: string | undefined,
+        wmtitle: string | undefined,
+        enabled: boolean
+    ) {
+        let label = Gtk.Label.new(
+            wmtitle === undefined ? wmclass : `${wmclass} / ${wmtitle}`
+        );
         label.set_xalign(0);
         label.set_hexpand(true);
         label.set_ellipsize(Pango.EllipsizeMode.END);
@@ -190,7 +210,12 @@ export class ExceptionsView implements View {
         button.set_valign(Gtk.Align.CENTER);
         button.set_state(enabled);
         button.connect('notify::state', () => {
-            this.callback({ tag: 2, wmclass, wmtitle, enable: button.get_state() });
+            this.callback({
+                tag: 2,
+                wmclass,
+                wmtitle,
+                enable: button.get_state(),
+            });
         });
 
         let widget = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 24);
@@ -216,11 +241,14 @@ class App {
         this.stack.add(this.main_view.widget);
         this.stack.add(this.exceptions_view.widget);
 
-        let back = Gtk.Button.new_from_icon_name('go-previous-symbolic', Gtk.IconSize.BUTTON);
+        let back = Gtk.Button.new_from_icon_name(
+            'go-previous-symbolic',
+            Gtk.IconSize.BUTTON
+        );
 
         const TITLE = 'Floating Window Exceptions';
 
-        let win = new Gtk.Dialog({ use_header_bar: true });
+        let win = new Gtk.Dialog({use_header_bar: true});
         let headerbar = win.get_header_bar();
         headerbar.set_show_close_button(true);
         headerbar.set_title(TITLE);
@@ -243,7 +271,10 @@ class App {
             let wmtitle = value.title ?? undefined;
             let wmclass = value.class ?? undefined;
 
-            let disabled = this.config.rule_disabled({ class: wmclass, title: wmtitle });
+            let disabled = this.config.rule_disabled({
+                class: wmclass,
+                title: wmtitle,
+            });
             this.exceptions_view.add_rule(wmclass, wmtitle, !disabled);
         }
 
@@ -269,7 +300,9 @@ class App {
                             back.hide();
                             break;
                         case ViewNum.Exceptions:
-                            this.stack.set_visible_child(this.exceptions_view.widget);
+                            this.stack.set_visible_child(
+                                this.exceptions_view.widget
+                            );
                             back.show();
                             break;
                     }
@@ -279,14 +312,21 @@ class App {
                 // ToggleException
                 case 2:
                     log(`toggling exception ${event.enable}`);
-                    this.config.toggle_system_exception(event.wmclass, event.wmtitle, !event.enable);
+                    this.config.toggle_system_exception(
+                        event.wmclass,
+                        event.wmtitle,
+                        !event.enable
+                    );
                     println('MODIFIED');
                     break;
 
                 // RemoveException
                 case 3:
                     log(`removing exception`);
-                    this.config.remove_user_exception(event.wmclass, event.wmtitle);
+                    this.config.remove_user_exception(
+                        event.wmclass,
+                        event.wmtitle
+                    );
                     println('MODIFIED');
                     break;
             }
@@ -294,7 +334,9 @@ class App {
 
         this.main_view.callback = event_handler;
         this.exceptions_view.callback = event_handler;
-        back.connect('clicked', () => event_handler({ tag: 1, view: ViewNum.MainView }));
+        back.connect('clicked', () =>
+            event_handler({tag: 1, view: ViewNum.MainView})
+        );
     }
 }
 
@@ -306,7 +348,7 @@ function list_header_func(row: any, before: null | any) {
 
 /** We'll use stdout for printing events for the shell to handle */
 const STDOUT = new Gio.DataOutputStream({
-    base_stream: new Gio.UnixOutputStream({ fd: 1 }),
+    base_stream: new Gio.UnixOutputStream({fd: 1}),
 });
 
 /** Utility function for printing a message to stdout with an added newline */

@@ -32,7 +32,8 @@ export class Service {
     FocusDown: () => void = () => {};
     Launcher: () => void = () => {};
     WindowFocus: (window: [number, number]) => void = () => {};
-    WindowList: () => Array<[[number, number], string, string, string]> = () => [];
+    WindowList: () => Array<[[number, number], string, string, string]> =
+        () => [];
     WindowQuit: (window: [number, number]) => void = () => {};
 
     constructor() {
@@ -52,7 +53,7 @@ export class Service {
             Gio.BusNameOwnerFlags.NONE,
             onBusAcquired,
             onNameAcquired,
-            onNameLost,
+            onNameLost
         );
     }
 

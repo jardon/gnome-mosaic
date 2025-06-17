@@ -1,6 +1,6 @@
-import type { Entity } from './ecs.js';
-import type { Ext } from './extension.js';
-import type { ShellWindow } from './window.js';
+import type {Entity} from './ecs.js';
+import type {Ext} from './extension.js';
+import type {ShellWindow} from './window.js';
 
 import * as Ecs from './ecs.js';
 import * as a from './arena.js';
@@ -38,12 +38,12 @@ function stack_widgets_new(): StackWidgets {
 
     tabs.get_layout_manager()?.set_homogeneous(true);
 
-    return { tabs };
+    return {tabs};
 }
 
 const ContainerButton = GObject.registerClass(
     {
-        Signals: { activate: {} },
+        Signals: {activate: {}},
     },
     class ImageButton extends St.Button {
         _init(icon: St.Icon) {
@@ -53,7 +53,7 @@ const ContainerButton = GObject.registerClass(
                 y_expand: true,
             });
         }
-    },
+    }
 );
 
 interface TabButton extends St.Button {
@@ -62,7 +62,7 @@ interface TabButton extends St.Button {
 
 const TabButton = GObject.registerClass(
     {
-        Signals: { activate: {} },
+        Signals: {activate: {}},
     },
     class TabButton extends St.Button {
         _init(window: ShellWindow) {
@@ -88,7 +88,7 @@ const TabButton = GObject.registerClass(
                     icon_name: 'window-close-symbolic',
                     icon_size: 24,
                     y_align: Clutter.ActorAlign.CENTER,
-                }),
+                })
             );
 
             close_button.connect('clicked', () => {
@@ -117,7 +117,7 @@ const TabButton = GObject.registerClass(
                 this._title.text = text;
             }
         }
-    },
+    }
 );
 
 export class Stack {
@@ -142,13 +142,15 @@ export class Stack {
 
     tabs_height: number = TAB_HEIGHT;
 
-    stack_rect: Rectangular = { width: 0, height: 0, x: 0, y: 0 };
+    stack_rect: Rectangular = {width: 0, height: 0, x: 0, y: 0};
 
     private active_signals: [SignalID, SignalID] | null = null;
 
-    private rect: Rectangular = { width: 0, height: 0, x: 0, y: 0 };
+    private rect: Rectangular = {width: 0, height: 0, x: 0, y: 0};
 
-    private restacker: SignalID = global.display.connect('restacked', () => this.restack());
+    private restacker: SignalID = global.display.connect('restacked', () =>
+        this.restack()
+    );
 
     private tabs_destroy: SignalID;
 
@@ -165,7 +167,9 @@ export class Stack {
 
         this.reposition();
 
-        this.tabs_destroy = this.widgets.tabs.connect('destroy', () => this.recreate_widgets());
+        this.tabs_destroy = this.widgets.tabs.connect('destroy', () =>
+            this.recreate_widgets()
+        );
     }
 
     /** Adds a new window to the stack */
@@ -178,7 +182,13 @@ export class Stack {
         const button = new TabButton(window);
         const id = this.buttons.insert(button);
 
-        let tab: Tab = { active, entity, signals: [], button: id, button_signal: null };
+        let tab: Tab = {
+            active,
+            entity,
+            signals: [],
+            button: id,
+            button_signal: null,
+        };
         let comp = this.tabs.length;
         this.bind_hint_events(tab);
         this.tabs.push(tab);
@@ -229,7 +239,7 @@ export class Stack {
         for (const [idx, component] of this.tabs.entries()) {
             let name;
 
-            this.window_exec(id, component.entity, (window) => {
+            this.window_exec(id, component.entity, window => {
                 const actor = window.meta.get_compositor_private();
 
                 if (Ecs.entity_eq(entity, component.entity)) {
@@ -256,7 +266,9 @@ export class Stack {
                     }
 
                     const tab_border_radius = this.get_tab_border_radius(idx);
-                    button.set_style(`background: ${tab_color}; border-radius: ${tab_border_radius};`);
+                    button.set_style(
+                        `background: ${tab_color}; border-radius: ${tab_border_radius};`
+                    );
                 }
             });
 
@@ -272,13 +284,17 @@ export class Stack {
         let result = `0px 0px 0px 0px`;
 
         // the minus 4px is to accomodate the inner radius being tighter
-        let radius = Math.max(0, this.ext.settings.active_hint_border_radius() - 4);
+        let radius = Math.max(
+            0,
+            this.ext.settings.active_hint_border_radius() - 4
+        );
         // only allow a radius up to half the tab_height
         radius = Math.min(radius, Math.trunc(this.tabs_height / 2));
         // set each corner's radius based on it's order
         if (this.tabs.length === 1) result = `${radius}px`;
         else if (idx === 0) result = `${radius}px 0px 0px ${radius}px`;
-        else if (idx === this.tabs.length - 1) result = `0px ${radius}px ${radius}px 0px`;
+        else if (idx === this.tabs.length - 1)
+            result = `0px ${radius}px ${radius}px 0px`;
 
         return result;
     }
@@ -373,7 +389,8 @@ export class Stack {
         const window = this.ext.windows.get(c.entity);
         if (window) {
             for (const s of c.signals) window.meta.disconnect(s);
-            if (this.workspace === this.ext.active_workspace()) window.meta.get_compositor_private()?.show();
+            if (this.workspace === this.ext.active_workspace())
+                window.meta.get_compositor_private()?.show();
         }
 
         c.signals = [];
@@ -436,7 +453,10 @@ export class Stack {
                     const parent = this.widgets.tabs.get_parent();
                     const actor = this.active_meta()?.get_compositor_private();
                     if (actor && parent) {
-                        parent.set_child_below_sibling(this.widgets.tabs, actor);
+                        parent.set_child_below_sibling(
+                            this.widgets.tabs,
+                            actor
+                        );
                     }
                 }
 
@@ -456,7 +476,9 @@ export class Stack {
 
             global.window_group.add_child(this.widgets.tabs);
 
-            this.tabs_destroy = this.widgets.tabs.connect('destroy', () => this.recreate_widgets());
+            this.tabs_destroy = this.widgets.tabs.connect('destroy', () =>
+                this.recreate_widgets()
+            );
 
             this.active_disconnect();
 
@@ -569,7 +591,11 @@ export class Stack {
         parent.add_child(this.widgets.tabs);
 
         // Reposition actors on the screen, being careful about not displaying over maximized windows
-        if (!window.meta.is_fullscreen() && !window.is_maximized() && !this.ext.maximized_on_active_display()) {
+        if (
+            !window.meta.is_fullscreen() &&
+            !window.is_maximized() &&
+            !this.ext.maximized_on_active_display()
+        ) {
             parent.set_child_above_sibling(this.widgets.tabs, actor);
         } else {
             parent.set_child_below_sibling(this.widgets.tabs, actor);
@@ -577,18 +603,22 @@ export class Stack {
     }
 
     permitted_to_show(workspace?: number): boolean {
-        const active_workspace = workspace ?? global.workspace_manager.get_active_workspace_index();
+        const active_workspace =
+            workspace ?? global.workspace_manager.get_active_workspace_index();
         const primary = global.display.get_primary_monitor();
         const only_primary = this.ext.settings.workspaces_only_on_primary();
 
-        return active_workspace === this.workspace || (only_primary && this.monitor != primary);
+        return (
+            active_workspace === this.workspace ||
+            (only_primary && this.monitor != primary)
+        );
     }
 
     reset_visibility(permitted: boolean) {
         let idx = 0;
 
         for (const c of this.tabs) {
-            this.actor_exec(idx, c.entity, (actor) => {
+            this.actor_exec(idx, c.entity, actor => {
                 if (permitted && this.active_id === idx) {
                     actor.show();
                     return;
@@ -663,7 +693,7 @@ export class Stack {
         // Connect tab-clicked signal
         c.button_signal = widget.connect('clicked', () => {
             this.activate(entity);
-            this.window_exec(comp, entity, (window) => {
+            this.window_exec(comp, entity, window => {
                 const actor = window.meta.get_compositor_private();
                 if (actor) {
                     actor.show();
@@ -672,7 +702,9 @@ export class Stack {
                     this.reposition();
 
                     for (const comp of this.tabs) {
-                        this.buttons.get(comp.button)?.set_style_class_name(INACTIVE_TAB);
+                        this.buttons
+                            .get(comp.button)
+                            ?.set_style_class_name(INACTIVE_TAB);
                     }
 
                     widget.set_style_class_name(ACTIVE_TAB);
@@ -688,15 +720,17 @@ export class Stack {
         // Attach new signals
         this.tabs[comp].signals = [
             window.meta.connect('notify::title', () => {
-                this.window_exec(comp, entity, (window) => {
+                this.window_exec(comp, entity, window => {
                     this.buttons.get(button)?.set_title(window.title());
                 });
             }),
 
             window.meta.connect('notify::urgent', () => {
-                this.window_exec(comp, entity, (window) => {
+                this.window_exec(comp, entity, window => {
                     if (!window.meta.has_focus()) {
-                        this.buttons.get(button)?.set_style_class_name(URGENT_TAB);
+                        this.buttons
+                            .get(button)
+                            ?.set_style_class_name(URGENT_TAB);
                     }
                 });
             }),
@@ -707,13 +741,21 @@ export class Stack {
         this.ext.show_border_on_focused();
     }
 
-    private actor_exec(comp: number, entity: Entity, func: (window: Clutter.Actor) => void) {
-        this.window_exec(comp, entity, (window) => {
+    private actor_exec(
+        comp: number,
+        entity: Entity,
+        func: (window: Clutter.Actor) => void
+    ) {
+        this.window_exec(comp, entity, window => {
             func(window.meta.get_compositor_private() as Clutter.Actor);
         });
     }
 
-    private window_exec(comp: number, entity: Entity, func: (window: ShellWindow) => void) {
+    private window_exec(
+        comp: number,
+        entity: Entity,
+        func: (window: ShellWindow) => void
+    ) {
         const window = this.ext.windows.get(entity);
         if (window && window.actor_exists()) {
             func(window);

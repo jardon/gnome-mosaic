@@ -1,7 +1,7 @@
 import * as Movement from './movement.js';
 
-import type { Entity } from './ecs.js';
-import type { Rectangle } from './rectangle.js';
+import type {Entity} from './ecs.js';
+import type {Rectangle} from './rectangle.js';
 
 export class GrabOp {
     entity: Entity;

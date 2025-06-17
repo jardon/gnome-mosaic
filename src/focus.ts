@@ -1,7 +1,7 @@
 import * as Geom from './geom.js';
 
-import type { ShellWindow } from './window.js';
-import type { Ext } from './extension.js';
+import type {ShellWindow} from './window.js';
+import type {Ext} from './extension.js';
 
 export enum FocusPosition {
     TopLeft = 'Top Left',
@@ -14,8 +14,11 @@ export enum FocusPosition {
 export class FocusSelector {
     select(
         ext: Ext,
-        direction: (a: ShellWindow, b: Array<ShellWindow>) => Array<ShellWindow>,
-        window: ShellWindow | null,
+        direction: (
+            a: ShellWindow,
+            b: Array<ShellWindow>
+        ) => Array<ShellWindow>,
+        window: ShellWindow | null
     ): ShellWindow | null {
         window = window ?? ext.focus_window();
         if (window) {
@@ -46,7 +49,7 @@ export class FocusSelector {
 function select(
     windows: (a: ShellWindow, b: Array<ShellWindow>) => Array<ShellWindow>,
     focused: ShellWindow,
-    window_list: Array<ShellWindow>,
+    window_list: Array<ShellWindow>
 ): ShellWindow | null {
     const array = windows(focused, window_list);
     return array.length > 0 ? array[0] : null;
@@ -54,24 +57,56 @@ function select(
 
 function window_down(focused: ShellWindow, windows: Array<ShellWindow>) {
     return windows
-        .filter((win) => !win.meta.minimized && win.meta.get_frame_rect().y > focused.meta.get_frame_rect().y)
-        .sort((a, b) => Geom.downward_distance(a.meta, focused.meta) - Geom.downward_distance(b.meta, focused.meta));
+        .filter(
+            win =>
+                !win.meta.minimized &&
+                win.meta.get_frame_rect().y > focused.meta.get_frame_rect().y
+        )
+        .sort(
+            (a, b) =>
+                Geom.downward_distance(a.meta, focused.meta) -
+                Geom.downward_distance(b.meta, focused.meta)
+        );
 }
 
 function window_left(focused: ShellWindow, windows: Array<ShellWindow>) {
     return windows
-        .filter((win) => !win.meta.minimized && win.meta.get_frame_rect().x < focused.meta.get_frame_rect().x)
-        .sort((a, b) => Geom.leftward_distance(a.meta, focused.meta) - Geom.leftward_distance(b.meta, focused.meta));
+        .filter(
+            win =>
+                !win.meta.minimized &&
+                win.meta.get_frame_rect().x < focused.meta.get_frame_rect().x
+        )
+        .sort(
+            (a, b) =>
+                Geom.leftward_distance(a.meta, focused.meta) -
+                Geom.leftward_distance(b.meta, focused.meta)
+        );
 }
 
 function window_right(focused: ShellWindow, windows: Array<ShellWindow>) {
     return windows
-        .filter((win) => !win.meta.minimized && win.meta.get_frame_rect().x > focused.meta.get_frame_rect().x)
-        .sort((a, b) => Geom.rightward_distance(a.meta, focused.meta) - Geom.rightward_distance(b.meta, focused.meta));
+        .filter(
+            win =>
+                !win.meta.minimized &&
+                win.meta.get_frame_rect().x > focused.meta.get_frame_rect().x
+        )
+        .sort(
+            (a, b) =>
+                Geom.rightward_distance(a.meta, focused.meta) -
+                Geom.rightward_distance(b.meta, focused.meta)
+        );
 }
 
 function window_up(focused: ShellWindow, windows: Array<ShellWindow>) {
     return windows
-        .filter((win) => !win.meta.minimized && win.meta.get_frame_rect().y < focused.meta.get_frame_rect().y)
-        .sort((a, b) => Geom.upward_distance(a.meta, focused.meta) - Geom.upward_distance(b.meta, focused.meta));
+        .filter(
+            win =>
+                !win.meta.minimized &&
+                win.meta.get_frame_rect().y < focused.meta.get_frame_rect().y
+        )
+        .sort(
+            (a, b) =>
+                Geom.upward_distance(a.meta, focused.meta) -
+                Geom.upward_distance(b.meta, focused.meta)
+        );
 }

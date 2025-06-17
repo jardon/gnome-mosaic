@@ -2,7 +2,7 @@ import Gtk from 'gi://Gtk';
 
 import Gio from 'gi://Gio';
 const Settings = Gio.Settings;
-import { ExtensionPreferences } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
+import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 import * as settings from './settings.js';
 import * as log from './log.js';
@@ -85,34 +85,50 @@ function settings_dialog_new(): Gtk.Container {
     });
 
     app.show_skip_taskbar.set_active(ext.show_skiptaskbar());
-    app.show_skip_taskbar.connect('state-set', (_widget: any, state: boolean) => {
-        ext.set_show_skiptaskbar(state);
-        Settings.sync();
-    });
+    app.show_skip_taskbar.connect(
+        'state-set',
+        (_widget: any, state: boolean) => {
+            ext.set_show_skiptaskbar(state);
+            Settings.sync();
+        }
+    );
 
-    app.mouse_cursor_follows_active_window.set_active(ext.mouse_cursor_follows_active_window());
-    app.mouse_cursor_follows_active_window.connect('state-set', (_widget: any, state: boolean) => {
-        ext.set_mouse_cursor_follows_active_window(state);
-        Settings.sync();
-    });
+    app.mouse_cursor_follows_active_window.set_active(
+        ext.mouse_cursor_follows_active_window()
+    );
+    app.mouse_cursor_follows_active_window.connect(
+        'state-set',
+        (_widget: any, state: boolean) => {
+            ext.set_mouse_cursor_follows_active_window(state);
+            Settings.sync();
+        }
+    );
 
-    app.mouse_cursor_focus_position.set_active(ext.mouse_cursor_focus_location());
+    app.mouse_cursor_focus_position.set_active(
+        ext.mouse_cursor_focus_location()
+    );
     app.mouse_cursor_focus_position.connect('changed', () => {
         let active_id = app.mouse_cursor_focus_position.get_active_id();
         ext.set_mouse_cursor_focus_location(active_id);
     });
 
     app.fullscreen_launcher.set_active(ext.fullscreen_launcher());
-    app.fullscreen_launcher.connect('state-set', (_widget: any, state: boolean) => {
-        ext.set_fullscreen_launcher(state);
-        Settings.sync();
-    });
+    app.fullscreen_launcher.connect(
+        'state-set',
+        (_widget: any, state: boolean) => {
+            ext.set_fullscreen_launcher(state);
+            Settings.sync();
+        }
+    );
 
     app.stacking_with_mouse.set_active(ext.stacking_with_mouse());
-    app.stacking_with_mouse.connect('state-set', (_widget: any, state: boolean) => {
-        ext.set_stacking_with_mouse(state);
-        Settings.sync();
-    });
+    app.stacking_with_mouse.connect(
+        'state-set',
+        (_widget: any, state: boolean) => {
+            ext.set_stacking_with_mouse(state);
+            Settings.sync();
+        }
+    );
 
     app.max_window_width.set_text(String(ext.max_window_width()));
     app.max_window_width.connect('activate', (widget: any) => {
@@ -182,14 +198,21 @@ function settings_dialog_view(): [AppWidgets, Gtk.Container] {
     const settings = {
         inner_gap,
         outer_gap,
-        fullscreen_launcher: new Gtk.Switch({ halign: Gtk.Align.END }),
-        stacking_with_mouse: new Gtk.Switch({ halign: Gtk.Align.END }),
-        smart_gaps: new Gtk.Switch({ halign: Gtk.Align.END }),
-        snap_to_grid: new Gtk.Switch({ halign: Gtk.Align.END }),
-        window_titles: new Gtk.Switch({ halign: Gtk.Align.END }),
-        show_skip_taskbar: new Gtk.Switch({ halign: Gtk.Align.END }),
-        mouse_cursor_follows_active_window: new Gtk.Switch({ halign: Gtk.Align.END }),
-        mouse_cursor_focus_position: build_combo(grid, 7, focus.FocusPosition, 'Mouse Cursor Focus Position'),
+        fullscreen_launcher: new Gtk.Switch({halign: Gtk.Align.END}),
+        stacking_with_mouse: new Gtk.Switch({halign: Gtk.Align.END}),
+        smart_gaps: new Gtk.Switch({halign: Gtk.Align.END}),
+        snap_to_grid: new Gtk.Switch({halign: Gtk.Align.END}),
+        window_titles: new Gtk.Switch({halign: Gtk.Align.END}),
+        show_skip_taskbar: new Gtk.Switch({halign: Gtk.Align.END}),
+        mouse_cursor_follows_active_window: new Gtk.Switch({
+            halign: Gtk.Align.END,
+        }),
+        mouse_cursor_focus_position: build_combo(
+            grid,
+            7,
+            focus.FocusPosition,
+            'Mouse Cursor Focus Position'
+        ),
         log_level: build_combo(grid, 8, log.LOG_LEVELS, 'Log Level'),
         max_window_width: number_entry(),
     };
@@ -253,10 +276,15 @@ function gaps_section(grid: any, top: number): [any, any] {
 }
 
 function number_entry(): Gtk.Widget {
-    return new Gtk.Entry({ input_purpose: Gtk.InputPurpose.NUMBER });
+    return new Gtk.Entry({input_purpose: Gtk.InputPurpose.NUMBER});
 }
 
-function build_combo(grid: any, top_index: number, iter_enum: any, label: string) {
+function build_combo(
+    grid: any,
+    top_index: number,
+    iter_enum: any,
+    label: string
+) {
     let label_ = new Gtk.Label({
         label: label,
         halign: Gtk.Align.START,

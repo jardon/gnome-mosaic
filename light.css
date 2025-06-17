@@ -1,6 +1,6 @@
 .gnome-mosaic-active-hint {
     border-style: solid;
-    border-color: #FFAD00;
+    border-color: #ffad00;
     border-radius: var(--active-hint-border-radius, 5px);
     box-shadow: inset 0 0 0 1px rgba(200, 200, 200, 0);
 }
@@ -17,8 +17,8 @@
     border-width: 3px;
 }
 
-.gnome-mosaic-search-element:select{
-    background: rgba(0, 0, 0, .1);
+.gnome-mosaic-search-element:select {
+    background: rgba(0, 0, 0, 0.1);
     border-radius: 5px;
     color: #393634;
 }
@@ -45,13 +45,13 @@
 }
 
 .gnome-mosaic-tab-active {
-    background: #FFAD00;
+    background: #ffad00;
 }
 
 .gnome-mosaic-tab-inactive {
-    background: #9B8E8A;
+    background: #9b8e8a;
 }
 
 .gnome-mosaic-tab-urgent {
-    background: #D00;
+    background: #d00;
 }

@@ -30,29 +30,40 @@ function getExtensionPath(uuid: string) {
 
 function getSettings(schema: string) {
     let extensionPath = getExtensionPath('gnome-mosaic@jardon.github.com');
-    if (!extensionPath) throw new Error('getSettings() can only be called when extension is available');
+    if (!extensionPath)
+        throw new Error(
+            'getSettings() can only be called when extension is available'
+        );
 
     // The following will load a custom path for a user defined gsettings/schemas folder
     const GioSSS = Gio.SettingsSchemaSource;
     const schemaDir = extensionPath.get_child('schemas');
 
     let schemaSource = schemaDir.query_exists(null)
-        ? GioSSS.new_from_directory(schemaDir.get_path(), GioSSS.get_default(), false)
+        ? GioSSS.new_from_directory(
+              schemaDir.get_path(),
+              GioSSS.get_default(),
+              false
+          )
         : GioSSS.get_default();
 
     const schemaObj = schemaSource.lookup(schema, true);
 
     if (!schemaObj) {
-        throw new Error('Schema ' + schema + ' could not be found for extension ');
+        throw new Error(
+            'Schema ' + schema + ' could not be found for extension '
+        );
     }
-    return new Gio.Settings({ settings_schema: schemaObj });
+    return new Gio.Settings({settings_schema: schemaObj});
 }
 /**
  * Launch a Gtk.ColorChooserDialog. And then save the color RGBA/alpha values in GSettings of gnome-mosaic.
  * Using the settings.connect('changed') mechanism, the extension is able to listen to when the color changes in realtime.
  */
 function launch_color_dialog() {
-    let mosaic_settings = getSettings('org.gnome.shell.extensions.gnome-mosaic');
+    let mosaic_settings = getSettings(
+        'org.gnome.shell.extensions.gnome-mosaic'
+    );
 
     let color_dialog = new Gtk.ColorChooserDialog({
         title: 'Choose Color',
@@ -76,7 +87,10 @@ function launch_color_dialog() {
     } else if (response === Gtk.ResponseType.OK) {
         // save the selected RGBA to GSettings
         // TODO, save alpha instead of always 1.0
-        mosaic_settings.set_string('hint-color-rgba', color_dialog.get_rgba().to_string());
+        mosaic_settings.set_string(
+            'hint-color-rgba',
+            color_dialog.get_rgba().to_string()
+        );
         Gio.Settings.sync();
         color_dialog.destroy();
     }

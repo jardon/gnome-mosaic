@@ -3,7 +3,7 @@ import * as log from './log.js';
 
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
-const { byteArray } = imports;
+const {byteArray} = imports;
 
 /** Reads JSON responses from the launcher service asynchronously, and sends requests.
  *
@@ -13,7 +13,10 @@ const { byteArray } = imports;
 export class LauncherService {
     service: utils.AsyncIPC;
 
-    constructor(service: utils.AsyncIPC, callback: (response: JsonIPC.Response) => void) {
+    constructor(
+        service: utils.AsyncIPC,
+        callback: (response: JsonIPC.Response) => void
+    ) {
         this.service = service;
 
         /** Recursively registers an intent to read the next line asynchronously  */
@@ -24,35 +27,50 @@ export class LauncherService {
                     const string = byteArray.toString(bytes);
                     // log.debug(`received response from launcher service: ${string}`)
                     callback(JSON.parse(string));
-                    this.service.stdout.read_line_async(0, this.service.cancellable, generator);
+                    this.service.stdout.read_line_async(
+                        0,
+                        this.service.cancellable,
+                        generator
+                    );
                 }
             } catch (why) {
                 // Do not print an error if it was merely cancelled.
-                if ((why as any).matches(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED)) {
+                if (
+                    (why as any).matches(
+                        Gio.IOErrorEnum,
+                        Gio.IOErrorEnum.CANCELLED
+                    )
+                ) {
                     return;
                 }
 
-                log.error(`failed to read response from launcher service: ${why}`);
+                log.error(
+                    `failed to read response from launcher service: ${why}`
+                );
             }
         };
 
-        this.service.stdout.read_line_async(0, this.service.cancellable, generator);
+        this.service.stdout.read_line_async(
+            0,
+            this.service.cancellable,
+            generator
+        );
     }
 
     activate(id: number) {
-        this.send({ Activate: id });
+        this.send({Activate: id});
     }
 
     activate_context(id: number, context: number) {
-        this.send({ ActivateContext: { id, context } });
+        this.send({ActivateContext: {id, context}});
     }
 
     complete(id: number) {
-        this.send({ Complete: id });
+        this.send({Complete: id});
     }
 
     context(id: number) {
-        this.send({ Context: id });
+        this.send({Context: id});
     }
 
     exit() {
@@ -61,7 +79,8 @@ export class LauncherService {
         const service = this.service;
 
         GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
-            if (service.stdout.has_pending() || service.stdin.has_pending()) return true;
+            if (service.stdout.has_pending() || service.stdin.has_pending())
+                return true;
 
             const close_stream = (stream: any) => {
                 try {
@@ -81,15 +100,15 @@ export class LauncherService {
     }
 
     query(search: string) {
-        this.send({ Search: search });
+        this.send({Search: search});
     }
 
     quit(id: number) {
-        this.send({ Quit: id });
+        this.send({Quit: id});
     }
 
     select(id: number) {
-        this.send({ Select: id });
+        this.send({Select: id});
     }
 
     send(object: Object) {

@@ -19,10 +19,11 @@ Therefore, we see an opportunity here to advance the usability of the GNOME desk
 - [The Problem](#the-problem): Why we need this in GNOME
 - [Installation](#installation): For those wanting to install this on their distribution
 - The Solution:
-  - [Shared Features](#shared-features): Behaviors shared between stacking and auto-tiling modes
-  - [Floating Mode](#floating-mode): Behaviors specific to the floating mode
-  - [Tiling Mode](#tiling-mode): Behaviors specific to the auto-tiling mode
+    - [Shared Features](#shared-features): Behaviors shared between stacking and auto-tiling modes
+    - [Floating Mode](#floating-mode): Behaviors specific to the floating mode
+    - [Tiling Mode](#tiling-mode): Behaviors specific to the auto-tiling mode
 - [Developers](#developers): Guide for getting started with development
+
 ---
 
 ## The Problem
@@ -98,16 +99,16 @@ Window management mode activates additional keyboard control over the size and l
 Activating this enables the following behaviors:
 
 - `<Direction>`
-  - In default mode, this will move the displayed overlay around based on a grid
-  - In auto-tile mode, this will resize the window
+    - In default mode, this will move the displayed overlay around based on a grid
+    - In auto-tile mode, this will resize the window
 - `Shift` + `<Direction>`
-  - In default mode, this will resize the overlay
-  - In auto-tile mode, this will do nothing
+    - In default mode, this will resize the overlay
+    - In auto-tile mode, this will do nothing
 - `Ctrl` + `<Direction>`
-  - Selects a window in the given direction of the overlay
-  - When `Return` is pressed, window positions will be swapped
+    - Selects a window in the given direction of the overlay
+    - When `Return` is pressed, window positions will be swapped
 - `Shift` + `Ctrl` + `<Direction>`
-  - In auto-tile mode, this resizes in the opposite direction
+    - In auto-tile mode, this resizes in the opposite direction
 - `O`: Toggles between horizontal and vertical tiling in auto-tile mode
 - `~`: Toggles between floating and tiling in auto-tile mode
 - `Return`: Applies the changes that have been requested
@@ -154,19 +155,22 @@ Disabled by default, this mode manages windows using a tree-based tiling window 
 ### Keyboard Shortcuts
 
 - `Super` + `O`
-  - Toggles the orientation of a fork's tiling orientation
+    - Toggles the orientation of a fork's tiling orientation
 - `Super` + `G`
-  - Toggles a window between floating and tiling.
-  - See [#customizing the window float list](#customizing-the-floating-window-list)
+    - Toggles a window between floating and tiling.
+    - See [#customizing the window float list](#customizing-the-floating-window-list)
 
 ### Customizing the Floating Window List
+
 There is file `$XDG_CONFIG_HOME/gnome-mosaic/config.json` where you can add the following structure:
+
 ```
 {
   class: "<WM_CLASS String from xprop>",
   title: "<Optional Window Title>"
 }
 ```
+
 For example, doing `xprop` on GNOME Settings (or GNOME Control Center), the WM_CLASS values are `gnome-control-center` and `Gnome-control-center`. Use the second value (Gnome-control-center), which gnome-mosaic will read. The `title` field is optional.
 
 After applying changes in `config.json`, you can reload the tiling if it doesn't work the first time.
