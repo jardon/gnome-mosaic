@@ -1,7 +1,7 @@
 // const Me = imports.misc.extensionUtils.getCurrentExtension();
 import Gio from 'gi://Gio';
 import Gdk from 'gi://Gdk';
-import { get_current_path } from './paths.js';
+import {get_current_path} from './paths.js';
 
 const DARK = ['dark', 'adapta', 'plata', 'dracula'];
 
@@ -15,12 +15,17 @@ interface Settings extends GObject.Object {
     get_string(key: string): string;
     set_string(key: string, value: string): void;
 
-    bind(key: string, object: GObject.Object, property: string, flags: any): void;
+    bind(
+        key: string,
+        object: GObject.Object,
+        property: string,
+        flags: any
+    ): void;
 }
 
 function settings_new_id(schema_id: string): Settings | null {
     try {
-        return new Gio.Settings({ schema_id });
+        return new Gio.Settings({schema_id});
     } catch (why) {
         if (schema_id !== 'org.gnome.shell.extensions.user-theme') {
             // global.log(`failed to get settings for ${schema_id}: ${why}`);
@@ -32,21 +37,29 @@ function settings_new_id(schema_id: string): Settings | null {
 
 function settings_new_schema(schema: string): Settings {
     const GioSSS = Gio.SettingsSchemaSource;
-    const schemaDir = Gio.File.new_for_path(get_current_path()).get_child('schemas');
+    const schemaDir =
+        Gio.File.new_for_path(get_current_path()).get_child('schemas');
 
     let schemaSource = schemaDir.query_exists(null)
-        ? GioSSS.new_from_directory(schemaDir.get_path(), GioSSS.get_default(), false)
+        ? GioSSS.new_from_directory(
+              schemaDir.get_path(),
+              GioSSS.get_default(),
+              false
+          )
         : GioSSS.get_default();
 
     const schemaObj = schemaSource.lookup(schema, true);
 
     if (!schemaObj) {
         throw new Error(
-            'Schema ' + schema + ' could not be found for extension gnome-mosaic' + '. Please check your installation.',
+            'Schema ' +
+                schema +
+                ' could not be found for extension gnome-mosaic' +
+                '. Please check your installation.'
         );
     }
 
-    return new Gio.Settings({ settings_schema: schemaObj });
+    return new Gio.Settings({settings_schema: schemaObj});
 }
 
 const ACTIVE_HINT = 'active-hint';
@@ -71,10 +84,14 @@ const MOUSE_CURSOR_FOCUS_LOCATION = 'mouse-cursor-focus-location';
 const MAX_WINDOW_WIDTH = 'max-window-width';
 
 export class ExtensionSettings {
-    ext: Settings = settings_new_schema('org.gnome.shell.extensions.gnome-mosaic');
+    ext: Settings = settings_new_schema(
+        'org.gnome.shell.extensions.gnome-mosaic'
+    );
     int: Settings | null = settings_new_id('org.gnome.desktop.interface');
     mutter: Settings | null = settings_new_id('org.gnome.mutter');
-    shell: Settings | null = settings_new_id('org.gnome.shell.extensions.user-theme');
+    shell: Settings | null = settings_new_id(
+        'org.gnome.shell.extensions.user-theme'
+    );
 
     // Getters
 
@@ -95,7 +112,9 @@ export class ExtensionSettings {
     }
 
     dynamic_workspaces(): boolean {
-        return this.mutter ? this.mutter.get_boolean('dynamic-workspaces') : false;
+        return this.mutter
+            ? this.mutter.get_boolean('dynamic-workspaces')
+            : false;
     }
 
     fullscreen_launcher(): boolean {
@@ -122,12 +141,16 @@ export class ExtensionSettings {
     }
 
     theme(): string {
-        return this.shell ? this.shell.get_string('name') : this.int ? this.int.get_string('gtk-theme') : 'Adwaita';
+        return this.shell
+            ? this.shell.get_string('name')
+            : this.int
+              ? this.int.get_string('gtk-theme')
+              : 'Adwaita';
     }
 
     is_dark(): boolean {
         const theme = this.theme().toLowerCase();
-        return DARK.some((dark) => theme.includes(dark));
+        return DARK.some(dark => theme.includes(dark));
     }
 
     is_high_contrast(): boolean {
@@ -155,7 +178,9 @@ export class ExtensionSettings {
     }
 
     workspaces_only_on_primary(): boolean {
-        return this.mutter ? this.mutter.get_boolean('workspaces-only-on-primary') : false;
+        return this.mutter
+            ? this.mutter.get_boolean('workspaces-only-on-primary')
+            : false;
     }
 
     log_level(): number {

@@ -7,9 +7,7 @@
         "outDir": "./target",
         "forceConsistentCasingInFileNames": true,
         "downlevelIteration": true,
-        "lib": [
-            "es2020"
-        ],
+        "lib": ["es2020"],
         "pretty": true,
         "removeComments": true,
         "incremental": true,
@@ -18,7 +16,5 @@
         "moduleResolution": "NodeNext",
         "module": "NodeNext"
     },
-    "include": [
-        "src/*.ts"
-    ]
+    "include": ["src/*.ts"]
 }

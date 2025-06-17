@@ -13,12 +13,19 @@ export class AddExceptionDialog {
         shouldFadeOut: false,
     });
 
-    constructor(cancel: () => void, this_app: () => void, current_window: () => void, on_close: () => void) {
+    constructor(
+        cancel: () => void,
+        this_app: () => void,
+        current_window: () => void,
+        on_close: () => void
+    ) {
         let title = St.Label.new('Add Floating Window Exception');
         title.set_x_align(Clutter.ActorAlign.CENTER);
         title.set_style('font-weight: bold');
 
-        let desc = St.Label.new('Float the selected window or all windows from the application.');
+        let desc = St.Label.new(
+            'Float the selected window or all windows from the application.'
+        );
         desc.set_x_align(Clutter.ActorAlign.CENTER);
 
         let l = this.dialog.contentLayout;
@@ -26,7 +33,10 @@ export class AddExceptionDialog {
         l.add_child(title);
         l.add_child(desc);
 
-        this.dialog.contentLayout.width = Math.max(Lib.current_monitor().width / 4, 640);
+        this.dialog.contentLayout.width = Math.max(
+            Lib.current_monitor().width / 4,
+            640
+        );
 
         this.dialog.addButton({
             label: 'Cancel',

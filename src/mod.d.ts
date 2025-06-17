@@ -1,4 +1,7 @@
-declare const global: Global, imports: any, log: any, _: (arg: string) => string;
+declare const global: Global,
+    imports: any,
+    log: any,
+    _: (arg: string) => string;
 
 interface Global {
     get_current_time(): number;
@@ -104,7 +107,11 @@ declare module 'gi://GLib' {
         spawn_command_line_sync(cmd: string): ProcessResult;
         spawn_command_line_async(cmd: string): boolean;
 
-        timeout_add(priority: number, ms: number, callback: () => boolean): number;
+        timeout_add(
+            priority: number,
+            ms: number,
+            callback: () => boolean
+        ): number;
 
         get_user_config_dir(): string;
         file_get_contents(filename: string): string;
@@ -137,7 +144,10 @@ declare interface GLib {
 
 declare namespace GObject {
     interface Object {
-        connect(signal: string, callback: (...args: any) => boolean | void): SignalID;
+        connect(
+            signal: string,
+            callback: (...args: any) => boolean | void
+        ): SignalID;
         disconnect(id: SignalID): void;
 
         ref(): this;
@@ -263,10 +273,16 @@ declare namespace Meta {
         get_focus_window(): null | Meta.Window;
         get_monitor_index_for_rect(rect: Rectangular): number;
         get_monitor_geometry(monitor: number): null | Rectangular;
-        get_monitor_neighbor_index(monitor: number, direction: DisplayDirection): number;
+        get_monitor_neighbor_index(
+            monitor: number,
+            direction: DisplayDirection
+        ): number;
         get_n_monitors(): number;
         get_primary_monitor(): number;
-        get_tab_list(list: number, workspace: Meta.Workspace | null): Array<Meta.Window>;
+        get_tab_list(
+            list: number,
+            workspace: Meta.Workspace | null
+        ): Array<Meta.Window>;
         get_workspace_manager(): WorkspaceManager;
     }
 
@@ -307,7 +323,13 @@ declare namespace Meta {
         make_fullscreen(): void;
         maximize(flags: MaximizeFlags): void;
         move_frame(user_op: boolean, x: number, y: number): void;
-        move_resize_frame(user_op: boolean, x: number, y: number, w: number, h: number): boolean;
+        move_resize_frame(
+            user_op: boolean,
+            x: number,
+            y: number,
+            w: number,
+            h: number
+        ): boolean;
         raise(): void;
         skip_taskbar: boolean;
         unmaximize(flags: any): void;

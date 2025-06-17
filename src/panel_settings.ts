@@ -1,6 +1,6 @@
 import * as Utils from './utils.js';
 
-import type { Ext } from './extension.js';
+import type {Ext} from './extension.js';
 
 import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
@@ -12,10 +12,10 @@ import {
     PopupSwitchMenuItem,
     PopupSeparatorMenuItem,
 } from 'resource:///org/gnome/shell/ui/popupMenu.js';
-import { Button } from 'resource:///org/gnome/shell/ui/panelMenu.js';
+import {Button} from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import GLib from 'gi://GLib';
-import { spawn } from 'resource:///org/gnome/shell/misc/util.js';
-import { get_current_path } from './paths.js';
+import {spawn} from 'resource:///org/gnome/shell/misc/util.js';
+import {get_current_path} from './paths.js';
 // import * as Settings from './settings.js';
 
 export class Indicator {
@@ -34,8 +34,12 @@ export class Indicator {
 
         const path = get_current_path();
         ext.button = this.button;
-        ext.button_gio_icon_auto_on = Gio.icon_new_for_string(`${path}/icons/gnome-mosaic-auto-on-symbolic.svg`);
-        ext.button_gio_icon_auto_off = Gio.icon_new_for_string(`${path}/icons/gnome-mosaic-auto-off-symbolic.svg`);
+        ext.button_gio_icon_auto_on = Gio.icon_new_for_string(
+            `${path}/icons/gnome-mosaic-auto-on-symbolic.svg`
+        );
+        ext.button_gio_icon_auto_off = Gio.icon_new_for_string(
+            `${path}/icons/gnome-mosaic-auto-off-symbolic.svg`
+        );
 
         let button_icon_auto_on = new St.Icon({
             gicon: ext.button_gio_icon_auto_on,
@@ -58,14 +62,22 @@ export class Indicator {
 
         this.toggle_tiled = tiled(ext);
 
-        this.toggle_active = toggle(_('Show Active Hint'), ext.settings.active_hint(), (toggle) => {
-            ext.settings.set_active_hint(toggle.state);
-        });
+        this.toggle_active = toggle(
+            _('Show Active Hint'),
+            ext.settings.active_hint(),
+            toggle => {
+                ext.settings.set_active_hint(toggle.state);
+            }
+        );
 
-        this.entry_gaps = number_entry(_('Gaps'), ext.settings.gap_inner(), (value) => {
-            ext.settings.set_gap_inner(value);
-            ext.settings.set_gap_outer(value);
-        });
+        this.entry_gaps = number_entry(
+            _('Gaps'),
+            ext.settings.gap_inner(),
+            value => {
+                ext.settings.set_gap_inner(value);
+                ext.settings.set_gap_outer(value);
+            }
+        );
 
         this.border_radius = number_entry(
             _('Active Border Radius'),
@@ -74,9 +86,9 @@ export class Indicator {
                 min: 0,
                 max: 30,
             },
-            (value) => {
+            value => {
                 ext.settings.set_active_hint_border_radius(value);
-            },
+            }
         );
 
         bm.addMenuItem(this.toggle_tiled);
@@ -113,11 +125,16 @@ function menu_separator(text: any): any {
 function settings_button(menu: any): any {
     let item = new PopupMenuItem(_('View All'));
     item.connect('activate', () => {
-        let path: string | null = GLib.find_program_in_path('gnome-mosaic-shortcuts');
+        let path: string | null = GLib.find_program_in_path(
+            'gnome-mosaic-shortcuts'
+        );
         if (path) {
             spawn([path]);
         } else {
-            spawn(['xdg-open', 'https://support.system76.com/articles/pop-keyboard-shortcuts/']);
+            spawn([
+                'xdg-open',
+                'https://support.system76.com/articles/pop-keyboard-shortcuts/',
+            ]);
         }
 
         menu.close();
@@ -129,12 +146,12 @@ function settings_button(menu: any): any {
 }
 
 function floating_window_exceptions(ext: Ext, menu: any): any {
-    let label = new St.Label({ text: 'Floating Window Exceptions' });
+    let label = new St.Label({text: 'Floating Window Exceptions'});
     label.set_x_expand(true);
 
-    let icon = new St.Icon({ icon_name: 'go-next-symbolic', icon_size: 16 });
+    let icon = new St.Icon({icon_name: 'go-next-symbolic', icon_size: 16});
 
-    let widget = new St.BoxLayout({ vertical: false });
+    let widget = new St.BoxLayout({vertical: false});
     widget.add_child(label);
     widget.add_child(icon);
     widget.set_x_expand(true);
@@ -154,24 +171,31 @@ function floating_window_exceptions(ext: Ext, menu: any): any {
 }
 
 function shortcuts(menu: any): any {
-    let layout_manager = new Clutter.GridLayout({ orientation: Clutter.Orientation.HORIZONTAL });
-    let widget = new St.Widget({ layout_manager, x_expand: true });
+    let layout_manager = new Clutter.GridLayout({
+        orientation: Clutter.Orientation.HORIZONTAL,
+    });
+    let widget = new St.Widget({layout_manager, x_expand: true});
 
     let item = new PopupBaseMenuItem();
     item.add_child(widget);
     item.connect('activate', () => {
-        let path: string | null = GLib.find_program_in_path('gnome-mosaic-shortcuts');
+        let path: string | null = GLib.find_program_in_path(
+            'gnome-mosaic-shortcuts'
+        );
         if (path) {
             spawn([path]);
         } else {
-            spawn(['xdg-open', 'https://support.system76.com/articles/pop-keyboard-shortcuts/']);
+            spawn([
+                'xdg-open',
+                'https://support.system76.com/articles/pop-keyboard-shortcuts/',
+            ]);
         }
 
         menu.close();
     });
 
     function create_label(text: string): any {
-        return new St.Label({ text });
+        return new St.Label({text});
     }
 
     function create_shortcut_label(text: string): any {
@@ -217,13 +241,14 @@ function clamp(input: number, min = 0, max = 128): number {
 
 function number_entry(
     label: string,
-    valueOrOptions: number | { value: number; min: number; max: number },
-    callback: (a: number) => void,
+    valueOrOptions: number | {value: number; min: number; max: number},
+    callback: (a: number) => void
 ): any {
     let value = valueOrOptions,
         min: number,
         max: number;
-    if (typeof valueOrOptions !== 'number') ({ value, min, max } = valueOrOptions);
+    if (typeof valueOrOptions !== 'number')
+        ({value, min, max} = valueOrOptions);
 
     const entry = new St.Entry({
         text: String(value),
@@ -247,10 +272,10 @@ function number_entry(
             symbol == 65293 // enter key
                 ? parse_number(text.text)
                 : symbol == 65361 // left key
-                ? clamp(parse_number(text.text) - 1, min, max)
-                : symbol == 65363 // right key
-                ? clamp(parse_number(text.text) + 1, min, max)
-                : null;
+                  ? clamp(parse_number(text.text) - 1, min, max)
+                  : symbol == 65363 // right key
+                    ? clamp(parse_number(text.text) + 1, min, max)
+                    : null;
 
         if (number !== null) {
             text.set_text(String(number));
@@ -258,7 +283,7 @@ function number_entry(
     });
 
     const create_icon = (icon_name: string) => {
-        return new St.Icon({ icon_name, icon_size: 16 });
+        return new St.Icon({icon_name, icon_size: 16});
     };
 
     entry.set_primary_icon(create_icon('value-decrease'));
@@ -301,14 +326,22 @@ function parse_number(text: string): number {
 }
 
 function show_title(ext: Ext): any {
-    const t = toggle(_('Show Window Titles'), ext.settings.show_title(), (toggle: any) => {
-        ext.settings.set_show_title(toggle.state);
-    });
+    const t = toggle(
+        _('Show Window Titles'),
+        ext.settings.show_title(),
+        (toggle: any) => {
+            ext.settings.set_show_title(toggle.state);
+        }
+    );
 
     return t;
 }
 
-function toggle(desc: string, active: boolean, connect: (toggle: any, state: boolean) => void): any {
+function toggle(
+    desc: string,
+    active: boolean,
+    connect: (toggle: any, state: boolean) => void
+): any {
     let toggle = new PopupSwitchMenuItem(desc, active);
 
     toggle.label.set_y_align(Clutter.ActorAlign.CENTER);
@@ -322,13 +355,17 @@ function toggle(desc: string, active: boolean, connect: (toggle: any, state: boo
 }
 
 function tiled(ext: Ext): any {
-    let t = toggle(_('Tile Windows'), null != ext.auto_tiler, (_, shouldTile) => {
-        if (shouldTile) {
-            ext.auto_tile_on();
-        } else {
-            ext.auto_tile_off();
+    let t = toggle(
+        _('Tile Windows'),
+        null != ext.auto_tiler,
+        (_, shouldTile) => {
+            if (shouldTile) {
+                ext.auto_tile_on();
+            } else {
+                ext.auto_tile_off();
+            }
         }
-    });
+    );
     return t;
 }
 
@@ -340,12 +377,16 @@ function color_selector(ext: Ext, menu: any) {
 
     // TODO, find a way to expand the button text, :)
     color_button.label = '           '; // blank for now
-    color_button.set_style(`background-color: ${selected_color}; border: 2px solid lightgray; border-radius: 2px`);
+    color_button.set_style(
+        `background-color: ${selected_color}; border: 2px solid lightgray; border-radius: 2px`
+    );
 
     settings.ext.connect('changed', (_, key) => {
         if (key === 'hint-color-rgba') {
             let color_value = settings.hint_color_rgba();
-            color_button.set_style(`background-color: ${color_value}; border: 2px solid lightgray; border-radius: 2px`);
+            color_button.set_style(
+                `background-color: ${color_value}; border: 2px solid lightgray; border-radius: 2px`
+            );
         }
     });
 

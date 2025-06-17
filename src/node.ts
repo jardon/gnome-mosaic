@@ -1,11 +1,11 @@
 import * as Ecs from './ecs.js';
 
-import type { Forest } from './forest.js';
-import type { Entity } from './ecs.js';
-import type { Ext } from './extension.js';
-import type { Rectangle } from './rectangle.js';
-import type { Stack } from './stack.js';
-import { ShellWindow } from './window.js';
+import type {Forest} from './forest.js';
+import type {Entity} from './ecs.js';
+import type {Ext} from './extension.js';
+import type {Rectangle} from './rectangle.js';
+import type {Stack} from './stack.js';
+import {ShellWindow} from './window.js';
 
 /** A node is either a fork a window */
 export enum NodeKind {
@@ -56,7 +56,12 @@ export function stack_find(node: NodeStack, entity: Entity): null | number {
 }
 
 /** Move the window in a stack to the left, and detach if it it as the end. */
-export function stack_move_left(ext: Ext, forest: Forest, node: NodeStack, entity: Entity): boolean {
+export function stack_move_left(
+    ext: Ext,
+    forest: Forest,
+    node: NodeStack,
+    entity: Entity
+): boolean {
     const stack = forest.stacks.get(node.idx);
     if (!stack) return false;
 
@@ -83,7 +88,12 @@ export function stack_move_left(ext: Ext, forest: Forest, node: NodeStack, entit
 }
 
 /** Move the window in a stack to the right, and detach if it is at the end. */
-export function stack_move_right(ext: Ext, forest: Forest, node: NodeStack, entity: Entity): boolean {
+export function stack_move_right(
+    ext: Ext,
+    forest: Forest,
+    node: NodeStack,
+    entity: Entity
+): boolean {
     const stack = forest.stacks.get(node.idx);
     if (!stack) return false;
 
@@ -120,7 +130,11 @@ export function stack_replace(ext: Ext, node: NodeStack, window: ShellWindow) {
 }
 
 /** Removes a window from a stack */
-export function stack_remove(forest: Forest, node: NodeStack, entity: Entity): null | number {
+export function stack_remove(
+    forest: Forest,
+    node: NodeStack,
+    entity: Entity
+): null | number {
     const stack = forest.stacks.get(node.idx);
     if (!stack) return null;
     const idx = stack.remove_tab(entity);
@@ -147,12 +161,12 @@ export class Node {
 
     /** Create a fork variant of a `Node` */
     static fork(entity: Entity): Node {
-        return new Node({ kind: NodeKind.FORK, entity });
+        return new Node({kind: NodeKind.FORK, entity});
     }
 
     /** Create the window variant of a `Node` */
     static window(entity: Entity): Node {
-        return new Node({ kind: NodeKind.WINDOW, entity });
+        return new Node({kind: NodeKind.WINDOW, entity});
     }
 
     static stacked(window: Entity, idx: number): Node {
@@ -196,12 +210,16 @@ export class Node {
 
     /** Asks if this fork is the fork we are looking for */
     is_fork(entity: Entity): boolean {
-        return this.inner.kind === 1 && Ecs.entity_eq(this.inner.entity, entity);
+        return (
+            this.inner.kind === 1 && Ecs.entity_eq(this.inner.entity, entity)
+        );
     }
 
     /** Asks if this window is the window we are looking for */
     is_window(entity: Entity): boolean {
-        return this.inner.kind === 2 && Ecs.entity_eq(this.inner.entity, entity);
+        return (
+            this.inner.kind === 2 && Ecs.entity_eq(this.inner.entity, entity)
+        );
     }
 
     /** Calculates the future arrangement of windows in this node */
@@ -210,7 +228,7 @@ export class Node {
         ext: Ext,
         parent: Entity,
         area: Rectangle,
-        record: (win: Entity, parent: Entity, area: Rectangle) => void,
+        record: (win: Entity, parent: Entity, area: Rectangle) => void
     ) {
         switch (this.inner.kind) {
             // Fork
@@ -239,7 +257,10 @@ export class Node {
                 }
 
                 if (ext.auto_tiler) {
-                    ext.auto_tiler.forest.stack_updates.push([this.inner, parent]);
+                    ext.auto_tiler.forest.stack_updates.push([
+                        this.inner,
+                        parent,
+                    ]);
                 }
         }
     }

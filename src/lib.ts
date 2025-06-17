@@ -1,7 +1,7 @@
 import * as log from './log.js';
 import * as rectangle from './rectangle.js';
 
-import type { Rectangle } from './rectangle.js';
+import type {Rectangle} from './rectangle.js';
 
 import Meta from 'gi://Meta';
 import St from 'gi://St';
@@ -25,7 +25,11 @@ export function ok<T, X>(input: T | null, func: (a: T) => X | null): X | null {
     return input ? func(input) : null;
 }
 
-export function ok_or_else<A, B>(input: A | null, ok_func: (input: A) => B, or_func: () => B): B {
+export function ok_or_else<A, B>(
+    input: A | null,
+    ok_func: (input: A) => B,
+    or_func: () => B
+): B {
     return input ? ok_func(input) : or_func();
 }
 
@@ -45,7 +49,9 @@ export function bench<T>(name: string, callback: () => T): T {
 
 export function current_monitor(): Rectangle {
     return rectangle.Rectangle.from_meta(
-        global.display.get_monitor_geometry(global.display.get_current_monitor()) as Rectangular,
+        global.display.get_monitor_geometry(
+            global.display.get_current_monitor()
+        ) as Rectangular
     );
 }
 
@@ -61,7 +67,9 @@ export function dbg<T>(value: T): T {
 }
 
 /// Missing from the Clutter API is an Actor children iterator
-export function* get_children(actor: Clutter.Actor): IterableIterator<Clutter.Actor> {
+export function* get_children(
+    actor: Clutter.Actor
+): IterableIterator<Clutter.Actor> {
     let nth = 0;
     let children = actor.get_n_children();
 
@@ -72,8 +80,12 @@ export function* get_children(actor: Clutter.Actor): IterableIterator<Clutter.Ac
     }
 }
 
-export function join<T>(iterator: IterableIterator<T>, next_func: (arg: T) => void, between_func: () => void) {
-    ok(iterator.next().value, (first) => {
+export function join<T>(
+    iterator: IterableIterator<T>,
+    next_func: (arg: T) => void,
+    between_func: () => void
+) {
+    ok(iterator.next().value, first => {
         next_func(first);
 
         for (const item of iterator) {
@@ -84,17 +96,22 @@ export function join<T>(iterator: IterableIterator<T>, next_func: (arg: T) => vo
 }
 
 export function is_keyboard_op(op: number): boolean {
-    const window_flag_keyboard = Meta.GrabOp.KEYBOARD_MOVING & ~Meta.GrabOp.WINDOW_BASE;
+    const window_flag_keyboard =
+        Meta.GrabOp.KEYBOARD_MOVING & ~Meta.GrabOp.WINDOW_BASE;
     return (op & window_flag_keyboard) != 0;
 }
 
 export function is_resize_op(op: number): boolean {
     const window_dir_mask =
-        (Meta.GrabOp.RESIZING_N | Meta.GrabOp.RESIZING_E | Meta.GrabOp.RESIZING_S | Meta.GrabOp.RESIZING_W) &
+        (Meta.GrabOp.RESIZING_N |
+            Meta.GrabOp.RESIZING_E |
+            Meta.GrabOp.RESIZING_S |
+            Meta.GrabOp.RESIZING_W) &
         ~Meta.GrabOp.WINDOW_BASE;
     return (
         (op & window_dir_mask) != 0 ||
-        (op & Meta.GrabOp.KEYBOARD_RESIZING_UNKNOWN) == Meta.GrabOp.KEYBOARD_RESIZING_UNKNOWN
+        (op & Meta.GrabOp.KEYBOARD_RESIZING_UNKNOWN) ==
+            Meta.GrabOp.KEYBOARD_RESIZING_UNKNOWN
     );
 }
 
@@ -126,5 +143,8 @@ export function round_to(n: number, digits: number): number {
 }
 
 export function separator(): any {
-    return new St.BoxLayout({ styleClass: 'gnome-mosaic-separator', x_expand: true });
+    return new St.BoxLayout({
+        styleClass: 'gnome-mosaic-separator',
+        x_expand: true,
+    });
 }

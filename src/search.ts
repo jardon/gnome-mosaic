@@ -1,7 +1,7 @@
 import * as Lib from './lib.js';
 import * as rect from './rectangle.js';
 
-import type { JsonIPC } from './launcher_service.js';
+import type {JsonIPC} from './launcher_service.js';
 
 import GLib from 'gi://GLib';
 import Clutter from 'gi://Clutter';
@@ -11,11 +11,11 @@ import Shell from 'gi://Shell';
 import St from 'gi://St';
 import Gdk from 'gi://Gdk';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import { ModalDialog } from 'resource:///org/gnome/shell/ui/modalDialog.js';
+import {ModalDialog} from 'resource:///org/gnome/shell/ui/modalDialog.js';
 import * as Util from 'resource:///org/gnome/shell/misc/util.js';
 
-const { overview, wm } = Main;
-import { Overview } from 'resource:///org/gnome/shell/ui/overview.js';
+const {overview, wm} = Main;
+import {Overview} from 'resource:///org/gnome/shell/ui/overview.js';
 
 let overview_toggle: any = null;
 
@@ -58,7 +58,9 @@ export class Search {
             x_expand: true,
         });
 
-        this.entry.set_hint_text("  Type to search apps, or type '?' for more options.");
+        this.entry.set_hint_text(
+            "  Type to search apps, or type '?' for more options."
+        );
 
         this.text = this.entry.get_clutter_text();
         (this.text as any).set_use_markup(true);
@@ -91,15 +93,28 @@ export class Search {
         });
 
         this.text.connect('key-press-event', (_: any, event: any) => {
-            const key = Gdk.keyval_name(Gdk.keyval_to_upper(event.get_key_symbol()));
-            const ctrlKey = Boolean(event.get_state() & Clutter.ModifierType.CONTROL_MASK);
+            const key = Gdk.keyval_name(
+                Gdk.keyval_to_upper(event.get_key_symbol())
+            );
+            const ctrlKey = Boolean(
+                event.get_state() & Clutter.ModifierType.CONTROL_MASK
+            );
 
             const is_down = (): boolean => {
-                return key === 'Down' || (ctrlKey && key === 'J') || (ctrlKey && key === 'N');
+                return (
+                    key === 'Down' ||
+                    (ctrlKey && key === 'J') ||
+                    (ctrlKey && key === 'N')
+                );
             };
 
             const is_up = (): boolean => {
-                return key === 'Up' || key === 'ISO_Left_Tab' || (ctrlKey && key === 'K') || (ctrlKey && key === 'P');
+                return (
+                    key === 'Up' ||
+                    key === 'ISO_Left_Tab' ||
+                    (ctrlKey && key === 'K') ||
+                    (ctrlKey && key === 'P')
+                );
             };
 
             // Up arrow or left tab was pressed
@@ -190,7 +205,10 @@ export class Search {
                 // Ctrl + Q shall quit the selected application
                 this.quit(this.active_id);
                 return;
-            } else if (key === 'Copy' || (ctrlKey && (key === 'C' || key === 'Insert'))) {
+            } else if (
+                key === 'Copy' ||
+                (ctrlKey && (key === 'C' || key === 'Insert'))
+            ) {
                 if ((this.text as any).get_selection()) {
                     // If text entry has selected text, behave as normal
                     return;
@@ -219,11 +237,14 @@ export class Search {
         this.scroller = scroller;
 
         // Ensure that the width is at least 640 pixels wide.
-        this.dialog.contentLayout.width = Math.max(Lib.current_monitor().width / 4, 640);
+        this.dialog.contentLayout.width = Math.max(
+            Lib.current_monitor().width / 4,
+            640
+        );
 
         this.dialog.connect('event', (_actor: any, event: any) => {
-            const { width, height } = this.dialog.dialogLayout._dialog;
-            const { x, y } = this.dialog.dialogLayout;
+            const {width, height} = this.dialog.dialogLayout._dialog;
+            const {x, y} = this.dialog.dialogLayout;
             const area = new rect.Rectangle([x, y, width, height]);
 
             const close =
@@ -273,7 +294,10 @@ export class Search {
 
         this.dialog.close(global.get_current_time());
 
-        wm.allowKeybinding('overlay-key', Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW);
+        wm.allowKeybinding(
+            'overlay-key',
+            Shell.ActionMode.NORMAL | Shell.ActionMode.OVERVIEW
+        );
     }
 
     _open(timestamp: number, on_primary: boolean) {
@@ -347,7 +371,7 @@ export class Search {
             this.list.add_child(Lib.separator());
         }
 
-        const { widget, shortcut } = option;
+        const {widget, shortcut} = option;
 
         if (id < 9) {
             (shortcut as any).set_text(`Ctrl + ${id + 1}`);
@@ -360,7 +384,7 @@ export class Search {
 
         widget.connect('clicked', () => this.activate_id(id));
         widget.connect('notify::hover', () => {
-            const { x, y } = Lib.cursor_rect();
+            const {x, y} = Lib.cursor_rect();
             if (x === initial_cursor.x && y === initial_cursor.y) return;
             this.select_id(id);
             this.select(id);
@@ -422,18 +446,18 @@ export class SearchOption {
         icon: null | JsonIPC.IconSource,
         icon_size: number,
         exec: null | string,
-        keywords: null | Array<string>,
+        keywords: null | Array<string>
     ) {
         this.title = title;
         this.description = description;
         this.exec = exec;
         this.keywords = keywords;
 
-        const layout = new St.BoxLayout({ x_expand: true });
+        const layout = new St.BoxLayout({x_expand: true});
 
         attach_icon(layout, category_icon, icon_size / 2);
 
-        const label = new St.Label({ text: title });
+        const label = new St.Label({text: title});
         label.clutter_text.set_ellipsize(Pango.EllipsizeMode.END);
 
         attach_icon(layout, icon, icon_size);
@@ -446,18 +470,26 @@ export class SearchOption {
         info_box.add_child(label);
 
         if (description) {
-            info_box.add_child(new St.Label({ text: description, style: 'font-size: small' }));
+            info_box.add_child(
+                new St.Label({text: description, style: 'font-size: small'})
+            );
         }
 
         layout.add_child(info_box);
         layout.add_child(this.shortcut);
 
-        this.widget = new St.Button({ style_class: 'gnome-mosaic-search-element' });
+        this.widget = new St.Button({
+            style_class: 'gnome-mosaic-search-element',
+        });
         (this.widget as any).add_child(layout);
     }
 }
 
-function attach_icon(layout: any, icon: null | JsonIPC.IconSource, icon_size: number) {
+function attach_icon(
+    layout: any,
+    icon: null | JsonIPC.IconSource,
+    icon_size: number
+) {
     if (icon) {
         const generated = generate_icon(icon, icon_size);
 
@@ -468,7 +500,10 @@ function attach_icon(layout: any, icon: null | JsonIPC.IconSource, icon_size: nu
     }
 }
 
-function generate_icon(icon: JsonIPC.IconSource, icon_size: number): null | St.Widget {
+function generate_icon(
+    icon: JsonIPC.IconSource,
+    icon_size: number
+): null | St.Widget {
     let app_icon = null;
 
     if ('Name' in icon) {

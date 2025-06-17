@@ -14,9 +14,9 @@ export interface Err<T> {
 }
 
 export function Ok<T, E>(value: T): Result<T, E> {
-    return { kind: 1, value: value };
+    return {kind: 1, value: value};
 }
 
 export function Err<T, E>(value: E): Result<T, E> {
-    return { kind: 2, value: value };
+    return {kind: 2, value: value};
 }

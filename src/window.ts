@@ -5,9 +5,9 @@ import * as Rect from './rectangle.js';
 import * as Tags from './tags.js';
 import * as utils from './utils.js';
 import * as xprop from './xprop.js';
-import type { Entity } from './ecs.js';
-import type { Ext } from './extension.js';
-import type { Rectangle } from './rectangle.js';
+import type {Entity} from './ecs.js';
+import type {Ext} from './extension.js';
+import type {Rectangle} from './rectangle.js';
 import * as scheduler from './scheduler.js';
 import * as focus from './focus.js';
 
@@ -18,7 +18,7 @@ import St from 'gi://St';
 import GLib from 'gi://GLib';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
-const { OnceCell } = once_cell;
+const {OnceCell} = once_cell;
 
 export var window_tracker = Shell.WindowTracker.get_default();
 
@@ -88,7 +88,12 @@ export class ShellWindow {
 
     private border_size = 0;
 
-    constructor(entity: Entity, window: Meta.Window, window_app: any, ext: Ext) {
+    constructor(
+        entity: Entity,
+        window: Meta.Window,
+        window_app: any,
+        ext: Ext
+    ) {
         this.window_app = window_app;
 
         this.entity = entity;
@@ -121,7 +126,8 @@ export class ShellWindow {
         this.restack();
         this.update_border_layout();
 
-        if (this.meta.get_compositor_private()?.get_stage()) this.on_style_changed();
+        if (this.meta.get_compositor_private()?.get_stage())
+            this.on_style_changed();
     }
 
     activate(move_mouse: boolean = true): void {
@@ -150,7 +156,7 @@ export class ShellWindow {
                 }),
                 this.meta.connect('raised', () => {
                     this.window_raised();
-                }),
+                })
             );
     }
 
@@ -236,13 +242,17 @@ export class ShellWindow {
 
         this.was_hidden = true;
 
-        this.decoration(ext, (xid) => xprop.set_hint(xid, xprop.MOTIF_HINTS, xprop.HIDE_FLAGS));
+        this.decoration(ext, xid =>
+            xprop.set_hint(xid, xprop.MOTIF_HINTS, xprop.HIDE_FLAGS)
+        );
     }
 
     decoration_show(ext: Ext): void {
         if (!this.was_hidden) return;
 
-        this.decoration(ext, (xid) => xprop.set_hint(xid, xprop.MOTIF_HINTS, xprop.SHOW_FLAGS));
+        this.decoration(ext, xid =>
+            xprop.set_hint(xid, xprop.MOTIF_HINTS, xprop.SHOW_FLAGS)
+        );
     }
 
     icon(_ext: Ext, size: number): any {
@@ -262,7 +272,7 @@ export class ShellWindow {
     ignore_decoration(): boolean {
         const name = this.meta.get_wm_class();
         if (name === null) return true;
-        return WM_TITLE_BLACKLIST.findIndex((n) => name.startsWith(n)) !== -1;
+        return WM_TITLE_BLACKLIST.findIndex(n => name.startsWith(n)) !== -1;
     }
 
     is_client_decorated(): boolean {
@@ -285,7 +295,11 @@ export class ShellWindow {
     is_max_screen(): boolean {
         // log.debug(`title: ${this.meta.get_title()}`);
         // log.debug(`max: ${this.is_maximized()}, 0-gap: ${this.ext.settings.gap_inner() === 0}, smart: ${this.smart_gapped}`);
-        return this.is_maximized() || this.ext.settings.gap_inner() === 0 || this.smart_gapped;
+        return (
+            this.is_maximized() ||
+            this.ext.settings.gap_inner() === 0 ||
+            this.smart_gapped
+        );
     }
 
     is_single_max_screen(): boolean {
@@ -293,7 +307,9 @@ export class ShellWindow {
 
         if (display) {
             let monitor_count = display.get_n_monitors();
-            return (this.is_maximized() || this.smart_gapped) && monitor_count == 1;
+            return (
+                (this.is_maximized() || this.smart_gapped) && monitor_count == 1
+            );
         }
 
         return false;
@@ -321,14 +337,18 @@ export class ShellWindow {
                 const rect = this.rect();
 
                 const is_dialog = rect.width < 400 && rect.height < 200;
-                const is_first_login = rect.width === 432 && rect.height === 438;
+                const is_first_login =
+                    rect.width === 432 && rect.height === 438;
 
                 if (is_dialog || is_first_login) return false;
             }
 
             // Blacklist any windows that happen to leak through our filter
             // Windows that are tagged ForceTile are considered tilable despite exemption
-            if (wm_class !== null && ext.conf.window_shall_float(wm_class, this.title())) {
+            if (
+                wm_class !== null &&
+                ext.conf.window_shall_float(wm_class, this.title())
+            ) {
                 return ext.contains_tag(this.entity, Tags.ForceTile);
             }
 
@@ -374,12 +394,14 @@ export class ShellWindow {
         if (actor) {
             meta.unmaximize(Meta.MaximizeFlags.HORIZONTAL);
             meta.unmaximize(Meta.MaximizeFlags.VERTICAL);
-            meta.unmaximize(Meta.MaximizeFlags.HORIZONTAL | Meta.MaximizeFlags.VERTICAL);
+            meta.unmaximize(
+                Meta.MaximizeFlags.HORIZONTAL | Meta.MaximizeFlags.VERTICAL
+            );
             actor.remove_all_transitions();
 
             ext.movements.insert(this.entity, clone);
 
-            ext.register({ tag: 2, window: this, kind: { tag: 1 } });
+            ext.register({tag: 2, window: this, kind: {tag: 1}});
             if (on_complete) ext.register_fn(on_complete);
             if (meta.appears_focused) {
                 this.update_border_layout();
@@ -394,7 +416,9 @@ export class ShellWindow {
 
     private on_style_changed() {
         if (!this.border) return;
-        this.border_size = this.border.get_theme_node().get_border_width(St.Side.TOP);
+        this.border_size = this.border
+            .get_theme_node()
+            .get_border_width(St.Side.TOP);
     }
 
     rect(): Rectangle {
@@ -471,17 +495,25 @@ export class ShellWindow {
                     let applications = 0;
 
                     // Ensure that the border is shown
-                    if (ACTIVE_HINT_SHOW_ID !== null) GLib.source_remove(ACTIVE_HINT_SHOW_ID);
-                    ACTIVE_HINT_SHOW_ID = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 600, () => {
-                        if ((applications > 4 && !this.same_workspace()) || !permitted()) {
-                            ACTIVE_HINT_SHOW_ID = null;
-                            return GLib.SOURCE_REMOVE;
-                        }
+                    if (ACTIVE_HINT_SHOW_ID !== null)
+                        GLib.source_remove(ACTIVE_HINT_SHOW_ID);
+                    ACTIVE_HINT_SHOW_ID = GLib.timeout_add(
+                        GLib.PRIORITY_DEFAULT,
+                        600,
+                        () => {
+                            if (
+                                (applications > 4 && !this.same_workspace()) ||
+                                !permitted()
+                            ) {
+                                ACTIVE_HINT_SHOW_ID = null;
+                                return GLib.SOURCE_REMOVE;
+                            }
 
-                        applications += 1;
-                        border.show();
-                        return GLib.SOURCE_CONTINUE;
-                    });
+                            applications += 1;
+                            border.show();
+                            return GLib.SOURCE_CONTINUE;
+                        }
+                    );
                 }
             }
         }
@@ -491,7 +523,10 @@ export class ShellWindow {
         const workspace = this.meta.get_workspace();
         if (workspace) {
             let workspace_id = workspace.index();
-            return workspace_id === global.workspace_manager.get_active_workspace_index();
+            return (
+                workspace_id ===
+                global.workspace_manager.get_active_workspace_index()
+            );
         }
         return false;
     }
@@ -506,7 +541,11 @@ export class ShellWindow {
      */
     restack(updateState: RESTACK_STATE = RESTACK_STATE.NORMAL) {
         this.update_border_layout();
-        if (this.meta.is_fullscreen() || (this.is_single_max_screen() && !this.is_snap_edge()) || this.meta.minimized) {
+        if (
+            this.meta.is_fullscreen() ||
+            (this.is_single_max_screen() && !this.is_snap_edge()) ||
+            this.meta.minimized
+        ) {
             this.hide_border();
         }
 
@@ -533,7 +572,8 @@ export class ShellWindow {
             if (!this.actor_exists && count === 0) return true;
 
             if (count === 3) {
-                if (SCHEDULED_RESTACK !== null) GLib.source_remove(SCHEDULED_RESTACK);
+                if (SCHEDULED_RESTACK !== null)
+                    GLib.source_remove(SCHEDULED_RESTACK);
                 SCHEDULED_RESTACK = null;
             }
 
@@ -550,8 +590,13 @@ export class ShellWindow {
                     // honor the always-top windows
                     for (const above_actor of this.always_top_windows) {
                         if (actor != above_actor) {
-                            if (border.get_parent() === above_actor.get_parent()) {
-                                win_group.set_child_below_sibling(border, above_actor);
+                            if (
+                                border.get_parent() === above_actor.get_parent()
+                            ) {
+                                win_group.set_child_below_sibling(
+                                    border,
+                                    above_actor
+                                );
                             }
                         }
                     }
@@ -577,14 +622,23 @@ export class ShellWindow {
         };
 
         if (SCHEDULED_RESTACK !== null) GLib.source_remove(SCHEDULED_RESTACK);
-        SCHEDULED_RESTACK = GLib.timeout_add(GLib.PRIORITY_LOW, restackSpeed, action);
+        SCHEDULED_RESTACK = GLib.timeout_add(
+            GLib.PRIORITY_LOW,
+            restackSpeed,
+            action
+        );
     }
 
     get always_top_windows(): Clutter.Actor[] {
         let above_windows: Clutter.Actor[] = new Array();
 
         for (const actor of global.get_window_actors()) {
-            if (actor && actor.get_meta_window() && actor.get_meta_window().is_above()) above_windows.push(actor);
+            if (
+                actor &&
+                actor.get_meta_window() &&
+                actor.get_meta_window().is_above()
+            )
+                above_windows.push(actor);
         }
 
         return above_windows;
@@ -596,7 +650,7 @@ export class ShellWindow {
     }
 
     update_border_layout() {
-        let { x, y, width, height } = this.meta.get_frame_rect();
+        let {x, y, width, height} = this.meta.get_frame_rect();
 
         const border = this.border;
         let borderSize = this.border_size;
@@ -613,7 +667,8 @@ export class ShellWindow {
             let dimensions = null;
 
             if (stack_number !== null) {
-                const stack = this.ext.auto_tiler?.forest.stacks.get(stack_number);
+                const stack =
+                    this.ext.auto_tiler?.forest.stacks.get(stack_number);
                 if (stack) {
                     let stack_tab_height = stack.tabs_height;
 
@@ -630,7 +685,12 @@ export class ShellWindow {
                     ];
                 }
             } else {
-                dimensions = [x - borderSize, y - borderSize, width + 2 * borderSize, height + 2 * borderSize];
+                dimensions = [
+                    x - borderSize,
+                    y - borderSize,
+                    width + 2 * borderSize,
+                    height + 2 * borderSize,
+                ];
             }
 
             if (dimensions) {
@@ -640,7 +700,9 @@ export class ShellWindow {
 
                 if (workspace === null) return;
 
-                const screen = workspace.get_work_area_for_monitor(this.meta.get_monitor());
+                const screen = workspace.get_work_area_for_monitor(
+                    this.meta.get_monitor()
+                );
 
                 if (screen) {
                     width = Math.min(width, screen.x + screen.width);
@@ -654,11 +716,13 @@ export class ShellWindow {
     }
 
     update_border_style() {
-        const { settings } = this.ext;
+        const {settings} = this.ext;
         const color_value = settings.hint_color_rgba();
         const radius_value = settings.active_hint_border_radius();
         if (this.border) {
-            this.border.set_style(`border-color: ${color_value}; border-radius: ${radius_value}px;`);
+            this.border.set_style(
+                `border-color: ${color_value}; border-radius: ${radius_value}px;`
+            );
         }
     }
 
@@ -725,7 +789,10 @@ export function activate(ext: Ext, move_mouse: boolean, win: Meta.Window) {
 function pointer_in_work_area(): boolean {
     const cursor = lib.cursor_rect();
     const indice = global.display.get_current_monitor();
-    const mon = global.display.get_workspace_manager().get_active_workspace().get_work_area_for_monitor(indice);
+    const mon = global.display
+        .get_workspace_manager()
+        .get_active_workspace()
+        .get_work_area_for_monitor(indice);
 
     return mon ? cursor.intersects(mon) : false;
 }
@@ -735,8 +802,11 @@ function place_pointer_on(ext: Ext, win: Meta.Window) {
     let x = rect.x;
     let y = rect.y;
 
-    let key = Object.keys(focus.FocusPosition)[ext.settings.mouse_cursor_focus_location()];
-    let pointer_position_ = focus.FocusPosition[key as keyof typeof focus.FocusPosition];
+    let key = Object.keys(focus.FocusPosition)[
+        ext.settings.mouse_cursor_focus_location()
+    ];
+    let pointer_position_ =
+        focus.FocusPosition[key as keyof typeof focus.FocusPosition];
 
     switch (pointer_position_) {
         case focus.FocusPosition.TopLeft:
@@ -764,7 +834,11 @@ function place_pointer_on(ext: Ext, win: Meta.Window) {
             y += 8;
     }
 
-    global.stage.get_context().get_backend().get_default_seat().warp_pointer(x, y);
+    global.stage
+        .get_context()
+        .get_backend()
+        .get_default_seat()
+        .warp_pointer(x, y);
 }
 
 function pointer_already_on_window(meta: Meta.Window): boolean {

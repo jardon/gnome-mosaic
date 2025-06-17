@@ -1,9 +1,13 @@
 import * as Window from './window.js';
 
-import type { Ext } from './extension.js';
+import type {Ext} from './extension.js';
 
 /** Type representing all possible events handled by the extension's system. */
-export type ExtEvent = GenericCallback | ManagedWindow | CreateWindow | GlobalEventTag;
+export type ExtEvent =
+    | GenericCallback
+    | ManagedWindow
+    | CreateWindow
+    | GlobalEventTag;
 
 /** Eevnt with generic callback */
 export interface GenericCallback {
@@ -57,15 +61,22 @@ export enum WindowEvent {
 }
 
 export function global(event: GlobalEvent): GlobalEventTag {
-    return { tag: 4, event };
+    return {tag: 4, event};
 }
 
-export function window_move(ext: Ext, window: Window.ShellWindow, rect: Rectangular): ManagedWindow {
+export function window_move(
+    ext: Ext,
+    window: Window.ShellWindow,
+    rect: Rectangular
+): ManagedWindow {
     ext.movements.insert(window.entity, rect);
-    return { tag: 2, window, kind: { tag: 1 } };
+    return {tag: 2, window, kind: {tag: 1}};
 }
 
 /** Utility function for creating the an ExtEvent */
-export function window_event(window: Window.ShellWindow, event: WindowEvent): ManagedWindow {
-    return { tag: 2, window, kind: { tag: 2, event } };
+export function window_event(
+    window: Window.ShellWindow,
+    event: WindowEvent
+): ManagedWindow {
+    return {tag: 2, window, kind: {tag: 2, event}};
 }

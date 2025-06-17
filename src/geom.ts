@@ -1,4 +1,4 @@
-import type { Ext } from './extension.js';
+import type {Ext} from './extension.js';
 
 export enum Side {
     LEFT,
@@ -44,7 +44,10 @@ export function west(rect: Rectangular): [number, number] {
     return [rect.x, ycenter(rect)];
 }
 
-export function distance([ax, ay]: [number, number], [bx, by]: [number, number]): number {
+export function distance(
+    [ax, ay]: [number, number],
+    [bx, by]: [number, number]
+): number {
     return Math.sqrt(Math.pow(bx - ax, 2) + Math.pow(by - ay, 2));
 }
 
@@ -52,32 +55,61 @@ export function directional_distance(
     a: Rectangular,
     b: Rectangular,
     fn_a: (rect: Rectangular) => [number, number],
-    fn_b: (rect: Rectangular) => [number, number],
+    fn_b: (rect: Rectangular) => [number, number]
 ) {
     return distance(fn_a(a), fn_b(b));
 }
 
 export function window_distance(win_a: Meta.Window, win_b: Meta.Window) {
-    return directional_distance(win_a.get_frame_rect(), win_b.get_frame_rect(), center, center);
+    return directional_distance(
+        win_a.get_frame_rect(),
+        win_b.get_frame_rect(),
+        center,
+        center
+    );
 }
 
 export function upward_distance(win_a: Meta.Window, win_b: Meta.Window) {
-    return directional_distance(win_a.get_frame_rect(), win_b.get_frame_rect(), south, north);
+    return directional_distance(
+        win_a.get_frame_rect(),
+        win_b.get_frame_rect(),
+        south,
+        north
+    );
 }
 
 export function rightward_distance(win_a: Meta.Window, win_b: Meta.Window) {
-    return directional_distance(win_a.get_frame_rect(), win_b.get_frame_rect(), west, east);
+    return directional_distance(
+        win_a.get_frame_rect(),
+        win_b.get_frame_rect(),
+        west,
+        east
+    );
 }
 
 export function downward_distance(win_a: Meta.Window, win_b: Meta.Window) {
-    return directional_distance(win_a.get_frame_rect(), win_b.get_frame_rect(), north, south);
+    return directional_distance(
+        win_a.get_frame_rect(),
+        win_b.get_frame_rect(),
+        north,
+        south
+    );
 }
 
 export function leftward_distance(win_a: Meta.Window, win_b: Meta.Window) {
-    return directional_distance(win_a.get_frame_rect(), win_b.get_frame_rect(), east, west);
+    return directional_distance(
+        win_a.get_frame_rect(),
+        win_b.get_frame_rect(),
+        east,
+        west
+    );
 }
 
-export function nearest_side(ext: Ext, origin: [number, number], rect: Rectangular): [number, Side] {
+export function nearest_side(
+    ext: Ext,
+    origin: [number, number],
+    rect: Rectangular
+): [number, Side] {
     const left = west(rect),
         top = north(rect),
         right = east(rect),
@@ -91,16 +123,22 @@ export function nearest_side(ext: Ext, origin: [number, number], rect: Rectangul
         center_distance = distance(origin, ctr);
 
     let nearest: [number, Side] =
-        left_distance < right_distance ? [left_distance, Side.LEFT] : [right_distance, Side.RIGHT];
+        left_distance < right_distance
+            ? [left_distance, Side.LEFT]
+            : [right_distance, Side.RIGHT];
 
     if (top_distance < nearest[0]) nearest = [top_distance, Side.TOP];
     if (bottom_distance < nearest[0]) nearest = [bottom_distance, Side.BOTTOM];
-    if (ext.settings.stacking_with_mouse() && center_distance < nearest[0]) nearest = [center_distance, Side.CENTER];
+    if (ext.settings.stacking_with_mouse() && center_distance < nearest[0])
+        nearest = [center_distance, Side.CENTER];
 
     return nearest;
 }
 
-export function shortest_side(origin: [number, number], rect: Rectangular): number {
+export function shortest_side(
+    origin: [number, number],
+    rect: Rectangular
+): number {
     let shortest = distance(origin, west(rect));
     shortest = Math.min(shortest, distance(origin, north(rect)));
     shortest = Math.min(shortest, distance(origin, east(rect)));

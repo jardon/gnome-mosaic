@@ -67,7 +67,12 @@ export class Rectangle {
     }
 
     clone(): Rectangle {
-        return new Rectangle([this.array[0], this.array[1], this.array[2], this.array[3]]);
+        return new Rectangle([
+            this.array[0],
+            this.array[1],
+            this.array[2],
+            this.array[3],
+        ]);
     }
 
     contains(other: Rectangular): boolean {
@@ -89,7 +94,12 @@ export class Rectangle {
     }
 
     eq(other: Rectangular): boolean {
-        return this.x == other.x && this.y == other.y && this.width == other.width && this.height == other.height;
+        return (
+            this.x == other.x &&
+            this.y == other.y &&
+            this.width == other.width &&
+            this.height == other.height
+        );
     }
 
     fmt(): string {

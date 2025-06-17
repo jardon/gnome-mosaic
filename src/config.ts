@@ -23,42 +23,42 @@ interface Error {
 type Result<T> = Ok<T> | Error;
 
 export const DEFAULT_FLOAT_RULES: Array<FloatRule> = [
-    { class: 'Authy Desktop' },
-    { class: 'Com.github.amezin.ddterm' },
-    { class: 'Com.github.donadigo.eddy' },
-    { class: 'Conky' },
-    { title: 'Discord Updater' },
-    { class: 'Enpass', title: 'Enpass Assistant' },
-    { class: 'Floating Window Exceptions' },
-    { class: 'Gjs', title: 'Settings' },
-    { class: 'Gnome-initial-setup' },
-    { class: 'Gnome-terminal', title: 'Preferences – General' },
-    { class: 'Guake' },
-    { class: 'Io.elementary.sideload' },
-    { title: 'JavaEmbeddedFrame' },
-    { class: 'KotatogramDesktop', title: 'Media viewer' },
-    { class: 'Mozilla VPN' },
-    { class: 'update-manager', title: 'Software Updater' },
-    { class: 'Solaar' },
-    { class: 'Steam', title: '^((?!Steam).)*$' },
-    { class: 'Steam', title: '^.*(Guard|Login).*' },
-    { class: 'TelegramDesktop', title: 'Media viewer' },
-    { class: 'Zotero', title: 'Quick Format Citation' },
-    { class: 'firefox', title: '^(?!.*Mozilla Firefox).*$' },
-    { class: 'gnome-screenshot' },
-    { class: 'ibus-.*' },
-    { class: 'jetbrains-toolbox' },
-    { class: 'jetbrains-webstorm', title: 'Customize WebStorm' },
-    { class: 'jetbrains-webstorm', title: 'License Activation' },
-    { class: 'jetbrains-webstorm', title: 'Welcome to WebStorm' },
-    { class: 'krunner' },
-    { class: 'pritunl' },
-    { class: 're.sonny.Junction' },
-    { class: 'system76-driver' },
-    { class: 'tilda' },
-    { class: 'zoom' },
-    { class: '^.*action=join.*$' },
-    { class: 'gjs' },
+    {class: 'Authy Desktop'},
+    {class: 'Com.github.amezin.ddterm'},
+    {class: 'Com.github.donadigo.eddy'},
+    {class: 'Conky'},
+    {title: 'Discord Updater'},
+    {class: 'Enpass', title: 'Enpass Assistant'},
+    {class: 'Floating Window Exceptions'},
+    {class: 'Gjs', title: 'Settings'},
+    {class: 'Gnome-initial-setup'},
+    {class: 'Gnome-terminal', title: 'Preferences – General'},
+    {class: 'Guake'},
+    {class: 'Io.elementary.sideload'},
+    {title: 'JavaEmbeddedFrame'},
+    {class: 'KotatogramDesktop', title: 'Media viewer'},
+    {class: 'Mozilla VPN'},
+    {class: 'update-manager', title: 'Software Updater'},
+    {class: 'Solaar'},
+    {class: 'Steam', title: '^((?!Steam).)*$'},
+    {class: 'Steam', title: '^.*(Guard|Login).*'},
+    {class: 'TelegramDesktop', title: 'Media viewer'},
+    {class: 'Zotero', title: 'Quick Format Citation'},
+    {class: 'firefox', title: '^(?!.*Mozilla Firefox).*$'},
+    {class: 'gnome-screenshot'},
+    {class: 'ibus-.*'},
+    {class: 'jetbrains-toolbox'},
+    {class: 'jetbrains-webstorm', title: 'Customize WebStorm'},
+    {class: 'jetbrains-webstorm', title: 'License Activation'},
+    {class: 'jetbrains-webstorm', title: 'Welcome to WebStorm'},
+    {class: 'krunner'},
+    {class: 'pritunl'},
+    {class: 're.sonny.Junction'},
+    {class: 'system76-driver'},
+    {class: 'tilda'},
+    {class: 'zoom'},
+    {class: '^.*action=join.*$'},
+    {class: 'gjs'},
 ];
 
 export interface WindowRule {
@@ -72,11 +72,11 @@ export interface WindowRule {
  * And any rule here should be added on the DEFAULT_RULES above
  */
 export const SKIPTASKBAR_EXCEPTIONS: Array<WindowRule> = [
-    { class: 'Conky' },
-    { class: 'gjs' },
-    { class: 'Guake' },
-    { class: 'Com.github.amezin.ddterm' },
-    { class: 'plank' },
+    {class: 'Conky'},
+    {class: 'gjs'},
+    {class: 'Guake'},
+    {class: 'Com.github.amezin.ddterm'},
+    {class: 'plank'},
 ];
 
 export interface FloatRule {
@@ -103,7 +103,7 @@ export class Config {
             if (r.class === wmclass && r.title === undefined) return;
         }
 
-        this.float.push({ class: wmclass });
+        this.float.push({class: wmclass});
         this.sync_to_disk();
     }
 
@@ -113,7 +113,7 @@ export class Config {
             if (r.class === wmclass && r.title === title) return;
         }
 
-        this.float.push({ class: wmclass, title });
+        this.float.push({class: wmclass, title});
         this.sync_to_disk();
     }
 
@@ -143,7 +143,9 @@ export class Config {
 
         if (!meta_window.is_skip_taskbar()) return false;
 
-        for (const rule of this.skiptaskbarhidden.concat(SKIPTASKBAR_EXCEPTIONS)) {
+        for (const rule of this.skiptaskbarhidden.concat(
+            SKIPTASKBAR_EXCEPTIONS
+        )) {
             if (rule.class) {
                 if (!new RegExp(rule.class, 'i').test(wmclass)) {
                     continue;
@@ -176,7 +178,11 @@ export class Config {
 
     rule_disabled(rule: FloatRule): boolean {
         for (const value of this.float.values()) {
-            if (value.disabled && rule.class === value.class && value.title === rule.title) {
+            if (
+                value.disabled &&
+                rule.class === value.class &&
+                value.title === rule.title
+            ) {
                 return true;
             }
         }
@@ -188,7 +194,11 @@ export class Config {
         return JSON.stringify(this, set_to_json, 2);
     }
 
-    toggle_system_exception(wmclass: string | undefined, wmtitle: string | undefined, disabled: boolean) {
+    toggle_system_exception(
+        wmclass: string | undefined,
+        wmtitle: string | undefined,
+        disabled: boolean
+    ) {
         if (disabled) {
             for (const value of DEFAULT_FLOAT_RULES) {
                 if (value.class === wmclass && value.title === wmtitle) {
@@ -215,7 +225,10 @@ export class Config {
         this.sync_to_disk();
     }
 
-    remove_user_exception(wmclass: string | undefined, wmtitle: string | undefined) {
+    remove_user_exception(
+        wmclass: string | undefined,
+        wmtitle: string | undefined
+    ) {
         let index = 0;
         let found = new Array();
         for (const value of this.float.values()) {
@@ -245,7 +258,7 @@ export class Config {
         const stream = Config.read();
         if (stream.tag === 1) return stream;
         let value = Config.from_json(stream.value);
-        return { tag: 0, value };
+        return {tag: 0, value};
     }
 
     private static gio_file(): Result<any> {
@@ -255,18 +268,27 @@ export class Config {
             if (!conf.query_exists(null)) {
                 const dir = Gio.File.new_for_path(CONF_DIR);
                 if (!dir.query_exists(null) && !dir.make_directory(null)) {
-                    return { tag: 1, why: 'failed to create gnome-mosaic config directory' };
+                    return {
+                        tag: 1,
+                        why: 'failed to create gnome-mosaic config directory',
+                    };
                 }
 
                 const example = new Config();
-                example.float.push({ class: 'gnome-mosaic-example', title: 'gnome-mosaic-example' });
+                example.float.push({
+                    class: 'gnome-mosaic-example',
+                    title: 'gnome-mosaic-example',
+                });
 
-                conf.create(Gio.FileCreateFlags.NONE, null).write_all(JSON.stringify(example, undefined, 2), null);
+                conf.create(Gio.FileCreateFlags.NONE, null).write_all(
+                    JSON.stringify(example, undefined, 2),
+                    null
+                );
             }
 
-            return { tag: 0, value: conf };
+            return {tag: 0, value: conf};
         } catch (why) {
-            return { tag: 1, why: `Gio.File I/O error: ${why}` };
+            return {tag: 1, why: `Gio.File I/O error: ${why}`};
         }
     }
 
@@ -277,9 +299,9 @@ export class Config {
 
             const [, buffer] = file.value.load_contents(null);
 
-            return { tag: 0, value: imports.byteArray.toString(buffer) };
+            return {tag: 0, value: imports.byteArray.toString(buffer)};
         } catch (why) {
-            return { tag: 1, why: `failed to read gnome-mosaic config: ${why}` };
+            return {tag: 1, why: `failed to read gnome-mosaic config: ${why}`};
         }
     }
 
@@ -288,11 +310,17 @@ export class Config {
             const file = Config.gio_file();
             if (file.tag === 1) return file;
 
-            file.value.replace_contents(data, null, false, Gio.FileCreateFlags.NONE, null);
+            file.value.replace_contents(
+                data,
+                null,
+                false,
+                Gio.FileCreateFlags.NONE,
+                null
+            );
 
-            return { tag: 0, value: file.value };
+            return {tag: 0, value: file.value};
         } catch (why) {
-            return { tag: 1, why: `failed to write to config: ${why}` };
+            return {tag: 1, why: `failed to write to config: ${why}`};
         }
     }
 

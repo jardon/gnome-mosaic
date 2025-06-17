@@ -3,7 +3,7 @@ import St from 'gi://St';
 
 import * as Lib from './lib.js';
 
-const { separator } = Lib;
+const {separator} = Lib;
 
 export class Shortcut {
     description: string;
@@ -79,7 +79,7 @@ export var ShortcutOverlay = GObject.registerClass(
                 new St.Label({
                     styleClass: 'gnome-mosaic-shortcuts-title',
                     text: title,
-                }),
+                })
             );
 
             this.add(columns_layout);
@@ -94,7 +94,7 @@ export var ShortcutOverlay = GObject.registerClass(
             });
 
             for (const key of combination) {
-                layout.add(St.Label({ text: key }));
+                layout.add(St.Label({text: key}));
             }
 
             return layout;
@@ -109,7 +109,7 @@ export var ShortcutOverlay = GObject.registerClass(
                 new St.Label({
                     styleClass: 'gnome-mosaic-section-header',
                     text: section.header,
-                }),
+                })
             );
 
             for (const subsection of section.shortcuts) {
@@ -129,7 +129,7 @@ export var ShortcutOverlay = GObject.registerClass(
             layout.add(
                 new St.Label({
                     text: shortcut.description,
-                }),
+                })
             );
 
             // for (const binding of shortcut.bindings) {
@@ -142,5 +142,5 @@ export var ShortcutOverlay = GObject.registerClass(
 
             return layout;
         }
-    },
+    }
 );

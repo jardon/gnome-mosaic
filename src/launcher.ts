@@ -5,9 +5,9 @@ import * as log from './log.js';
 import * as service from './launcher_service.js';
 import * as context from './context.js';
 
-import type { Ext } from './extension.js';
-import type { ShellWindow } from './window.js';
-import type { JsonIPC } from './launcher_service.js';
+import type {Ext} from './extension.js';
+import type {ShellWindow} from './window.js';
+import type {JsonIPC} from './launcher_service.js';
 
 import Clutter from 'gi://Clutter';
 import GLib from 'gi://GLib';
@@ -68,7 +68,7 @@ export class Launcher extends search.Search {
                 if (!win) return;
 
                 if (win.workspace_id() == ext.active_workspace()) {
-                    const { x, y, width, height } = win.rect();
+                    const {x, y, width, height} = win.rect();
                     ext.overlay.x = x;
                     ext.overlay.y = y;
                     ext.overlay.width = width;
@@ -140,10 +140,10 @@ export class Launcher extends search.Search {
                             item.icon ? item.icon : null,
                             this.icon_size(),
                             null,
-                            null,
+                            null
                         );
 
-                        const menu = context.addMenu(button.widget, (menu) => {
+                        const menu = context.addMenu(button.widget, menu => {
                             if (this.active_menu) {
                                 this.active_menu.actor.hide();
                             }
@@ -154,7 +154,7 @@ export class Launcher extends search.Search {
                         });
 
                         this.append_search_option(button);
-                        const result = { result: item, menu };
+                        const result = {result: item, menu};
                         this.options.set(item.id, result);
                         this.options_array.push(result);
                     } catch (error) {
@@ -175,7 +175,7 @@ export class Launcher extends search.Search {
             this.launch_desktop_entry(response.DesktopEntry);
             this.close();
         } else if ('Context' in response) {
-            const { id, options } = response.Context;
+            const {id, options} = response.Context;
 
             const option = this.options.get(id);
             if (option) {
@@ -211,12 +211,17 @@ export class Launcher extends search.Search {
 
     launch_desktop_entry(entry: JsonIPC.DesktopEntry) {
         const basename = (name: string): string => {
-            return name.substr(name.indexOf('/applications/') + 14).replace('/', '-');
+            return name
+                .substr(name.indexOf('/applications/') + 14)
+                .replace('/', '-');
         };
 
         const desktop_entry_id = basename(entry.path);
 
-        const gpuPref = entry.gpu_preference === 'Default' ? Shell.AppLaunchGpu.DEFAULT : Shell.AppLaunchGpu.DISCRETE;
+        const gpuPref =
+            entry.gpu_preference === 'Default'
+                ? Shell.AppLaunchGpu.DEFAULT
+                : Shell.AppLaunchGpu.DISCRETE;
 
         log.debug(`launching desktop entry: ${desktop_entry_id}`);
 
@@ -227,7 +232,9 @@ export class Launcher extends search.Search {
         }
 
         if (!app) {
-            log.error(`GNOME Shell cannot find desktop entry for ${desktop_entry_id}`);
+            log.error(
+                `GNOME Shell cannot find desktop entry for ${desktop_entry_id}`
+            );
             log.error(`mosaic-launcher will use Gio.DesktopAppInfo instead`);
 
             const dapp = Gio.DesktopAppInfo.new_from_filename(entry.path);
@@ -265,7 +272,9 @@ export class Launcher extends search.Search {
             const window: Meta.Window = app.get_windows()[0];
 
             if (window) {
-                window.get_workspace().activate_with_focus(window, global.get_current_time());
+                window
+                    .get_workspace()
+                    .activate_with_focus(window, global.get_current_time());
                 return;
             }
         }
@@ -278,7 +287,9 @@ export class Launcher extends search.Search {
     }
 
     load_desktop_files() {
-        log.warn('gnome-mosaic: deprecated function called (launcher::load_desktop_files)');
+        log.warn(
+            'gnome-mosaic: deprecated function called (launcher::load_desktop_files)'
+        );
     }
 
     locate_by_app_info(info: any): null | ShellWindow {
@@ -294,7 +305,8 @@ export class Launcher extends search.Search {
                     try {
                         let f = Gio.File.new_for_path(`/proc/${pid}/cmdline`);
                         const [, bytes] = f.load_contents(null);
-                        const output: string = imports.byteArray.toString(bytes);
+                        const output: string =
+                            imports.byteArray.toString(bytes);
                         const cmd = output.split(' ').shift()?.split('/').pop();
                         if (cmd === exec) return window;
                     } catch (_) {}
@@ -312,7 +324,11 @@ export class Launcher extends search.Search {
         if (this.opened) return;
 
         // Do not activate if the focused window is fullscreen
-        if (!ext.settings.fullscreen_launcher() && ext.focus_window()?.meta.is_fullscreen()) return;
+        if (
+            !ext.settings.fullscreen_launcher() &&
+            ext.focus_window()?.meta.is_fullscreen()
+        )
+            return;
 
         this.opened = true;
 
@@ -334,17 +350,26 @@ export class Launcher extends search.Search {
         this.start_services();
         this.search('');
 
-        this.dialog.dialogLayout.x = mon_width / 2 - this.dialog.dialogLayout.width / 2;
+        this.dialog.dialogLayout.x =
+            mon_width / 2 - this.dialog.dialogLayout.width / 2;
 
-        let height = mon_work_area.height >= 900 ? mon_work_area.height / 2 : mon_work_area.height / 3.5;
-        this.dialog.dialogLayout.y = height - this.dialog.dialogLayout.height / 2;
+        let height =
+            mon_work_area.height >= 900
+                ? mon_work_area.height / 2
+                : mon_work_area.height / 3.5;
+        this.dialog.dialogLayout.y =
+            height - this.dialog.dialogLayout.height / 2;
     }
 
     start_services() {
         if (this.service === null) {
             log.debug('starting mosaic-launcher service');
             const ipc = utils.async_process_ipc(['mosaic-launcher']);
-            this.service = ipc ? new service.LauncherService(ipc, (resp) => this.on_response(resp)) : null;
+            this.service = ipc
+                ? new service.LauncherService(ipc, resp =>
+                      this.on_response(resp)
+                  )
+                : null;
         }
     }
 

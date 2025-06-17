@@ -13,7 +13,11 @@ const SchedulerInterface =
 
 const SchedulerProxy = Gio.DBusProxy.makeProxyWrapper(SchedulerInterface);
 
-const SchedProxy = new SchedulerProxy(Gio.DBus.system, 'com.system76.Scheduler', '/com/system76/Scheduler');
+const SchedProxy = new SchedulerProxy(
+    Gio.DBus.system,
+    'com.system76.Scheduler',
+    '/com/system76/Scheduler'
+);
 
 let foreground: number = 0;
 let failed: boolean = false;
@@ -27,9 +31,12 @@ export function setForeground(win: Meta.Window) {
         foreground = pid;
 
         try {
-            SchedProxy.SetForegroundProcessRemote(pid, (_result: any, error: any, _fds: any) => {
-                if (error !== null) errorHandler(error);
-            });
+            SchedProxy.SetForegroundProcessRemote(
+                pid,
+                (_result: any, error: any, _fds: any) => {
+                    if (error !== null) errorHandler(error);
+                }
+            );
         } catch (error) {
             errorHandler(error);
         }

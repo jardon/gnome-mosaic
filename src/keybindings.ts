@@ -1,6 +1,6 @@
-import type { Ext } from './extension.js';
+import type {Ext} from './extension.js';
 
-import { wm } from 'resource:///org/gnome/shell/ui/main.js';
+import {wm} from 'resource:///org/gnome/shell/ui/main.js';
 import Shell from 'gi://Shell';
 import Meta from 'gi://Meta';
 
@@ -38,27 +38,38 @@ export class Keybindings {
 
             'toggle-tiling': () => ext.toggle_tiling(),
 
-            'toggle-stacking-global': () => ext.auto_tiler?.toggle_stacking(ext),
+            'toggle-stacking-global': () =>
+                ext.auto_tiler?.toggle_stacking(ext),
 
-            'tile-move-left-global': () => ext.tiler.move_left(ext, ext.focus_window()?.entity),
+            'tile-move-left-global': () =>
+                ext.tiler.move_left(ext, ext.focus_window()?.entity),
 
-            'tile-move-down-global': () => ext.tiler.move_down(ext, ext.focus_window()?.entity),
+            'tile-move-down-global': () =>
+                ext.tiler.move_down(ext, ext.focus_window()?.entity),
 
-            'tile-move-up-global': () => ext.tiler.move_up(ext, ext.focus_window()?.entity),
+            'tile-move-up-global': () =>
+                ext.tiler.move_up(ext, ext.focus_window()?.entity),
 
-            'tile-move-right-global': () => ext.tiler.move_right(ext, ext.focus_window()?.entity),
+            'tile-move-right-global': () =>
+                ext.tiler.move_right(ext, ext.focus_window()?.entity),
 
-            'mosaic-monitor-left': () => ext.move_monitor(Meta.DisplayDirection.LEFT),
+            'mosaic-monitor-left': () =>
+                ext.move_monitor(Meta.DisplayDirection.LEFT),
 
-            'mosaic-monitor-right': () => ext.move_monitor(Meta.DisplayDirection.RIGHT),
+            'mosaic-monitor-right': () =>
+                ext.move_monitor(Meta.DisplayDirection.RIGHT),
 
-            'mosaic-monitor-up': () => ext.move_monitor(Meta.DisplayDirection.UP),
+            'mosaic-monitor-up': () =>
+                ext.move_monitor(Meta.DisplayDirection.UP),
 
-            'mosaic-monitor-down': () => ext.move_monitor(Meta.DisplayDirection.DOWN),
+            'mosaic-monitor-down': () =>
+                ext.move_monitor(Meta.DisplayDirection.DOWN),
 
-            'mosaic-workspace-up': () => ext.move_workspace(Meta.DisplayDirection.UP),
+            'mosaic-workspace-up': () =>
+                ext.move_workspace(Meta.DisplayDirection.UP),
 
-            'mosaic-workspace-down': () => ext.move_workspace(Meta.DisplayDirection.DOWN),
+            'mosaic-workspace-down': () =>
+                ext.move_workspace(Meta.DisplayDirection.DOWN),
         };
     }
 
@@ -69,7 +80,7 @@ export class Keybindings {
                 this.ext.settings.ext,
                 Meta.KeyBindingFlags.NONE,
                 Shell.ActionMode.NORMAL,
-                keybindings[name],
+                keybindings[name]
             );
         }
 

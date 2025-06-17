@@ -1,7 +1,7 @@
 import * as lib from './lib.js';
 
 import GLib from 'gi://GLib';
-import { spawn } from 'resource:///org/gnome/shell/misc/util.js';
+import {spawn} from 'resource:///org/gnome/shell/misc/util.js';
 
 export var MOTIF_HINTS: string = '_MOTIF_WM_HINTS';
 export var HIDE_FLAGS: string[] = ['0x2', '0x0', '0x0', '0x0', '0x0'];
@@ -18,11 +18,11 @@ export function get_window_role(xid: string): string | null {
 }
 
 export function get_frame_extents(xid: string): string | null {
-    let out = xprop_cmd(xid, "_GTK_FRAME_EXTENTS");
+    let out = xprop_cmd(xid, '_GTK_FRAME_EXTENTS');
 
     if (!out) return null;
 
-    return parse_string(out)
+    return parse_string(out);
 }
 
 export function get_hint(xid: string, hint: string): Array<string> | null {
@@ -32,7 +32,9 @@ export function get_hint(xid: string, hint: string): Array<string> | null {
 
     const array = parse_cardinal(out);
 
-    return array ? array.map((value) => (value.startsWith('0x') ? value : '0x' + value)) : null;
+    return array
+        ? array.map(value => (value.startsWith('0x') ? value : '0x' + value))
+        : null;
 }
 
 function size_params(line: string): [number, number] | null {
@@ -92,7 +94,17 @@ export function motif_hints(xid: string): Array<string> | null {
 }
 
 export function set_hint(xid: string, hint: string, value: string[]) {
-    spawn(['xprop', '-id', xid, '-f', hint, '32c', '-set', hint, value.join(', ')]);
+    spawn([
+        'xprop',
+        '-id',
+        xid,
+        '-f',
+        hint,
+        '32c',
+        '-set',
+        hint,
+        value.join(', '),
+    ]);
 }
 
 function consume_key(string: string): number | null {

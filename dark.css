@@ -1,8 +1,8 @@
 .gnome-mosaic-active-hint {
     border-style: solid;
-    border-color: #FBB86C;
+    border-color: #fbb86c;
     border-radius: var(--active-hint-border-radius, 5px);
-    box-shadow: inset 0 0 0 1px rgba(24, 23, 23, 0)
+    box-shadow: inset 0 0 0 1px rgba(24, 23, 23, 0);
 }
 
 .gnome-mosaic-overlay {
@@ -17,10 +17,10 @@
     border-width: 3px;
 }
 
-.gnome-mosaic-search-element:select{
-    background: rgba(246, 246, 246, .2);
+.gnome-mosaic-search-element:select {
+    background: rgba(246, 246, 246, 0.2);
     border-radius: 5px;
-    color: #EDEDED;
+    color: #ededed;
 }
 
 .gnome-mosaic-search-icon {
@@ -45,13 +45,13 @@
 }
 
 .gnome-mosaic-tab-active {
-    background: #FBB86C;
+    background: #fbb86c;
 }
 
 .gnome-mosaic-tab-inactive {
-    background: #9B8E8A;
+    background: #9b8e8a;
 }
 
 .gnome-mosaic-tab-urgent {
-    background: #D00;
+    background: #d00;
 }
