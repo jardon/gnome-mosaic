@@ -396,10 +396,7 @@ export class Forest extends Ecs.World {
     }
 
     /** Detaches an entity from the a fork, re-arranging the fork's tree as necessary */
-    detach(
-        fork_entity: Entity,
-        window: Entity
-    ): [Entity, Fork.Fork] | null {
+    detach(fork_entity: Entity, window: Entity): [Entity, Fork.Fork] | null {
         const fork = this.forks.get(fork_entity);
         if (!fork) return null;
 

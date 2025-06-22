@@ -184,12 +184,7 @@ export class Tiler {
 
                     this.moving = true;
 
-                    if (move_to !== null)
-                        this.move_auto(
-                            ext,
-                            focused,
-                            move_to
-                        );
+                    if (move_to !== null) this.move_auto(ext, focused, move_to);
                     this.moving = false;
                     place_pointer();
                 }
@@ -343,10 +338,10 @@ export class Tiler {
         );
     }
 
-        move_auto(
+    move_auto(
         ext: Ext,
         focused: window.ShellWindow,
-        move_to: window.ShellWindow | number,
+        move_to: window.ShellWindow | number
     ) {
         let watching: null | window.ShellWindow = null;
 
@@ -382,12 +377,7 @@ export class Tiler {
 
                     focused.ignore_detach = true;
                     at.detach_window(ext, focused.entity);
-                    at.attach_to_window(
-                        ext,
-                        move_to,
-                        focused,
-                        movement,
-                    );
+                    at.attach_to_window(ext, move_to, focused, movement);
                     watching = focused;
                 }
             } else {

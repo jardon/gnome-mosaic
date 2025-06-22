@@ -416,10 +416,7 @@ export class AutoTiler {
             ? fork.area
             : attach_to.meta.get_frame_rect();
 
-        let placement: null | MoveBy = cursor_placement(
-            attach_area,
-            cursor
-        );
+        let placement: null | MoveBy = cursor_placement(attach_area, cursor);
 
         const {Left, Up, Right, Down} = tiling.Direction;
 
