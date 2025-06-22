@@ -1571,7 +1571,7 @@ export class Ext extends Ecs.System<ExtEvent> {
 
                         const result = monitor_attachment
                             ? null
-                            : auto_tiler.cursor_placement(this, area, cursor);
+                            : auto_tiler.cursor_placement(area, cursor);
 
                         if (!result) {
                             this.overlay.x = area.x;

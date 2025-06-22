@@ -1,5 +1,3 @@
-import type {Ext} from './extension.js';
-
 export enum Side {
     LEFT,
     TOP,
@@ -106,7 +104,6 @@ export function leftward_distance(win_a: Meta.Window, win_b: Meta.Window) {
 }
 
 export function nearest_side(
-    ext: Ext,
     origin: [number, number],
     rect: Rectangular
 ): [number, Side] {

@@ -2,7 +2,6 @@
 import * as GrabOp from './grab_op.js';
 import * as Lib from './lib.js';
 import * as Log from './log.js';
-import * as Node from './node.js';
 import * as Rect from './rectangle.js';
 import * as Tags from './tags.js';
 import * as window from './window.js';
@@ -13,7 +12,6 @@ import type {Entity} from './ecs.js';
 import type {Rectangle} from './rectangle.js';
 import type {Ext} from './extension.js';
 import {AutoTiler} from './auto_tiler.js';
-import {Fork} from './fork.js';
 
 import Meta from 'gi://Meta';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
@@ -166,7 +164,6 @@ export class Tiler {
         y: number,
         w: number,
         h: number,
-        direction: Direction,
         focus: () => window.ShellWindow | number | null
     ) {
         if (!window) return;
@@ -191,8 +188,7 @@ export class Tiler {
                         this.move_auto(
                             ext,
                             focused,
-                            move_to,
-                            direction === Direction.Left
+                            move_to
                         );
                     this.moving = false;
                     place_pointer();
@@ -347,10 +343,10 @@ export class Tiler {
         );
     }
 
-    move_auto(
+        move_auto(
         ext: Ext,
         focused: window.ShellWindow,
-        move_to: window.ShellWindow | number
+        move_to: window.ShellWindow | number,
     ) {
         let watching: null | window.ShellWindow = null;
 
@@ -386,7 +382,12 @@ export class Tiler {
 
                     focused.ignore_detach = true;
                     at.detach_window(ext, focused.entity);
-                    at.attach_to_window(ext, move_to, focused, movement);
+                    at.attach_to_window(
+                        ext,
+                        move_to,
+                        focused,
+                        movement,
+                    );
                     watching = focused;
                 }
             } else {
@@ -415,7 +416,6 @@ export class Tiler {
             0,
             0,
             0,
-            Direction.Left,
             move_window_or_monitor(
                 ext,
                 ext.focus_selector.left,
@@ -432,7 +432,6 @@ export class Tiler {
             1,
             0,
             0,
-            Direction.Down,
             move_window_or_monitor(
                 ext,
                 ext.focus_selector.down,
@@ -449,7 +448,6 @@ export class Tiler {
             -1,
             0,
             0,
-            Direction.Up,
             move_window_or_monitor(
                 ext,
                 ext.focus_selector.up,
@@ -466,7 +464,6 @@ export class Tiler {
             0,
             0,
             0,
-            Direction.Right,
             move_window_or_monitor(
                 ext,
                 ext.focus_selector.right,

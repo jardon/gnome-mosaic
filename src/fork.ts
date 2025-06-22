@@ -6,7 +6,6 @@ import type {Node} from './node.js';
 
 import * as Ecs from './ecs.js';
 import * as Lib from './lib.js';
-import * as node from './node.js';
 import * as Rect from './rectangle.js';
 import {ShellWindow} from './window.js';
 
@@ -123,12 +122,6 @@ export class Fork {
                     }
 
                     break;
-                case 3:
-                    for (const e of branch.inner.entities) {
-                        if (Ecs.entity_eq(e, entity)) {
-                            return branch;
-                        }
-                    }
             }
 
             return null;
@@ -151,7 +144,6 @@ export class Fork {
 
     /** Replaces the association of a window in a fork with another */
     replace_window(
-        ext: Ext,
         a: ShellWindow,
         b: ShellWindow
     ): null | (() => void) {

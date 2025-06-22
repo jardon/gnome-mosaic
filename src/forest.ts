@@ -1,4 +1,3 @@
-import * as arena from './arena.js';
 import * as Ecs from './ecs.js';
 import * as Lib from './lib.js';
 import * as log from './log.js';
@@ -13,7 +12,6 @@ import type {Rectangle} from './rectangle.js';
 import type {ShellWindow} from './window.js';
 import type {Ext} from './extension.js';
 
-const {Arena} = arena;
 import Meta from 'gi://Meta';
 const {Movement} = movement;
 
@@ -399,7 +397,6 @@ export class Forest extends Ecs.World {
 
     /** Detaches an entity from the a fork, re-arranging the fork's tree as necessary */
     detach(
-        ext: Ext,
         fork_entity: Entity,
         window: Entity
     ): [Entity, Fork.Fork] | null {
@@ -613,8 +610,6 @@ export class Forest extends Ecs.World {
                 case 2:
                     window_compare(node.inner.entity);
                     break;
-                case 3:
-                    window_compare(node.inner.entities[0]);
             }
         }
 
@@ -695,9 +690,6 @@ export class Forest extends Ecs.World {
                     case 2:
                         this.on_attach(p, inner.entity);
                         break;
-                    case 3:
-                        for (const entity of inner.entities)
-                            this.on_attach(p, entity);
                 }
             }
 
@@ -719,10 +711,6 @@ export class Forest extends Ecs.World {
             case 2:
                 this.on_attach(parent, sibling.inner.entity);
                 break;
-            case 3:
-                for (const entity of sibling.inner.entities) {
-                    this.on_attach(parent, entity);
-                }
         }
     }
 

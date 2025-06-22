@@ -46,10 +46,10 @@ export class AutoTiler {
 
         if (!a_fork || !b_fork) return;
 
-        const a_fn = a_fork.replace_window(ext, a_win, b_win);
+        const a_fn = a_fork.replace_window(a_win, b_win);
         this.forest.on_attach(a_ent, b);
 
-        const b_fn = b_fork.replace_window(ext, b_win, a_win);
+        const b_fn = b_fork.replace_window(b_win, a_win);
         this.forest.on_attach(b_ent, a);
 
         if (a_fn) a_fn();
@@ -206,10 +206,6 @@ export class AutoTiler {
             for (const node of this.forest.iter(fent)) {
                 if (node.inner.kind === 2) {
                     this.forest.on_detach(node.inner.entity);
-                } else if (node.inner.kind === 3) {
-                    for (const window of node.inner.entities) {
-                        this.forest.on_detach(window);
-                    }
                 }
             }
         }
@@ -220,7 +216,7 @@ export class AutoTiler {
     /** Detaches the window from a tiling branch, if it is attached to one. */
     detach_window(ext: Ext, win: Entity) {
         this.attached.take_with(win, (prev_fork: Entity) => {
-            const reflow_fork = this.forest.detach(ext, prev_fork, win);
+            const reflow_fork = this.forest.detach(prev_fork, win);
 
             if (reflow_fork) {
                 const fork = reflow_fork[1];
@@ -421,7 +417,6 @@ export class AutoTiler {
             : attach_to.meta.get_frame_rect();
 
         let placement: null | MoveBy = cursor_placement(
-            ext,
             attach_area,
             cursor
         );
@@ -636,14 +631,13 @@ export class AutoTiler {
  * A null indicates that the window should be stacked
  */
 export function cursor_placement(
-    ext: Ext,
     area: Rectangular,
     cursor: Rectangular
 ): null | MoveByCursor {
     const {LEFT, RIGHT, TOP, BOTTOM} = geom.Side;
     const {HORIZONTAL, VERTICAL} = lib.Orientation;
 
-    const [, side] = geom.nearest_side(ext, [cursor.x, cursor.y], area);
+    const [, side] = geom.nearest_side([cursor.x, cursor.y], area);
 
     let res: null | [lib.Orientation, boolean] =
         side === LEFT
