@@ -44,17 +44,6 @@ Tasks for a tester to verify when approving a patch. Use complex window layouts 
 - [ ] Turn on auto-tiling. Windows automatically tile.
 - [ ] Disabling and enabling auto-tiling correctly handles minimized, maximized, fullscreen, floating, and non-floating windows (This test needs a better definition, steps, or to be separated out.)
 
-### Stacking
-
-- [ ] Windows can be moved into a stack.
-- [ ] Windows can be moved out of a stack.
-- [ ] Windows inside and outside of a stack can be swapped multiple times and in both directions.
-- [ ] Moving the last window out of a stack works as expected.
-- [ ] Stacks can be resized with the keyboard.
-- [ ] Stacks can be resized with the mouse.
-- [ ] Lock and unlock the screen-- stacks should still exist and windows should not have moved.
-- [ ] Full-screen an application within the stack, then quit the application-- the remaining tabs should be visible.
-
 ### Workspaces
 
 - [ ] Windows can be moved to another workspace with the keyboard

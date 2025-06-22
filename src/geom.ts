@@ -129,8 +129,7 @@ export function nearest_side(
 
     if (top_distance < nearest[0]) nearest = [top_distance, Side.TOP];
     if (bottom_distance < nearest[0]) nearest = [bottom_distance, Side.BOTTOM];
-    if (ext.settings.stacking_with_mouse() && center_distance < nearest[0])
-        nearest = [center_distance, Side.CENTER];
+    if (center_distance < nearest[0]) nearest = [center_distance, Side.CENTER];
 
     return nearest;
 }

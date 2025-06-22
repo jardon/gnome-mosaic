@@ -3,7 +3,6 @@ import * as lib from './lib.js';
 import * as log from './log.js';
 import * as node from './node.js';
 import * as result from './result.js';
-import * as stack from './stack.js';
 import * as geom from './geom.js';
 import * as tiling from './tiling.js';
 
@@ -15,7 +14,6 @@ import type {Rectangle} from './rectangle.js';
 import type {Result} from './result.js';
 import type {ShellWindow} from './window.js';
 
-const {Stack} = stack;
 const {Ok, Err, ERR} = result;
 const {NodeKind} = node;
 import * as Tags from './tags.js';
@@ -48,33 +46,6 @@ export class AutoTiler {
 
         if (!a_fork || !b_fork) return;
 
-        const a_stack = a_win.stack,
-            b_stack = b_win.stack;
-
-        if (ext.auto_tiler) {
-            if (a_win.stack !== null) {
-                const stack = ext.auto_tiler.forest.stacks.get(a_win.stack);
-                if (stack) {
-                    a = stack.active;
-                    a_win = ext.windows.get(a);
-                    if (!a_win) return;
-
-                    stack.deactivate(a_win);
-                }
-            }
-
-            if (b_win.stack !== null) {
-                const stack = ext.auto_tiler.forest.stacks.get(b_win.stack);
-                if (stack) {
-                    b = stack.active;
-                    b_win = ext.windows.get(b);
-                    if (!b_win) return;
-
-                    stack.deactivate(b_win);
-                }
-            }
-        }
-
         const a_fn = a_fork.replace_window(ext, a_win, b_win);
         this.forest.on_attach(a_ent, b);
 
@@ -83,9 +54,6 @@ export class AutoTiler {
 
         if (a_fn) a_fn();
         if (b_fn) b_fn();
-
-        a_win.stack = b_stack;
-        b_win.stack = a_stack;
 
         a_win.meta.get_compositor_private()?.show();
         b_win.meta.get_compositor_private()?.show();
@@ -156,15 +124,13 @@ export class AutoTiler {
         ext: Ext,
         attachee: ShellWindow,
         attacher: ShellWindow,
-        move_by: MoveBy,
-        stack_from_left: boolean = true
+        move_by: MoveBy
     ): boolean {
         let attached = this.forest.attach_window(
             ext,
             attachee.entity,
             attacher.entity,
-            move_by,
-            stack_from_left
+            move_by
         );
 
         if (attached) {
@@ -248,13 +214,6 @@ export class AutoTiler {
             }
         }
 
-        for (const stack of this.forest.stacks.values()) stack.destroy();
-
-        for (const window of ext.windows.values()) {
-            window.stack = null;
-        }
-
-        this.forest.stacks.truncate(0);
         ext.show_border_on_focused();
     }
 
@@ -330,22 +289,6 @@ export class AutoTiler {
         }
 
         return false;
-    }
-
-    find_stack(entity: Entity): null | [Fork, node.Node, boolean] {
-        const att = this.attached.get(entity);
-        if (att) {
-            const fork = this.forest.forks.get(att);
-            if (fork) {
-                if (fork.left.is_in_stack(entity)) {
-                    return [fork, fork.left, true];
-                } else if (fork.right?.is_in_stack(entity)) {
-                    return [fork, fork.right, false];
-                }
-            }
-        }
-
-        return null;
     }
 
     /** Find the fork that belongs to a window */
@@ -452,14 +395,14 @@ export class AutoTiler {
                 ext.settings.smart_gaps()
             );
         } else if (attach_to) {
-            this.place_or_stack(ext, win, attach_to, cursor);
+            this.place(ext, win, attach_to, cursor);
         } else {
             this.detach_window(ext, win.entity);
             attach_mon();
         }
     }
 
-    place_or_stack(
+    place(
         ext: Ext,
         win: ShellWindow,
         attach_to: ShellWindow,
@@ -473,21 +416,16 @@ export class AutoTiler {
             attach_to.entity
         );
 
-        const attach_area: Rectangular =
-            (win.stack === null && attach_to.stack === null && is_sibling) ||
-            (win.stack === null && is_sibling)
-                ? fork.area
-                : attach_to.meta.get_frame_rect();
+        const attach_area: Rectangular = is_sibling
+            ? fork.area
+            : attach_to.meta.get_frame_rect();
 
         let placement: null | MoveBy = cursor_placement(
             ext,
             attach_area,
             cursor
         );
-        const stack = ext.auto_tiler?.find_stack(attach_to.entity);
 
-        const matching_stack =
-            win.stack !== null && win.stack === attach_to.stack;
         const {Left, Up, Right, Down} = tiling.Direction;
 
         const swap = (o: lib.Orientation, d: tiling.Direction) => {
@@ -514,31 +452,7 @@ export class AutoTiler {
                       ? Up
                       : Down;
 
-            if (stack) {
-                if (matching_stack) {
-                    ext.tiler.move_from_stack(ext, stack, win, direction, true);
-                    return true;
-                } else if (attach_to.stack !== null) {
-                    const onto_stack = ext.auto_tiler?.find_stack(
-                        attach_to.entity
-                    );
-                    if (onto_stack) {
-                        if (is_sibling && win.stack === null) {
-                            swap(placement.orientation, direction);
-                            return true;
-                        } else {
-                            ext.tiler.move_alongside_stack(
-                                ext,
-                                onto_stack,
-                                win,
-                                direction
-                            );
-                        }
-
-                        return true;
-                    }
-                }
-            } else if (is_sibling && win.stack === null) {
+            if (is_sibling) {
                 swap(placement.orientation, direction);
                 return true;
             } else if (fork.is_toplevel && fork.right === null) {
@@ -547,12 +461,7 @@ export class AutoTiler {
                 swap(placement.orientation, direction);
                 return true;
             }
-        } else if (matching_stack) {
-            this.tile(ext, fork, fork.area);
-            return true;
         } else {
-            if (attach_to.stack === null) this.create_stack(ext, attach_to);
-
             placement = {auto: 0};
         }
 
@@ -618,130 +527,6 @@ export class AutoTiler {
         const result = this.toggle_orientation_(ext, window);
         if (result.kind == ERR) {
             log.warn(`toggle_orientation: ${result.value}`);
-        }
-    }
-
-    toggle_stacking(ext: Ext, window?: ShellWindow) {
-        const focused = window ?? ext.focus_window();
-        if (!focused) return;
-
-        // Disable floating if floating is enabled
-        if (ext.contains_tag(focused.entity, Tags.Floating)) {
-            ext.delete_tag(focused.entity, Tags.Floating);
-            this.auto_tile(ext, focused, false);
-        }
-
-        const fork_entity = this.attached.get(focused.entity);
-
-        if (fork_entity) {
-            const fork = this.forest.forks.get(fork_entity);
-            if (fork) {
-                this.unstack(ext, fork, focused, true);
-            }
-        }
-    }
-
-    unstack(ext: Ext, fork: Fork, win: ShellWindow, toggled: boolean = false) {
-        const stack_toggle = (fork: Fork, branch: node.Node) => {
-            // If the stack contains 1 item, unstack it
-            const stack = branch.inner as node.NodeStack;
-            if (stack.entities.length === 1) {
-                win.stack = null;
-                this.forest.stacks.remove(stack.idx)?.destroy();
-                fork.measure(
-                    this.forest,
-                    ext,
-                    fork.area,
-                    this.forest.on_record()
-                );
-                return node.Node.window(win.entity);
-            }
-
-            return null;
-        };
-
-        if (toggled && fork.left.is_window(win.entity)) {
-            // Assign left window as stack.
-            win.stack = this.forest.stacks.insert(
-                new Stack(ext, win.entity, fork.workspace, fork.monitor)
-            );
-            fork.left = node.Node.stacked(win.entity, win.stack);
-            fork.measure(this.forest, ext, fork.area, this.forest.on_record());
-        } else if (fork.left.is_in_stack(win.entity)) {
-            const node = stack_toggle(fork, fork.left);
-            if (node) {
-                fork.left = node;
-
-                if (!fork.right) {
-                    this.forest.reassign_to_parent(fork, node);
-                }
-            }
-        } else if (toggled && fork.right?.is_window(win.entity)) {
-            // Assign right window as stack
-            win.stack = this.forest.stacks.insert(
-                new Stack(ext, win.entity, fork.workspace, fork.monitor)
-            );
-            fork.right = node.Node.stacked(win.entity, win.stack);
-            fork.measure(this.forest, ext, fork.area, this.forest.on_record());
-        } else if (fork.right?.is_in_stack(win.entity)) {
-            const node = stack_toggle(fork, fork.right);
-            if (node) fork.right = node;
-        }
-
-        this.tile(ext, fork, fork.area);
-    }
-
-    stack_left(ext: Ext, fork: Fork, window: ShellWindow) {
-        window.stack = this.forest.stacks.insert(
-            new Stack(ext, window.entity, fork.workspace, fork.monitor)
-        );
-        fork.left = node.Node.stacked(window.entity, window.stack);
-        fork.measure(this.forest, ext, fork.area, this.forest.on_record());
-    }
-
-    stack_right(ext: Ext, fork: Fork, window: ShellWindow) {
-        window.stack = this.forest.stacks.insert(
-            new Stack(ext, window.entity, fork.workspace, fork.monitor)
-        );
-        fork.right = node.Node.stacked(window.entity, window.stack);
-        fork.measure(this.forest, ext, fork.area, this.forest.on_record());
-    }
-
-    /** Convers a window into a stack if it was not already stacked */
-    create_stack(ext: Ext, window: ShellWindow) {
-        const entity = this.attached.get(window.entity);
-        if (!entity) return;
-
-        const fork = this.forest.forks.get(entity);
-        if (!fork) return;
-
-        if (fork.left.is_window(window.entity)) {
-            this.stack_left(ext, fork, window);
-        } else if (fork.right?.is_window(window.entity)) {
-            this.stack_right(ext, fork, window);
-        }
-    }
-
-    update_stack(ext: Ext, stack: node.NodeStack) {
-        if (stack.rect) {
-            const container = this.forest.stacks.get(stack.idx);
-            if (container) {
-                container.clear();
-
-                // Collect names of each entity in the stack
-                for (const entity of stack.entities) {
-                    const window = ext.windows.get(entity);
-                    if (window) {
-                        window.stack = stack.idx;
-                        container.add(window);
-                    }
-                }
-
-                container.update_positions(stack.rect);
-                container.auto_activate();
-            }
-        } else {
-            log.warn('stack rect was null');
         }
     }
 

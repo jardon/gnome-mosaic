@@ -38,9 +38,6 @@ export class Keybindings {
 
             'toggle-tiling': () => ext.toggle_tiling(),
 
-            'toggle-stacking-global': () =>
-                ext.auto_tiler?.toggle_stacking(ext),
-
             'tile-move-left-global': () =>
                 ext.tiler.move_left(ext, ext.focus_window()?.entity),
 
