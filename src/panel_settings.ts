@@ -133,7 +133,7 @@ function settings_button(menu: any): any {
         } else {
             spawn([
                 'xdg-open',
-                'https://support.system76.com/articles/pop-keyboard-shortcuts/',
+                'https://github.com/jardon/gnome-mosaic/blob/main/BINDINGS.md',
             ]);
         }
 
@@ -187,7 +187,7 @@ function shortcuts(menu: any): any {
         } else {
             spawn([
                 'xdg-open',
-                'https://support.system76.com/articles/pop-keyboard-shortcuts/',
+                'https://github.com/jardon/gnome-mosaic/blob/main/BINDINGS.md',
             ]);
         }
 
