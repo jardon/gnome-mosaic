@@ -1,6 +1,5 @@
 // const Me = imports.misc.extensionUtils.getCurrentExtension();
 import Gio from 'gi://Gio';
-import Gdk from 'gi://Gdk';
 import {get_current_path} from './paths.js';
 
 const DARK = ['dark', 'adapta', 'plata', 'dracula'];
@@ -74,8 +73,6 @@ const SHOW_TITLE = 'show-title';
 const SMART_GAPS = 'smart-gaps';
 const SNAP_TO_GRID = 'snap-to-grid';
 const TILE_BY_DEFAULT = 'tile-by-default';
-const HINT_COLOR_RGBA = 'hint-color-rgba';
-const DEFAULT_RGBA_COLOR = 'rgba(251, 184, 108, 1)'; //pop-orange
 const LOG_LEVEL = 'log-level';
 const SHOW_SKIPTASKBAR = 'show-skip-taskbar';
 const MOUSE_CURSOR_FOLLOWS_ACTIVE_WINDOW = 'mouse-cursor-follows-active-window';
@@ -122,17 +119,6 @@ export class ExtensionSettings {
 
     gap_outer(): number {
         return this.ext.get_uint(GAP_OUTER);
-    }
-
-    hint_color_rgba() {
-        let rgba = this.ext.get_string(HINT_COLOR_RGBA);
-        let valid_color = new Gdk.RGBA().parse(rgba);
-
-        if (!valid_color) {
-            return DEFAULT_RGBA_COLOR;
-        }
-
-        return rgba;
     }
 
     theme(): string {
@@ -226,16 +212,6 @@ export class ExtensionSettings {
 
     set_gap_outer(gap: number) {
         this.ext.set_uint(GAP_OUTER, gap);
-    }
-
-    set_hint_color_rgba(rgba: string) {
-        let valid_color = new Gdk.RGBA().parse(rgba);
-
-        if (valid_color) {
-            this.ext.set_string(HINT_COLOR_RGBA, rgba);
-        } else {
-            this.ext.set_string(HINT_COLOR_RGBA, DEFAULT_RGBA_COLOR);
-        }
     }
 
     set_row_size(size: number) {

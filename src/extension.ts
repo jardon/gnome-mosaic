@@ -108,6 +108,7 @@ export class Ext extends Ecs.System<ExtEvent> {
     overlay: St.Widget = new St.BoxLayout({
         style_class: 'gnome-mosaic-overlay',
         visible: false,
+        opacity: 85,
     });
 
     /** The application launcher, focus search, and calculator dialog */
