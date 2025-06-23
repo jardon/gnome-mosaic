@@ -4,14 +4,11 @@ import type {Forest} from './forest.js';
 import type {Entity} from './ecs.js';
 import type {Ext} from './extension.js';
 import type {Rectangle} from './rectangle.js';
-import type {Stack} from './stack.js';
-import {ShellWindow} from './window.js';
 
 /** A node is either a fork a window */
 export enum NodeKind {
     FORK = 1,
     WINDOW = 2,
-    STACK = 3,
 }
 
 /** Fetch the string representation of this value */
@@ -31,124 +28,7 @@ export interface NodeWindow {
     entity: Entity;
 }
 
-export interface NodeStack {
-    kind: 3;
-    idx: number;
-    entities: Array<Entity>;
-    rect: Rectangle | null;
-}
-
-function stack_detach(node: NodeStack, stack: Stack, idx: number) {
-    node.entities.splice(idx, 1);
-    stack.remove_by_pos(idx);
-}
-
-export function stack_find(node: NodeStack, entity: Entity): null | number {
-    let idx = 0;
-    while (idx < node.entities.length) {
-        if (Ecs.entity_eq(entity, node.entities[idx])) {
-            return idx;
-        }
-        idx += 1;
-    }
-
-    return null;
-}
-
-/** Move the window in a stack to the left, and detach if it it as the end. */
-export function stack_move_left(
-    ext: Ext,
-    forest: Forest,
-    node: NodeStack,
-    entity: Entity
-): boolean {
-    const stack = forest.stacks.get(node.idx);
-    if (!stack) return false;
-
-    let idx = 0;
-    for (const cmp of node.entities) {
-        if (Ecs.entity_eq(cmp, entity)) {
-            if (idx === 0) {
-                // Remove the window from the stack
-                stack_detach(node, stack, 0);
-                return false;
-            } else {
-                // Swap tabs in the stack
-                stack_swap(node, idx - 1, idx);
-                stack.active_id -= 1;
-                ext.auto_tiler?.update_stack(ext, node);
-                return true;
-            }
-        }
-
-        idx += 1;
-    }
-
-    return false;
-}
-
-/** Move the window in a stack to the right, and detach if it is at the end. */
-export function stack_move_right(
-    ext: Ext,
-    forest: Forest,
-    node: NodeStack,
-    entity: Entity
-): boolean {
-    const stack = forest.stacks.get(node.idx);
-    if (!stack) return false;
-
-    let moved = false;
-    let idx = 0;
-    const max = node.entities.length - 1;
-    for (const cmp of node.entities) {
-        if (Ecs.entity_eq(cmp, entity)) {
-            if (idx === max) {
-                stack_detach(node, stack, idx);
-                moved = false;
-            } else {
-                stack_swap(node, idx + 1, idx);
-                stack.active_id += 1;
-                ext.auto_tiler?.update_stack(ext, node);
-                moved = true;
-            }
-            break;
-        }
-
-        idx += 1;
-    }
-
-    return moved;
-}
-
-export function stack_replace(ext: Ext, node: NodeStack, window: ShellWindow) {
-    if (!ext.auto_tiler) return;
-
-    const stack = ext.auto_tiler.forest.stacks.get(node.idx);
-    if (!stack) return;
-
-    stack.replace(window);
-}
-
-/** Removes a window from a stack */
-export function stack_remove(
-    forest: Forest,
-    node: NodeStack,
-    entity: Entity
-): null | number {
-    const stack = forest.stacks.get(node.idx);
-    if (!stack) return null;
-    const idx = stack.remove_tab(entity);
-    if (idx !== null) node.entities.splice(idx, 1);
-    return idx;
-}
-
-function stack_swap(node: NodeStack, from: number, to: number) {
-    const tmp = node.entities[from];
-    node.entities[from] = node.entities[to];
-    node.entities[to] = tmp;
-}
-
-export type NodeADT = NodeFork | NodeWindow | NodeStack;
+export type NodeADT = NodeFork | NodeWindow;
 
 /** A tiling node may either refer to a window entity, or another fork entity */
 export class Node {
@@ -169,17 +49,6 @@ export class Node {
         return new Node({kind: NodeKind.WINDOW, entity});
     }
 
-    static stacked(window: Entity, idx: number): Node {
-        const node = new Node({
-            kind: NodeKind.STACK,
-            entities: [window],
-            idx,
-            rect: null,
-        });
-
-        return node;
-    }
-
     /** Generates a string representation of the this value. */
     display(fmt: string): string {
         fmt += `{\n    kind: ${node_variant_as_string(this.inner.kind)},\n    `;
@@ -190,22 +59,7 @@ export class Node {
             case 2:
                 fmt += `entity: (${this.inner.entity})\n  }`;
                 return fmt;
-            // Stack
-            case 3:
-                fmt += `entities: ${this.inner.entities}\n  }`;
-                return fmt;
         }
-    }
-
-    /** Check if the entity exists as a child of this stack */
-    is_in_stack(entity: Entity): boolean {
-        if (this.inner.kind === 3) {
-            for (const compare of this.inner.entities) {
-                if (Ecs.entity_eq(entity, compare)) return true;
-            }
-        }
-
-        return false;
     }
 
     /** Asks if this fork is the fork we are looking for */
@@ -244,24 +98,6 @@ export class Node {
             case 2:
                 record(this.inner.entity, parent, area.clone());
                 break;
-            // Stack
-            case 3:
-                const size = ext.dpi * 4;
-
-                this.inner.rect = area.clone();
-                this.inner.rect.y += size * 6;
-                this.inner.rect.height -= size * 6;
-
-                for (const entity of this.inner.entities) {
-                    record(entity, parent, this.inner.rect);
-                }
-
-                if (ext.auto_tiler) {
-                    ext.auto_tiler.forest.stack_updates.push([
-                        this.inner,
-                        parent,
-                    ]);
-                }
         }
     }
 }

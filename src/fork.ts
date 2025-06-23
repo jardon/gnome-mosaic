@@ -6,7 +6,6 @@ import type {Node} from './node.js';
 
 import * as Ecs from './ecs.js';
 import * as Lib from './lib.js';
-import * as node from './node.js';
 import * as Rect from './rectangle.js';
 import {ShellWindow} from './window.js';
 
@@ -123,12 +122,6 @@ export class Fork {
                     }
 
                     break;
-                case 3:
-                    for (const e of branch.inner.entities) {
-                        if (Ecs.entity_eq(e, entity)) {
-                            return branch;
-                        }
-                    }
             }
 
             return null;
@@ -150,11 +143,7 @@ export class Fork {
     }
 
     /** Replaces the association of a window in a fork with another */
-    replace_window(
-        ext: Ext,
-        a: ShellWindow,
-        b: ShellWindow
-    ): null | (() => void) {
+    replace_window(a: ShellWindow, b: ShellWindow): null | (() => void) {
         let closure = null;
 
         let check_right = () => {
@@ -163,17 +152,6 @@ export class Fork {
                 if (inner.kind === 2) {
                     closure = () => {
                         inner.entity = b.entity;
-                    };
-                } else if (inner.kind === 3) {
-                    const idx = node.stack_find(inner, a.entity);
-                    if (idx === null) {
-                        closure = null;
-                        return;
-                    }
-
-                    closure = () => {
-                        node.stack_replace(ext, inner, b);
-                        inner.entities[idx] = b.entity;
                     };
                 }
             }
@@ -194,18 +172,6 @@ export class Fork {
                 }
 
                 break;
-            case 3:
-                const inner_s = this.left.inner as node.NodeStack;
-                let idx = node.stack_find(inner_s, a.entity);
-                if (idx !== null) {
-                    const id = idx;
-                    closure = () => {
-                        node.stack_replace(ext, inner_s, b);
-                        inner_s.entities[id] = b.entity;
-                    };
-                } else {
-                    check_right();
-                }
         }
 
         return closure;
@@ -355,31 +321,6 @@ export class Fork {
                             blocked.push(window);
                         }
                         break;
-                    case 3:
-                        for (const entity of child.inner.entities) {
-                            let stack = ext.auto_tiler.forest.stacks.get(
-                                child.inner.idx
-                            );
-                            if (stack) {
-                                stack.workspace = workspace;
-                            }
-
-                            let window = ext.windows.get(entity);
-
-                            if (window) {
-                                ext.size_signals_block(window);
-                                window.known_workspace = workspace;
-                                window.meta.change_workspace_by_index(
-                                    workspace,
-                                    true
-                                );
-                                ext.monitors.insert(window.entity, [
-                                    monitor,
-                                    workspace,
-                                ]);
-                                blocked.push(window);
-                            }
-                        }
                 }
             }
 

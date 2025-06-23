@@ -22,9 +22,6 @@ const {OnceCell} = once_cell;
 
 export var window_tracker = Shell.WindowTracker.get_default();
 
-/** Contains SourceID of a restack operation. Used to prevent multiple restacks. */
-let SCHEDULED_RESTACK: number | null = null;
-
 /** Contains SourceID of an active hint operation. */
 let ACTIVE_HINT_SHOW_ID: number | null = null;
 
@@ -33,18 +30,6 @@ const WM_TITLE_BLACKLIST: Array<string> = [
     'Nightly', // Firefox Nightly
     'Tor Browser',
 ];
-
-enum RESTACK_STATE {
-    RAISED,
-    WORKSPACE_CHANGED,
-    NORMAL,
-}
-
-enum RESTACK_SPEED {
-    RAISED = 430,
-    WORKSPACE_CHANGED = 300,
-    NORMAL = 200,
-}
 
 interface X11Info {
     normal_hints: once_cell.OnceCell<lib.SizeHint | null>;
@@ -56,7 +41,6 @@ export class ShellWindow {
     entity: Entity;
     meta: Meta.Window;
     ext: Ext;
-    stack: number | null = null;
     known_workspace: number;
     grab: boolean = false;
     activate_after_move: boolean = false;
@@ -123,7 +107,6 @@ export class ShellWindow {
         if (this.border) global.window_group.add_child(this.border);
 
         this.hide_border();
-        this.restack();
         this.update_border_layout();
 
         if (this.meta.get_compositor_private()?.get_stage())
@@ -472,7 +455,6 @@ export class ShellWindow {
     show_border() {
         if (!this.border) return;
 
-        this.restack();
         this.update_border_style();
         if (this.ext.settings.active_hint()) {
             let border = this.border;
@@ -535,100 +517,6 @@ export class ShellWindow {
         return this.meta.get_monitor() === global.display.get_current_monitor();
     }
 
-    /**
-     * Sort the window group/always top group with each window border
-     * @param updateState NORMAL, RAISED, WORKSPACE_CHANGED
-     */
-    restack(updateState: RESTACK_STATE = RESTACK_STATE.NORMAL) {
-        this.update_border_layout();
-        if (
-            this.meta.is_fullscreen() ||
-            (this.is_single_max_screen() && !this.is_snap_edge()) ||
-            this.meta.minimized
-        ) {
-            this.hide_border();
-        }
-
-        let restackSpeed = RESTACK_SPEED.NORMAL;
-
-        switch (updateState) {
-            case RESTACK_STATE.NORMAL:
-                restackSpeed = RESTACK_SPEED.NORMAL;
-                break;
-            case RESTACK_STATE.RAISED:
-                restackSpeed = RESTACK_SPEED.RAISED;
-                break;
-            case RESTACK_STATE.WORKSPACE_CHANGED:
-                restackSpeed = RESTACK_SPEED.WORKSPACE_CHANGED;
-                break;
-        }
-
-        let restacks = 0;
-
-        const action = () => {
-            const count = restacks;
-            restacks += 1;
-
-            if (!this.actor_exists && count === 0) return true;
-
-            if (count === 3) {
-                if (SCHEDULED_RESTACK !== null)
-                    GLib.source_remove(SCHEDULED_RESTACK);
-                SCHEDULED_RESTACK = null;
-            }
-
-            const border = this.border;
-            const actor = this.meta.get_compositor_private();
-            const win_group = global.window_group;
-
-            if (actor && border && win_group) {
-                this.update_border_layout();
-                // move the border above the window group first
-                win_group.set_child_above_sibling(border, null);
-
-                if (this.always_top_windows.length > 0) {
-                    // honor the always-top windows
-                    for (const above_actor of this.always_top_windows) {
-                        if (actor != above_actor) {
-                            if (
-                                border.get_parent() === above_actor.get_parent()
-                            ) {
-                                win_group.set_child_below_sibling(
-                                    border,
-                                    above_actor
-                                );
-                            }
-                        }
-                    }
-
-                    // Move the border above the current window actor
-                    if (border.get_parent() === actor.get_parent()) {
-                        win_group.set_child_above_sibling(border, actor);
-                    }
-                }
-
-                // Honor transient windows
-                for (const window of this.ext.windows.values()) {
-                    const parent = window.meta.get_transient_for();
-                    const window_actor = window.meta.get_compositor_private();
-                    if (!parent || !window_actor) continue;
-                    const parent_actor = parent.get_compositor_private();
-                    if (!parent_actor && parent_actor !== actor) continue;
-                    win_group.set_child_below_sibling(border, window_actor);
-                }
-            }
-
-            return true;
-        };
-
-        if (SCHEDULED_RESTACK !== null) GLib.source_remove(SCHEDULED_RESTACK);
-        SCHEDULED_RESTACK = GLib.timeout_add(
-            GLib.PRIORITY_LOW,
-            restackSpeed,
-            action
-        );
-    }
-
     get always_top_windows(): Clutter.Actor[] {
         let above_windows: Clutter.Actor[] = new Array();
 
@@ -663,35 +551,12 @@ export class ShellWindow {
                 border.add_style_class_name('gnome-mosaic-border-maximize');
             }
 
-            const stack_number = this.stack;
-            let dimensions = null;
-
-            if (stack_number !== null) {
-                const stack =
-                    this.ext.auto_tiler?.forest.stacks.get(stack_number);
-                if (stack) {
-                    let stack_tab_height = stack.tabs_height;
-
-                    if (borderSize === 0 || this.grab) {
-                        // not in max screen state
-                        stack_tab_height = 0;
-                    }
-
-                    dimensions = [
-                        x - borderSize,
-                        y - stack_tab_height - borderSize,
-                        width + 2 * borderSize,
-                        height + stack_tab_height + 2 * borderSize,
-                    ];
-                }
-            } else {
-                dimensions = [
-                    x - borderSize,
-                    y - borderSize,
-                    width + 2 * borderSize,
-                    height + 2 * borderSize,
-                ];
-            }
+            let dimensions = [
+                x - borderSize,
+                y - borderSize,
+                width + 2 * borderSize,
+                height + 2 * borderSize,
+            ];
 
             if (dimensions) {
                 [x, y, width, height] = dimensions;
@@ -741,13 +606,10 @@ export class ShellWindow {
     }
 
     private window_raised() {
-        this.restack(RESTACK_STATE.RAISED);
         this.ext.show_border_on_focused();
     }
 
-    private workspace_changed() {
-        this.restack(RESTACK_STATE.WORKSPACE_CHANGED);
-    }
+    private workspace_changed() {}
 }
 
 /// Activates a window, and moves the mouse point.
@@ -824,10 +686,6 @@ function place_pointer_on(ext: Ext, win: Meta.Window) {
         case focus.FocusPosition.BottomRight:
             x += rect.width - 16;
             y += rect.height - 16;
-            break;
-        case focus.FocusPosition.Center:
-            x += rect.width / 2 + 8;
-            y += rect.height / 2 + 8;
             break;
         default:
             x += 8;
