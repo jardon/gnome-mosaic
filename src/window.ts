@@ -687,10 +687,6 @@ function place_pointer_on(ext: Ext, win: Meta.Window) {
             x += rect.width - 16;
             y += rect.height - 16;
             break;
-        case focus.FocusPosition.Center:
-            x += rect.width / 2 + 8;
-            y += rect.height / 2 + 8;
-            break;
         default:
             x += 8;
             y += 8;

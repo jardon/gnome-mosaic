@@ -3,7 +3,6 @@ export enum Side {
     TOP,
     RIGHT,
     BOTTOM,
-    CENTER,
 }
 
 export function xend(rect: Rectangular): number {
@@ -110,14 +109,12 @@ export function nearest_side(
     const left = west(rect),
         top = north(rect),
         right = east(rect),
-        bottom = south(rect),
-        ctr = center(rect);
+        bottom = south(rect);
 
     const left_distance = distance(origin, left),
         top_distance = distance(origin, top),
         right_distance = distance(origin, right),
-        bottom_distance = distance(origin, bottom),
-        center_distance = distance(origin, ctr);
+        bottom_distance = distance(origin, bottom);
 
     let nearest: [number, Side] =
         left_distance < right_distance
@@ -126,7 +123,6 @@ export function nearest_side(
 
     if (top_distance < nearest[0]) nearest = [top_distance, Side.TOP];
     if (bottom_distance < nearest[0]) nearest = [bottom_distance, Side.BOTTOM];
-    if (center_distance < nearest[0]) nearest = [center_distance, Side.CENTER];
 
     return nearest;
 }

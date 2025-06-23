@@ -8,7 +8,6 @@ export enum FocusPosition {
     TopRight = 'Top Right',
     BottomLeft = 'Bottom Left',
     BottomRight = 'Bottom Right',
-    Center = 'Center',
 }
 
 export class FocusSelector {
