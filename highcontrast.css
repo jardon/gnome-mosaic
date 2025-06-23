@@ -38,24 +38,6 @@
     padding-bottom: 6px;
 }
 
-.gnome-mosaic-tab {
-    border: 1px solid #333;
-    color: #000;
-    padding: 0 1em;
-}
-
-.gnome-mosaic-tab-active {
-    background: #fbb86c;
-}
-
-.gnome-mosaic-tab-inactive {
-    background: #9b8e8a;
-}
-
-.gnome-mosaic-tab-urgent {
-    background: #d00;
-}
-
 .gnome-mosaic-entry:indeterminate {
     font-style: italic;
 }
