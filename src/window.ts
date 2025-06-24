@@ -586,7 +586,7 @@ export class ShellWindow {
         const radius_value = settings.active_hint_border_radius();
         if (this.border) {
             this.border.set_style(
-                `border-color: ${color_value}; border-radius: ${radius_value}px;`
+                `border-color: ${color_value}; border-radius: ${radius_value}px; border-width: 6px;`
             );
         }
     }
