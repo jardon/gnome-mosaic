@@ -8,7 +8,7 @@
         </key>
 
         <key type="u" name="active-hint-border-radius">
-            <default>5</default>
+            <default>15</default>
             <range min="0" max="30"/>
             <summary>Border radius for active window hint, in pixels</summary>
         </key>
@@ -19,7 +19,7 @@
         </key>
 
         <key type="u" name="gap-inner">
-            <default>2</default>
+            <default>4</default>
             <summary>Gap between tiled windows, in pixels</summary>
         </key>
 
