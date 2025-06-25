@@ -4,57 +4,11 @@
   Mosaic
 </h1>
 
-Mosaic is a keyboard-driven layer for GNOME Shell which allows for quick and sensible navigation and management of windows. The core feature of Mosaic is the addition of advanced tiling window management — a feature that has been highly sought within our community. For many — ourselves included — i3wm has become the leading competitor to the GNOME desktop.
+Originally forked from [pop-shell](https://github.com/pop-os/shell), Mosaic is a keyboard-driven layer for GNOME Shell that was which allows for quick and sensible navigation and management of windows. It is an opinionated GNOME extension that aims for simple and intuitive window management as well as minimal configuration and sane defaults.
 
-Tiling window management in GNOME is virtually nonexistent, which makes the desktop awkward to interact with when your needs exceed that of two windows at a given time. Luckily, GNOME Shell is an extensible desktop with the foundations that make it possible to implement a tiling window manager on top of the desktop.
-
-Therefore, we see an opportunity here to advance the usability of the GNOME desktop to better accommodate the needs of our community with Mosaic. Advanced tiling window management is a must for the desktop, so we've merged i3-like tiling window management with the GNOME desktop for the best of both worlds.
+With pop-shell as a starting point, this project is intended to implement mosaic-style window management as defined in GNOME's [Rethinking Window Management blog post](https://blogs.gnome.org/tbernard/2023/07/26/rethinking-window-management/). These changes are not yet implemented, but are being actively developed.
 
 [![](./screenshot.png)](https://raw.githubusercontent.com/jardon/gnome-mosaic/main/screenshot.png)
-
----
-
-## Table of Contents
-
-- [The Problem](#the-problem): Why we need this in GNOME
-- [Installation](#installation): For those wanting to install this on their distribution
-- The Solution:
-    - [Shared Features](#shared-features): Behaviors shared between stacking and auto-tiling modes
-    - [Floating Mode](#floating-mode): Behaviors specific to the floating mode
-    - [Tiling Mode](#tiling-mode): Behaviors specific to the auto-tiling mode
-- [Developers](#developers): Guide for getting started with development
-
----
-
-## The Problem
-
-So, why is this a problem for us, and why do so many of our users switch to i3wm?
-
-### Displays are large, and windows are many
-
-GNOME currently only supports half-tiling, which tiles one window to one side of the screen, and another window to the other side of the screen. If you have more than two windows, it is expected to place them on separate workspaces, monitors, or to alternate between windows with `Alt` + `Tab`.
-
-This tends to work fine if you only have a small handful of applications. If you need more than two windows at a time on a display, your only option is to manually drag windows into position, and resize them to fit alongside each other — a very time-consuming process that could easily be automated and streamlined.
-
-### Displays are large. Very, **very** large
-
-Suppose you are a lucky — or perhaps unlucky — owner of an ultra-wide display. A maximized window will have much of its preferences and controls dispersed across the far left and far right corners. The application may place a panel with buttons on the far left, while other buttons get shifted to either the distant center or far right.
-
-Half-tiling in this scenario means that each window will be as large as an entire 2560x1440 or 4K display. In either scenario, at such extreme sizes, the mouse becomes completely useless — and applications become unbearable to use — in practice.
-
-### Fighting the window manager is futile
-
-As you struggle with fighting the window manager, it quickly becomes clear that any attempt to manage windows in a traditional stacking manner — where you need to manually move windows into place, and then manually resize them — is futile. Humans are nowhere near as precise or as quick as algorithms at aligning windows alongside each other on a display.
-
-### Why not switch to i3wm?
-
-The GNOME desktop comes with many useful desktop integration features, which are lost when switching to an i3wm session. Although possible to connect various GNOME session services to an i3wm session, much of the GNOME desktop experience is still lost in the process. The application overview, the GNOME panel, and GNOME extensions.
-
-Even worse, many users are completely unfamiliar with tiling window managers, and may never feel comfortable switching "cold turkey" to one. By offering tiling window management as a feature that can be opted into, we can empower the user to ease into gaining greater control over their desktop, so that the idea of tiling window management suddenly becomes accessible.
-
-There are additionally those who do want the traditional stacking window management experience, but they also want to be able to opt into advanced tiling window management, too. So it should be possible to opt into tiling window management as necessary. Other operating systems have successfully combined tiling window management features with the traditional stacking window management experience, and we feel that we can do this with GNOME as well.
-
----
 
 ## Installation
 
@@ -132,8 +86,6 @@ Gaps improve the aesthetics of tiled windows and make it easier to grab the edge
 
 Windows with server-side decorations may have their title bars completely hidden, resulting in additional screen real estate for your applications, and a visually cleaner environment. This feature can be toggled in the extension's popup menu. Windows can be moved with the mouse by holding `Super` when clicking and dragging a window to another location, or using the keyboard shortcuts native to gnome-mosaic. Windows may be closed by pressing `Super` + `Q`, and maximized with `Super` + `M`.
 
----
-
 ## Floating Mode
 
 This is the default mode of Mosaic, which combines traditional stacking window management, with optional tiling window management features.
@@ -145,8 +97,6 @@ In this mode, displays are split into a grid of columns and rows. When entering 
 ### Snap-to-Grid
 
 An optional feature to improve your tiling experience is the ability to snap windows to the grid when using your mouse to move and resize them. This provides the same precision as entering window management mode to position a window with your keyboard, but with the convenience and familiarity of a mouse. This feature can be enabled through the extension's popup menu.
-
----
 
 ## Tiling Mode
 
