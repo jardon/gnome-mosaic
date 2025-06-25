@@ -16,6 +16,7 @@ import Shell from 'gi://Shell';
 import St from 'gi://St';
 import GLib from 'gi://GLib';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 
 const {OnceCell} = once_cell;
 
@@ -29,6 +30,8 @@ const WM_TITLE_BLACKLIST: Array<string> = [
     'Nightly', // Firefox Nightly
     'Tor Browser',
 ];
+
+const [major] = Config.PACKAGE_VERSION.split('.').map((s: string) => Number(s));
 
 interface X11Info {
     normal_hints: once_cell.OnceCell<lib.SizeHint | null>;
@@ -548,7 +551,7 @@ export class ShellWindow {
         const radius_value = settings.active_hint_border_radius();
         if (this.border) {
             this.border.set_style(
-                `border-radius: ${radius_value}px; border-width: 6px;`
+                `border-radius: ${radius_value}px; border-width: 6px; border-color: ${major > 46 ? "-st-accent-color" : "#2eff00"}`
             );
         }
     }
