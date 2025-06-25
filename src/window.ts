@@ -551,7 +551,7 @@ export class ShellWindow {
         const radius_value = settings.active_hint_border_radius();
         if (this.border) {
             this.border.set_style(
-                `border-radius: ${radius_value}px; border-width: 6px; border-color: ${major > 46 ? "-st-accent-color" : "#2eff00"}`
+                `border-radius: ${radius_value}px; border-width: 6px; border-color: ${major > 46 ? '-st-accent-color' : settings.gnome_legacy_accent_color()}`
             );
         }
     }

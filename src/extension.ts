@@ -106,7 +106,6 @@ export class Ext extends Ecs.System<ExtEvent> {
 
     /** An overlay which shows a preview of where a window will be moved */
     overlay: St.Widget = new St.BoxLayout({
-        style_class: 'gnome-mosaic-overlay',
         visible: false,
         opacity: 85,
     });
@@ -300,6 +299,11 @@ export class Ext extends Ecs.System<ExtEvent> {
             this.windows.get(win)?.meta.delete(global.get_current_time());
             this.window_search.close();
         };
+
+        const [major] = GNOME_VERSION.split('.').map((s: string) => Number(s));
+        this.overlay.set_style(
+            `background-color: ${major > 46 ? '-st-accent-color' : this.settings.gnome_legacy_accent_color()}`
+        );
     }
 
     // System interface
