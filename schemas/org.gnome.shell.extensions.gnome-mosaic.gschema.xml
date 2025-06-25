@@ -13,6 +13,11 @@
             <summary>Border radius for active window hint, in pixels</summary>
         </key>
 
+        <key type="s" name="gnome-legacy-accent-color">
+            <default>'#1c71d8'</default>
+            <summary>Color to use for accents on pre-Gnome 47</summary>
+        </key>
+
         <key type="b" name="fullscreen-launcher">
             <default>false</default>
             <summary>Allow showing launcher above fullscreen windows</summary>
@@ -257,10 +262,7 @@
             <summary>Move window to the rightward monitor</summary>
         </key>
 
-        <key type="s" name="hint-color-rgba">
-            <default>'rgba(251, 184, 108, 1)'</default>
-            <summary>The current active-hint-color in RGBA</summary>
-        </key>
+
         <key type="u" name="log-level">
             <default>0</default>
             <summary>

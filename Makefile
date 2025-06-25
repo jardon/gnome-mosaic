@@ -17,7 +17,7 @@ SCRIPTS_BASE = $(DESTDIR)/usr/lib/gnome-mosaic/scripts
 endif
 INSTALLNAME = $(UUID)
 
-PROJECTS = color_dialog floating_exceptions
+PROJECTS = floating_exceptions
 
 $(info UUID is "$(UUID)")
 

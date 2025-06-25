@@ -11,12 +11,12 @@ import type {Rectangle} from './rectangle.js';
 import * as scheduler from './scheduler.js';
 import * as focus from './focus.js';
 
-import Gdk from 'gi://Gdk';
 import Meta from 'gi://Meta';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
 import GLib from 'gi://GLib';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 
 const {OnceCell} = once_cell;
 
@@ -30,6 +30,8 @@ const WM_TITLE_BLACKLIST: Array<string> = [
     'Nightly', // Firefox Nightly
     'Tor Browser',
 ];
+
+const [major] = Config.PACKAGE_VERSION.split('.').map((s: string) => Number(s));
 
 interface X11Info {
     normal_hints: once_cell.OnceCell<lib.SizeHint | null>;
@@ -147,12 +149,7 @@ export class ShellWindow {
         if (!this.border) return;
 
         let settings = this.ext.settings;
-        let change_id = settings.ext.connect('changed', (_, key) => {
-            if (this.border) {
-                if (key === 'hint-color-rgba') {
-                    this.update_hint_colors();
-                }
-            }
+        let change_id = settings.ext.connect('changed', () => {
             return false;
         });
 
@@ -162,37 +159,6 @@ export class ShellWindow {
         this.border.connect('style-changed', () => {
             this.on_style_changed();
         });
-
-        this.update_hint_colors();
-    }
-
-    /**
-     * Adjust the colors for:
-     * - border hint
-     * - overlay
-     */
-    private update_hint_colors() {
-        let settings = this.ext.settings;
-        const color_value = settings.hint_color_rgba();
-
-        if (this.ext.overlay) {
-            const gdk = new Gdk.RGBA();
-            // TODO Probably move overlay color/opacity to prefs.js in future,
-            // For now mimic the hint color with lower opacity
-            const overlay_alpha = 0.3;
-            const orig_overlay = 'rgba(53, 132, 228, 0.3)';
-            gdk.parse(color_value);
-
-            if (utils.is_dark(gdk.to_string())) {
-                // too dark, use the blue overlay
-                gdk.parse(orig_overlay);
-            }
-
-            gdk.alpha = overlay_alpha;
-            this.ext.overlay.set_style(`background: ${gdk.to_string()}`);
-        }
-
-        this.update_border_style();
     }
 
     cmdline(): string | null {
@@ -582,11 +548,10 @@ export class ShellWindow {
 
     update_border_style() {
         const {settings} = this.ext;
-        const color_value = settings.hint_color_rgba();
         const radius_value = settings.active_hint_border_radius();
         if (this.border) {
             this.border.set_style(
-                `border-color: ${color_value}; border-radius: ${radius_value}px; border-width: 6px;`
+                `border-radius: ${radius_value}px; border-width: 6px; border-color: ${major > 46 ? '-st-accent-color' : settings.gnome_legacy_accent_color()}`
             );
         }
     }

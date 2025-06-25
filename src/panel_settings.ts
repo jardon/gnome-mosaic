@@ -107,9 +107,6 @@ export class Indicator {
         bm.addMenuItem(this.toggle_active);
         bm.addMenuItem(this.border_radius);
 
-        // CSS Selector
-        bm.addMenuItem(color_selector(ext, bm));
-
         bm.addMenuItem(this.entry_gaps);
     }
 
@@ -367,49 +364,4 @@ function tiled(ext: Ext): any {
         }
     );
     return t;
-}
-
-function color_selector(ext: Ext, menu: any) {
-    let color_selector_item = new PopupMenuItem('Active Hint Color');
-    let color_button = new St.Button();
-    let settings = ext.settings;
-    let selected_color = settings.hint_color_rgba();
-
-    // TODO, find a way to expand the button text, :)
-    color_button.label = '           '; // blank for now
-    color_button.set_style(
-        `background-color: ${selected_color}; border: 2px solid lightgray; border-radius: 2px`
-    );
-
-    settings.ext.connect('changed', (_, key) => {
-        if (key === 'hint-color-rgba') {
-            let color_value = settings.hint_color_rgba();
-            color_button.set_style(
-                `background-color: ${color_value}; border: 2px solid lightgray; border-radius: 2px`
-            );
-        }
-    });
-
-    color_button.set_x_align(Clutter.ActorAlign.END);
-    color_button.set_x_expand(false);
-
-    color_selector_item.label.get_clutter_text().set_x_expand(true);
-    color_selector_item.label.set_y_align(Clutter.ActorAlign.CENTER);
-
-    color_selector_item.add_child(color_button);
-    color_button.connect('button-press-event', () => {
-        let path = get_current_path() + '/color_dialog/main.js';
-        let resp = GLib.spawn_command_line_async(`gjs --module ${path}`);
-        if (!resp) {
-            return null;
-        }
-
-        // clean up and focus on the color dialog
-        GLib.timeout_add(GLib.PRIORITY_LOW, 300, () => {
-            menu.close();
-            return false;
-        });
-    });
-
-    return color_selector_item;
 }
