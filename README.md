@@ -4,9 +4,9 @@
   Mosaic
 </h1>
 
-Originally forked from [pop-shell](https://github.com/pop-os/shell), Mosaic is a keyboard-driven layer for GNOME Shell that was which allows for quick and sensible navigation and management of windows.  It is an opinionated GNOME extension that aims for simple and intuitive window management as well as minimal configuration and sane defaults.
+Originally forked from [pop-shell](https://github.com/pop-os/shell), Mosaic is a keyboard-driven layer for GNOME Shell that was which allows for quick and sensible navigation and management of windows. It is an opinionated GNOME extension that aims for simple and intuitive window management as well as minimal configuration and sane defaults.
 
-With pop-shell as a starting point, this project is intended to implement mosaic-style window management as defined in GNOME's [Rethinking Window Management blog post](https://blogs.gnome.org/tbernard/2023/07/26/rethinking-window-management/).  These changes are not yet implemented, but are being actively developed. 
+With pop-shell as a starting point, this project is intended to implement mosaic-style window management as defined in GNOME's [Rethinking Window Management blog post](https://blogs.gnome.org/tbernard/2023/07/26/rethinking-window-management/). These changes are not yet implemented, but are being actively developed.
 
 [![](./screenshot.png)](https://raw.githubusercontent.com/jardon/gnome-mosaic/main/screenshot.png)
 
