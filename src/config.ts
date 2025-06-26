@@ -2,6 +2,7 @@ import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 
 const CONF_DIR: string = GLib.get_user_config_dir() + '/gnome-mosaic';
+export const WM_CLASS_ID = 'gnome-mosaic-exceptions';
 export var CONF_FILE: string = CONF_DIR + '/config.json';
 
 export interface FloatRule {
@@ -29,7 +30,7 @@ export const DEFAULT_FLOAT_RULES: Array<FloatRule> = [
     {class: 'Conky'},
     {title: 'Discord Updater'},
     {class: 'Enpass', title: 'Enpass Assistant'},
-    {class: 'Floating Window Exceptions'},
+    {class: WM_CLASS_ID},
     {class: 'Gjs', title: 'Settings'},
     {class: 'Gnome-initial-setup'},
     {class: 'Gnome-terminal', title: 'Preferences – General'},
