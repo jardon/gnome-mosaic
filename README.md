@@ -18,7 +18,8 @@ Proper functionality of the shell requires modifying GNOME's default keyboard sh
 
 If you want to uninstall the extension, you may invoke `make uninstall`, and then open the "Keyboard Shortcuts" panel in GNOME Settings to select the "Reset All.." button in the header bar.
 
-> Note that if you are packaging for your Linux distribution, many features in Mosaic will not work out of the box because they require changes to GNOME's default keyboard shortcuts. A local install is necessary if you aren't packaging your GNOME session with these default keyboard shortcuts unset or changed.
+> [!Important]
+> If you are packaging for your Linux distribution, many features in Mosaic will not work out of the box because they require changes to GNOME's default keyboard shortcuts. A local install is necessary if you aren't packaging your GNOME session with these default keyboard shortcuts unset or changed.
 
 ## Shared Features
 
@@ -46,27 +47,20 @@ These are key to many of the shortcuts utilized by tiling window managers. This 
 
 ### Window Management Mode
 
-> This mode is activated with `Super` + `Return`.
+This mode is activated with `Super` + `Return`.
 
 Window management mode activates additional keyboard control over the size and location of the currently-focused window. The behavior of this mode changes slightly based on whether you are in auto-tile mode, or in the default stacking mode. In the default mode, an overlay is displayed snapped to a grid, which represents a possible future location and size of your focused window. This behavior changes slightly in auto-tiling mode, where resizes are performed immediately and overlays are only shown when swapping windows.
 
 Activating this enables the following behaviors:
 
-- `<Direction>`
-    - In default mode, this will move the displayed overlay around based on a grid
-    - In auto-tile mode, this will resize the window
-- `Shift` + `<Direction>`
-    - In default mode, this will resize the overlay
-    - In auto-tile mode, this will do nothing
-- `Ctrl` + `<Direction>`
-    - Selects a window in the given direction of the overlay
-    - When `Return` is pressed, window positions will be swapped
-- `Shift` + `Ctrl` + `<Direction>`
-    - In auto-tile mode, this resizes in the opposite direction
-- `O`: Toggles between horizontal and vertical tiling in auto-tile mode
-- `~`: Toggles between floating and tiling in auto-tile mode
-- `Return`: Applies the changes that have been requested
-- `Esc`: Cancels any changes that were requested
+- `<Direction>`: In default mode, this will move the displayed overlay around based on a grid. In auto-tile mode, this will resize the window.
+- `Shift` + `<Direction>`: In default mode, this will resize the overlay. In auto-tile mode, this will do nothing.
+- `Ctrl` + `<Direction>`: Selects a window in the given direction of the overlay. When `Return` is pressed, window positions will be swapped.
+- `Shift` + `Ctrl` + `<Direction>`: In auto-tile mode, this resizes in the opposite direction.
+- `O`: Toggles between horizontal and vertical tiling in auto-tile mode.
+- `~`: Toggles between floating and tiling in auto-tile mode.
+- `Return`: Applies the changes that have been requested.
+- `Esc`: Cancels any changes that were requested.
 
 ### Window Focus Switching
 
@@ -104,20 +98,17 @@ Disabled by default, this mode manages windows using a tree-based tiling window 
 
 ### Keyboard Shortcuts
 
-- `Super` + `O`
-    - Toggles the orientation of a fork's tiling orientation
-- `Super` + `G`
-    - Toggles a window between floating and tiling.
-    - See [#customizing the window float list](#customizing-the-floating-window-list)
+- `Super` + `O`: Toggles the orientation of a fork's tiling orientation
+- `Super` + `G`: Toggles a window between floating and tiling.
 
 ### Customizing the Floating Window List
 
 There is file `$XDG_CONFIG_HOME/gnome-mosaic/config.json` where you can add the following structure:
 
-```
+```json
 {
-  class: "<WM_CLASS String from xprop>",
-  title: "<Optional Window Title>"
+    "class": "<WM_CLASS String from xprop>",
+    "title": "<Optional Window Title>"
 }
 ```
 
