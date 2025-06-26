@@ -15,8 +15,6 @@ imports.searchPath.push(SCRIPT_DIR);
 
 import * as config from './config.js';
 
-const WM_CLASS_ID = 'gnome-mosaic-exceptions';
-
 interface SelectWindow {
     tag: 0;
 }
@@ -256,7 +254,7 @@ class App {
 
         Gtk.Window.set_default_icon_name('application-default');
 
-        win.set_wmclass(WM_CLASS_ID, TITLE);
+        win.set_wmclass(config.WM_CLASS_ID, TITLE);
 
         win.set_default_size(550, 700);
         win.get_content_area().add(this.stack);
@@ -358,7 +356,7 @@ function println(message: string) {
 
 /** Initialize GTK and start the application */
 function main() {
-    GLib.set_prgname(WM_CLASS_ID);
+    GLib.set_prgname(config.WM_CLASS_ID);
     GLib.set_application_name('GNOME Mosaic Floating Window Exceptions');
 
     Gtk.init(null);
