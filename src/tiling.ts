@@ -8,15 +8,16 @@ import * as exec from './executor.js';
 import * as movement from './movement.js';
 import * as utils from './utils.js';
 
-// import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 import type {Entity} from './ecs.js';
 import type {Rectangle} from './rectangle.js';
 import type {Ext} from './extension.js';
 import {Fork} from './fork.js';
-const Gio = imports.gi.Gio;
+import Gio from 'gi://Gio';
 
-const {Clutter, Meta, St} = imports.gi;
-const Main = imports.ui.main;
+import Clutter from 'gi://Clutter';
+import Meta from 'gi://Meta';
+import St from 'gi://St';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 const {layoutManager} = Main;
 const {ShellWindow} = window;
 
@@ -92,31 +93,31 @@ export class Tiler {
     constructor(ext: Ext) {
         this.resize_hint.visible = false;
 
-        const left_box = new St.BoxLayout({
+        const left_box: St.Widget = new St.BoxLayout({
             x_align: Clutter.ActorAlign.START,
             x_expand: true,
         });
 
-        left_box.add(this.resize_left);
+        left_box.add_child(this.resize_left);
 
-        const right_box = new St.BoxLayout({
+        const right_box: St.Widget = new St.BoxLayout({
             x_align: Clutter.ActorAlign.END,
         });
 
-        right_box.add(this.resize_right);
+        right_box.add_child(this.resize_right);
 
-        const middle_arrows = new St.BoxLayout({
+        const middle_arrows: St.Widget = new St.BoxLayout({
             vertical: false,
             x_expand: true,
             y_expand: true,
         });
 
-        middle_arrows.add(left_box);
-        middle_arrows.add(right_box);
+        middle_arrows.add_child(left_box);
+        middle_arrows.add_child(right_box);
 
-        this.resize_hint.add(this.resize_up);
-        this.resize_hint.add(middle_arrows);
-        this.resize_hint.add(this.resize_down);
+        this.resize_hint.add_child(this.resize_up);
+        this.resize_hint.add_child(middle_arrows);
+        this.resize_hint.add_child(this.resize_down);
         this.resize_hint.width = 128;
         this.resize_hint.height = 128;
 
