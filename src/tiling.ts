@@ -279,20 +279,20 @@ export class Tiler {
                 const window = ext.windows.get(this.window);
                 if (window) {
                     const area = window.rect();
-                    this.resize_hint.visible = true;
-                    this.resize_hint.x = area.x;
-                    this.resize_hint.y = area.y;
-                    this.resize_hint.width = 64 + area.width;
-                    this.resize_hint.height = 64 + area.height;
-
                     const work_area = ext.monitor_work_area(
                         window.meta.get_monitor()
                     );
+                    this.resize_hint.visible = true;
+                    this.resize_hint.x = area.x;
+                    this.resize_hint.y = area.y;
+                    this.resize_hint.width = area.width;
+                    this.resize_hint.height = area.height;
+
                     let {x, y, width, height} = this.resize_hint;
                     const wy = work_area.y + ext.gap_outer;
                     const wx = work_area.x + ext.gap_outer;
-                    const wh = work_area.height - ext.gap_outer * 2;
-                    const ww = work_area.width - ext.gap_outer * 2;
+                    const wh = work_area.height - (ext.gap_outer * 2);
+                    const ww = work_area.width - (ext.gap_outer * 2);
 
                     this.resize_up.visible = y > wy;
                     this.resize_left.visible = x > wx;
