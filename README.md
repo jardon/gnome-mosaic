@@ -29,21 +29,25 @@ Features that are shared between stacking and auto-tiling modes.
 
 These are key to many of the shortcuts utilized by tiling window managers. This document will henceforth refer to these keys as `<Direction>`, which default to the following keys:
 
-- `Left` or `h`
-- `Down` or `j`
-- `Up` or `k`
-- `Right` or `l`
+| Direction | Keys                |
+| --------- | ------------------- |
+| Left      | `Left Arrow` / `h`  |
+| Down      | `Down Arrow` / `j`  |
+| Up        | `Up Arrow` / `k`    |
+| Right     | `Right Arrow` / `l` |
 
 ### Overridden GNOME Shortcuts
 
-- `Super` + `q`: Close window
-- `Super` + `m`: Maximize the focused window
-- `Super` + `,`: Minimize the focused window
-- `Super` + `Esc`: Lock screen
-- `Super` + `f`: Files
-- `Super` + `e`: Email
-- `Super` + `b`: Web Browser
-- `Super` + `t`: Terminal
+| Shortcut        | Action                      |
+| --------------- | --------------------------- |
+| `Super` + `q`   | Close window                |
+| `Super` + `m`   | Maximize the focused window |
+| `Super` + `,`   | inimize the focused window  |
+| `Super` + `Esc` | Lock screen                 |
+| `Super` + `f`   | Files                       |
+| `Super` + `e`   | Email                       |
+| `Super` + `b`   | Web Browser                 |
+| `Super` + `t`   | Terminal                    |
 
 ### Window Management Mode
 
@@ -53,14 +57,16 @@ Window management mode activates additional keyboard control over the size and l
 
 Activating this enables the following behaviors:
 
-- `<Direction>`: In default mode, this will move the displayed overlay around based on a grid. In auto-tile mode, this will resize the window.
-- `Shift` + `<Direction>`: In default mode, this will resize the overlay. In auto-tile mode, this will do nothing.
-- `Ctrl` + `<Direction>`: Selects a window in the given direction of the overlay. When `Return` is pressed, window positions will be swapped.
-- `Shift` + `Ctrl` + `<Direction>`: In auto-tile mode, this resizes in the opposite direction.
-- `O`: Toggles between horizontal and vertical tiling in auto-tile mode.
-- `~`: Toggles between floating and tiling in auto-tile mode.
-- `Return`: Applies the changes that have been requested.
-- `Esc`: Cancels any changes that were requested.
+| Shortcut                         | Action                                                                                                                            |
+| -------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `<Direction>`                    | In default mode, this will move the displayed overlay around based on a grid. <br>In auto-tile mode, this will resize the window. |
+| `Shift` + `<Direction>`          | In default mode, this will resize the overlay. <br>In auto-tile mode, this will do nothing.                                       |
+| `Ctrl` + `<Direction>`           | Selects a window in the given direction of the overlay. When `Return` is pressed, window positions will be swapped.               |
+| `Shift` + `Ctrl` + `<Direction>` | In auto-tile mode, this resizes in the opposite direction.                                                                        |
+| `O`                              | Toggles between horizontal and vertical tiling in auto-tile mode.                                                                 |
+| `~`                              | Toggles between floating and tiling in auto-tile mode.                                                                            |
+| `Return`                         | Applies the changes that have been requested.                                                                                     |
+| `Esc`                            | Cancels any changes that were requested.                                                                                          |
 
 ### Window Focus Switching
 
@@ -98,8 +104,10 @@ Disabled by default, this mode manages windows using a tree-based tiling window 
 
 ### Keyboard Shortcuts
 
-- `Super` + `O`: Toggles the orientation of a fork's tiling orientation
-- `Super` + `G`: Toggles a window between floating and tiling.
+| Shortcut      | Action                                                 |
+| ------------- | ------------------------------------------------------ |
+| `Super` + `O` | Toggles the orientation of a fork's tiling orientation |
+| `Super` + `G` | Toggles a window between floating and tiling.          |
 
 ### Customizing the Floating Window List
 
