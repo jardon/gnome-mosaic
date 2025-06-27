@@ -37,8 +37,22 @@
     font-style: italic;
 }
 
-.gnome-mosaic-resize-hint {
-    background: #ededed;
+.gnome-mosaic-resize-hint-top {
     padding: 12px;
-    border-radius: 32px;
+    border-radius: 0 0 32px 32px;
+}
+
+.gnome-mosaic-resize-hint-right {
+    padding: 12px;
+    border-radius: 32px 0 0 32px;
+}
+
+.gnome-mosaic-resize-hint-bottom {
+    padding: 12px;
+    border-radius: 32px 32px 0 0;
+}
+
+.gnome-mosaic-resize-hint-left {
+    padding: 12px;
+    border-radius: 0 32px 32px 0;
 }

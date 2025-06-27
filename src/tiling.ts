@@ -13,7 +13,6 @@ import type {Entity} from './ecs.js';
 import type {Rectangle} from './rectangle.js';
 import type {Ext} from './extension.js';
 import {Fork} from './fork.js';
-import Gio from 'gi://Gio';
 
 import Clutter from 'gi://Clutter';
 import Meta from 'gi://Meta';
@@ -21,10 +20,6 @@ import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 const {layoutManager} = Main;
 const {ShellWindow} = window;
-
-const interfaceSettings = new Gio.Settings({
-    schema: 'org.gnome.desktop.interface',
-});
 
 export enum Direction {
     Left,
@@ -54,7 +49,7 @@ export class Tiler {
         icon_name: ICON_UP_ARROW,
         icon_size: 32,
         x_align: Clutter.ActorAlign.CENTER,
-        style_class: 'gnome-mosaic-resize-hint',
+        style_class: 'gnome-mosaic-resize-hint-top',
         visible: false,
     });
 
@@ -62,7 +57,7 @@ export class Tiler {
         icon_name: ICON_LEFT_ARROW,
         icon_size: 32,
         y_align: Clutter.ActorAlign.CENTER,
-        style_class: 'gnome-mosaic-resize-hint',
+        style_class: 'gnome-mosaic-resize-hint-left',
         visible: false,
     });
 
@@ -70,7 +65,7 @@ export class Tiler {
         icon_name: ICON_RIGHT_ARROW,
         icon_size: 32,
         y_align: Clutter.ActorAlign.CENTER,
-        style_class: 'gnome-mosaic-resize-hint',
+        style_class: 'gnome-mosaic-resize-hint-right',
         visible: false,
     });
 
@@ -78,7 +73,7 @@ export class Tiler {
         icon_name: ICON_DOWN_ARROW,
         icon_size: 32,
         x_align: Clutter.ActorAlign.CENTER,
-        style_class: 'gnome-mosaic-resize-hint',
+        style_class: 'gnome-mosaic-resize-hint-bottom',
         visible: false,
     });
 
@@ -224,12 +219,22 @@ export class Tiler {
             const [major] = Config.PACKAGE_VERSION.split('.').map((s: string) =>
                 Number(s)
             );
-            const color_value =
-                major > 46
-                    ? interfaceSettings.get_string('accent-color')
-                    : ext.settings.gnome_legacy_accent_color();
-            const color_rgba = utils.hex_to_rgba(color_value);
-            const css = `background: ${color_value}; color: ${utils.is_dark(color_rgba) ? 'white' : 'black'}`;
+            
+            var background: string;
+            var color: string;
+
+            if (major > 46) {
+                background = '-st-accent-color';
+                color = '-st-fg-accent-color';
+            } else {
+                background = ext.settings.gnome_legacy_accent_color();
+                const background_rgba = utils.hex_to_rgba(background);
+                color = utils.is_dark(background_rgba) ? 'white' : 'black'
+            }
+            
+            
+            const css = `background: ${background}; color: ${color}`;
+
             this.resize_up.set_style(css);
             this.resize_down.set_style(css);
             this.resize_left.set_style(css);
@@ -275,8 +280,8 @@ export class Tiler {
                 if (window) {
                     const area = window.rect();
                     this.resize_hint.visible = true;
-                    this.resize_hint.x = area.x - 32;
-                    this.resize_hint.y = area.y - 32;
+                    this.resize_hint.x = area.x;
+                    this.resize_hint.y = area.y;
                     this.resize_hint.width = 64 + area.width;
                     this.resize_hint.height = 64 + area.height;
 
@@ -289,10 +294,10 @@ export class Tiler {
                     const wh = work_area.height - ext.gap_outer * 2;
                     const ww = work_area.width - ext.gap_outer * 2;
 
-                    this.resize_up.visible = y >= wy;
-                    this.resize_left.visible = x >= wx;
-                    this.resize_down.visible = y + height <= wy + wh;
-                    this.resize_right.visible = x + width <= wx + ww;
+                    this.resize_up.visible = y > wy;
+                    this.resize_left.visible = x > wx;
+                    this.resize_down.visible = y + height < wy + wh;
+                    this.resize_right.visible = x + width < wx + ww;
                 }
             }
         });
