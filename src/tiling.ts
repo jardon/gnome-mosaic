@@ -219,7 +219,7 @@ export class Tiler {
             const [major] = Config.PACKAGE_VERSION.split('.').map((s: string) =>
                 Number(s)
             );
-            
+
             var background: string;
             var color: string;
 
@@ -229,10 +229,9 @@ export class Tiler {
             } else {
                 background = ext.settings.gnome_legacy_accent_color();
                 const background_rgba = utils.hex_to_rgba(background);
-                color = utils.is_dark(background_rgba) ? 'white' : 'black'
+                color = utils.is_dark(background_rgba) ? 'white' : 'black';
             }
-            
-            
+
             const css = `background: ${background}; color: ${color}`;
 
             this.resize_up.set_style(css);
@@ -291,8 +290,8 @@ export class Tiler {
                     let {x, y, width, height} = this.resize_hint;
                     const wy = work_area.y + ext.gap_outer;
                     const wx = work_area.x + ext.gap_outer;
-                    const wh = work_area.height - (ext.gap_outer * 2);
-                    const ww = work_area.width - (ext.gap_outer * 2);
+                    const wh = work_area.height - ext.gap_outer * 2;
+                    const ww = work_area.width - ext.gap_outer * 2;
 
                     this.resize_up.visible = y > wy;
                     this.resize_left.visible = x > wx;
