@@ -96,7 +96,7 @@ export class Tiler {
             y_expand: true,
         });
 
-        top_box.add_child(this.resize_up)
+        top_box.add_child(this.resize_up);
 
         const bottom_box: St.Widget = new St.BoxLayout({
             style: 'padding: 12px;',
@@ -105,7 +105,7 @@ export class Tiler {
         });
 
         bottom_box.add_child(this.resize_down);
-        
+
         const left_box: St.Widget = new St.BoxLayout({
             style: 'padding: 12px;',
             x_align: Clutter.ActorAlign.START,
@@ -130,7 +130,7 @@ export class Tiler {
         middle_arrows.add_child(left_box);
         middle_arrows.add_child(right_box);
 
-        this.resize_hint.add_child(top_box)
+        this.resize_hint.add_child(top_box);
         this.resize_hint.add_child(middle_arrows);
         this.resize_hint.add_child(bottom_box);
         this.resize_hint.width = 128;
@@ -188,22 +188,38 @@ export class Tiler {
                         case Clutter.KEY_Left:
                         case Clutter.KEY_H:
                         case Clutter.KEY_h:
-                            this.resize(ext, Direction.Left, (state && Clutter.ModifierType.SHIFT_MASK));
+                            this.resize(
+                                ext,
+                                Direction.Left,
+                                state && Clutter.ModifierType.SHIFT_MASK
+                            );
                             break;
                         case Clutter.KEY_Right:
                         case Clutter.KEY_L:
                         case Clutter.KEY_l:
-                            this.resize(ext, Direction.Right, (state && Clutter.ModifierType.SHIFT_MASK));
+                            this.resize(
+                                ext,
+                                Direction.Right,
+                                state && Clutter.ModifierType.SHIFT_MASK
+                            );
                             break;
                         case Clutter.KEY_Up:
                         case Clutter.KEY_K:
                         case Clutter.KEY_k:
-                            this.resize(ext, Direction.Up, (state && Clutter.ModifierType.SHIFT_MASK));
+                            this.resize(
+                                ext,
+                                Direction.Up,
+                                state && Clutter.ModifierType.SHIFT_MASK
+                            );
                             break;
                         case Clutter.KEY_Down:
                         case Clutter.KEY_J:
                         case Clutter.KEY_j:
-                            this.resize(ext, Direction.Down, (state && Clutter.ModifierType.SHIFT_MASK));
+                            this.resize(
+                                ext,
+                                Direction.Down,
+                                state && Clutter.ModifierType.SHIFT_MASK
+                            );
                             break;
                         default:
                             return Clutter.EVENT_PROPAGATE;
@@ -626,8 +642,10 @@ export class Tiler {
 
                         const is_leftmost = x <= work_area.x;
                         const is_topmost = y <= work_area.y;
-                        const is_rightmost = (x + width + step) >= (work_area.x + work_area.width);
-                        const is_bottommost = (y + height + step) >= (work_area.y + work_area.height);
+                        const is_rightmost =
+                            x + width + step >= work_area.x + work_area.width;
+                        const is_bottommost =
+                            y + height + step >= work_area.y + work_area.height;
 
                         switch (direction) {
                             case Direction.Up:
