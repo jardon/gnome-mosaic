@@ -42,14 +42,14 @@ export class Tiler {
 
     private resize_hint: St.Widget = new St.BoxLayout({
         vertical: true,
-        style: 'background: transparent',
     });
 
     private resize_up: St.Icon = new St.Icon({
         icon_name: ICON_UP_ARROW,
         icon_size: 32,
         x_align: Clutter.ActorAlign.CENTER,
-        style_class: 'gnome-mosaic-resize-hint-top',
+        x_expand: true,
+        style_class: 'gnome-mosaic-resize-hint',
         visible: false,
     });
 
@@ -57,7 +57,7 @@ export class Tiler {
         icon_name: ICON_LEFT_ARROW,
         icon_size: 32,
         y_align: Clutter.ActorAlign.CENTER,
-        style_class: 'gnome-mosaic-resize-hint-left',
+        style_class: 'gnome-mosaic-resize-hint',
         visible: false,
     });
 
@@ -65,7 +65,7 @@ export class Tiler {
         icon_name: ICON_RIGHT_ARROW,
         icon_size: 32,
         y_align: Clutter.ActorAlign.CENTER,
-        style_class: 'gnome-mosaic-resize-hint-right',
+        style_class: 'gnome-mosaic-resize-hint',
         visible: false,
     });
 
@@ -73,7 +73,8 @@ export class Tiler {
         icon_name: ICON_DOWN_ARROW,
         icon_size: 32,
         x_align: Clutter.ActorAlign.CENTER,
-        style_class: 'gnome-mosaic-resize-hint-bottom',
+        x_expand: true,
+        style_class: 'gnome-mosaic-resize-hint',
         visible: false,
     });
 
@@ -89,7 +90,24 @@ export class Tiler {
     constructor(ext: Ext) {
         this.resize_hint.visible = false;
 
+        const top_box: St.Widget = new St.BoxLayout({
+            style: 'padding: 12px;',
+            y_align: Clutter.ActorAlign.START,
+            y_expand: true,
+        });
+
+        top_box.add_child(this.resize_up)
+
+        const bottom_box: St.Widget = new St.BoxLayout({
+            style: 'padding: 12px;',
+            y_align: Clutter.ActorAlign.END,
+            y_expand: true,
+        });
+
+        bottom_box.add_child(this.resize_down);
+        
         const left_box: St.Widget = new St.BoxLayout({
+            style: 'padding: 12px;',
             x_align: Clutter.ActorAlign.START,
             x_expand: true,
         });
@@ -97,6 +115,7 @@ export class Tiler {
         left_box.add_child(this.resize_left);
 
         const right_box: St.Widget = new St.BoxLayout({
+            style: 'padding: 12px;',
             x_align: Clutter.ActorAlign.END,
         });
 
@@ -111,9 +130,9 @@ export class Tiler {
         middle_arrows.add_child(left_box);
         middle_arrows.add_child(right_box);
 
-        this.resize_hint.add_child(this.resize_up);
+        this.resize_hint.add_child(top_box)
         this.resize_hint.add_child(middle_arrows);
-        this.resize_hint.add_child(this.resize_down);
+        this.resize_hint.add_child(bottom_box);
         this.resize_hint.width = 128;
         this.resize_hint.height = 128;
 
@@ -169,22 +188,22 @@ export class Tiler {
                         case Clutter.KEY_Left:
                         case Clutter.KEY_H:
                         case Clutter.KEY_h:
-                            this.resize(ext, Direction.Left, state === 1);
+                            this.resize(ext, Direction.Left, (state && Clutter.ModifierType.SHIFT_MASK));
                             break;
                         case Clutter.KEY_Right:
                         case Clutter.KEY_L:
                         case Clutter.KEY_l:
-                            this.resize(ext, Direction.Right, state === 1);
+                            this.resize(ext, Direction.Right, (state && Clutter.ModifierType.SHIFT_MASK));
                             break;
                         case Clutter.KEY_Up:
                         case Clutter.KEY_K:
                         case Clutter.KEY_k:
-                            this.resize(ext, Direction.Up, state === 1);
+                            this.resize(ext, Direction.Up, (state && Clutter.ModifierType.SHIFT_MASK));
                             break;
                         case Clutter.KEY_Down:
                         case Clutter.KEY_J:
                         case Clutter.KEY_j:
-                            this.resize(ext, Direction.Down, state === 1);
+                            this.resize(ext, Direction.Down, (state && Clutter.ModifierType.SHIFT_MASK));
                             break;
                         default:
                             return Clutter.EVENT_PROPAGATE;
@@ -607,53 +626,50 @@ export class Tiler {
 
                         const is_leftmost = x <= work_area.x;
                         const is_topmost = y <= work_area.y;
+                        const is_rightmost = (x + width + step) >= (work_area.x + work_area.width);
+                        const is_bottommost = (y + height + step) >= (work_area.y + work_area.height);
 
-                        if (inverse && Direction.Down === direction) {
-                            if (y - step < work_area.y) return;
-                            y += step;
-                            height -= step;
-                        } else if (inverse && Direction.Left === direction) {
-                            if (
-                                x + width + step >
-                                work_area.x + work_area.width
-                            )
-                                return;
-                            width -= step;
-                            if (is_leftmost) width += step / 2;
-                        } else if (inverse && Direction.Up === direction) {
-                            if (
-                                y + height + step >
-                                work_area.y + work_area.height
-                            )
-                                return;
-                            height -= step;
-                            if (is_topmost) height += step / 2;
-                        } else if (inverse) {
-                            if (x - step < work_area.x) return;
-                            x += step;
-                            width -= step;
-                        } else if (Direction.Down === direction) {
-                            if (
-                                y + height + step >
-                                work_area.y + work_area.height
-                            )
-                                return;
-                            height += step;
-                        } else if (Direction.Left === direction) {
-                            if (x - step < work_area.x) return;
-                            width += step;
-                            x -= step;
-                        } else if (Direction.Up === direction) {
-                            if (y - step < work_area.y) return;
-                            y -= step;
-                            height += step;
-                        } else {
-                            if (
-                                x + width + step >
-                                work_area.x + work_area.width
-                            )
-                                return;
-                            width += step;
+                        switch (direction) {
+                            case Direction.Up:
+                                if (!inverse) {
+                                    if (is_topmost) return;
+                                    y -= step;
+                                    height += step;
+                                } else {
+                                    if (is_bottommost) return;
+                                    height -= step;
+                                }
+                                break;
+                            case Direction.Down:
+                                if (!inverse) {
+                                    if (is_bottommost) return;
+                                    height += step;
+                                } else {
+                                    if (is_topmost) return;
+                                    y += step;
+                                    height -= step;
+                                }
+                                break;
+                            case Direction.Left:
+                                if (!inverse) {
+                                    if (is_leftmost) return;
+                                    x -= step;
+                                    width += step;
+                                } else {
+                                    if (is_rightmost) return;
+                                    width -= step;
+                                }
+                                break;
+                            case Direction.Right:
+                                if (!inverse) {
+                                    if (is_rightmost) return;
+                                    width += step;
+                                } else {
+                                    if (is_leftmost) return;
+                                    x += step;
+                                    width -= step;
+                                }
+                                break;
                         }
 
                         const after = new Rect.Rectangle([x, y, width, height]);
