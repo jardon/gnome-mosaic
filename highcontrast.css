@@ -36,3 +36,8 @@
 .gnome-mosaic-entry:indeterminate {
     font-style: italic;
 }
+
+.gnome-mosaic-resize-hint {
+    padding: 12px;
+    border-radius: 32px 32px 32px 32px;
+}

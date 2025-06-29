@@ -1,5 +1,3 @@
-// import * as Ecs from './ecs.js';
-import * as GrabOp from './grab_op.js';
 import * as Lib from './lib.js';
 import * as Log from './log.js';
 import * as Rect from './rectangle.js';
@@ -7,14 +5,20 @@ import * as Tags from './tags.js';
 import * as window from './window.js';
 import * as geom from './geom.js';
 import * as exec from './executor.js';
+import * as movement from './movement.js';
+import * as utils from './utils.js';
 
+import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 import type {Entity} from './ecs.js';
 import type {Rectangle} from './rectangle.js';
 import type {Ext} from './extension.js';
-import {AutoTiler} from './auto_tiler.js';
+import {Fork} from './fork.js';
 
+import Clutter from 'gi://Clutter';
 import Meta from 'gi://Meta';
+import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+const {layoutManager} = Main;
 const {ShellWindow} = window;
 
 export enum Direction {
@@ -24,8 +28,55 @@ export enum Direction {
     Down,
 }
 
+const ICON_LEFT_ARROW: string = 'go-previous-symbolic';
+const ICON_RIGHT_ARROW: string = 'go-next-symbolic';
+const ICON_UP_ARROW: string = 'go-up-symbolic';
+const ICON_DOWN_ARROW: string = 'go-down-symbolic';
+
 export class Tiler {
     private keybindings: Object;
+    private resize_bindings: Object;
+    private resize_grab: any = null;
+    private resize_keymon: null | number = null;
+    private resize_keymon_release: null | number = null;
+
+    private resize_hint: St.Widget = new St.BoxLayout({
+        vertical: true,
+    });
+
+    private resize_up: St.Icon = new St.Icon({
+        icon_name: ICON_UP_ARROW,
+        icon_size: 32,
+        x_align: Clutter.ActorAlign.CENTER,
+        x_expand: true,
+        style_class: 'gnome-mosaic-resize-hint',
+        visible: false,
+    });
+
+    private resize_left: St.Icon = new St.Icon({
+        icon_name: ICON_LEFT_ARROW,
+        icon_size: 32,
+        y_align: Clutter.ActorAlign.CENTER,
+        style_class: 'gnome-mosaic-resize-hint',
+        visible: false,
+    });
+
+    private resize_right: St.Icon = new St.Icon({
+        icon_name: ICON_RIGHT_ARROW,
+        icon_size: 32,
+        y_align: Clutter.ActorAlign.CENTER,
+        style_class: 'gnome-mosaic-resize-hint',
+        visible: false,
+    });
+
+    private resize_down: St.Icon = new St.Icon({
+        icon_name: ICON_DOWN_ARROW,
+        icon_size: 32,
+        x_align: Clutter.ActorAlign.CENTER,
+        x_expand: true,
+        style_class: 'gnome-mosaic-resize-hint',
+        visible: false,
+    });
 
     window: Entity | null = null;
 
@@ -37,16 +88,62 @@ export class Tiler {
     queue: exec.ChannelExecutor<() => void> = new exec.ChannelExecutor();
 
     constructor(ext: Ext) {
+        this.resize_hint.visible = false;
+
+        const top_box: St.Widget = new St.BoxLayout({
+            style: 'padding: 12px;',
+            y_align: Clutter.ActorAlign.START,
+            y_expand: true,
+        });
+
+        top_box.add_child(this.resize_up);
+
+        const bottom_box: St.Widget = new St.BoxLayout({
+            style: 'padding: 12px;',
+            y_align: Clutter.ActorAlign.END,
+            y_expand: true,
+        });
+
+        bottom_box.add_child(this.resize_down);
+
+        const left_box: St.Widget = new St.BoxLayout({
+            style: 'padding: 12px;',
+            x_align: Clutter.ActorAlign.START,
+            x_expand: true,
+        });
+
+        left_box.add_child(this.resize_left);
+
+        const right_box: St.Widget = new St.BoxLayout({
+            style: 'padding: 12px;',
+            x_align: Clutter.ActorAlign.END,
+        });
+
+        right_box.add_child(this.resize_right);
+
+        const middle_arrows: St.Widget = new St.BoxLayout({
+            vertical: false,
+            x_expand: true,
+            y_expand: true,
+        });
+
+        middle_arrows.add_child(left_box);
+        middle_arrows.add_child(right_box);
+
+        this.resize_hint.add_child(top_box);
+        this.resize_hint.add_child(middle_arrows);
+        this.resize_hint.add_child(bottom_box);
+        this.resize_hint.width = 128;
+        this.resize_hint.height = 128;
+
+        layoutManager.addChrome(this.resize_hint);
+
         this.keybindings = {
             'management-orientation': () => this.toggle_orientation(ext),
             'tile-move-left': () => this.move_left(ext),
             'tile-move-down': () => this.move_down(ext),
             'tile-move-up': () => this.move_up(ext),
             'tile-move-right': () => this.move_right(ext),
-            'tile-resize-left': () => this.resize(ext, Direction.Left),
-            'tile-resize-down': () => this.resize(ext, Direction.Down),
-            'tile-resize-up': () => this.resize(ext, Direction.Up),
-            'tile-resize-right': () => this.resize(ext, Direction.Right),
             'tile-swap-left': () => this.swap_left(ext),
             'tile-swap-down': () => this.swap_down(ext),
             'tile-swap-up': () => this.swap_up(ext),
@@ -54,6 +151,143 @@ export class Tiler {
             'tile-accept': () => this.accept(ext),
             'tile-reject': () => this.exit(ext),
         };
+
+        this.resize_bindings = {
+            'tile-accept': () => this.exit(ext),
+            'tile-reject': () => this.exit(ext),
+        };
+    }
+
+    resize_mode(ext: Ext) {
+        if (!this.window) {
+            const win = ext.focus_window();
+            if (!win) return;
+
+            if (this.resize_keymon !== null) {
+                global.stage.disconnect(this.resize_keymon);
+            }
+
+            if (this.resize_keymon_release !== null) {
+                global.stage.disconnect(this.resize_keymon_release);
+            }
+
+            this.resize_keymon = global.stage.connect(
+                'key-press-event',
+                (_: any, event: any) => {
+                    const state: number = event.get_state();
+
+                    switch (event.get_key_symbol()) {
+                        case Clutter.KEY_Escape:
+                        case Clutter.KEY_Return:
+                            this.exit(ext);
+                            break;
+                        case Clutter.KEY_Shift_L:
+                        case Clutter.KEY_Shift_R:
+                            this.reverse_arrows();
+                            break;
+                        case Clutter.KEY_Left:
+                        case Clutter.KEY_H:
+                        case Clutter.KEY_h:
+                            this.resize(
+                                ext,
+                                Direction.Left,
+                                state && Clutter.ModifierType.SHIFT_MASK
+                            );
+                            break;
+                        case Clutter.KEY_Right:
+                        case Clutter.KEY_L:
+                        case Clutter.KEY_l:
+                            this.resize(
+                                ext,
+                                Direction.Right,
+                                state && Clutter.ModifierType.SHIFT_MASK
+                            );
+                            break;
+                        case Clutter.KEY_Up:
+                        case Clutter.KEY_K:
+                        case Clutter.KEY_k:
+                            this.resize(
+                                ext,
+                                Direction.Up,
+                                state && Clutter.ModifierType.SHIFT_MASK
+                            );
+                            break;
+                        case Clutter.KEY_Down:
+                        case Clutter.KEY_J:
+                        case Clutter.KEY_j:
+                            this.resize(
+                                ext,
+                                Direction.Down,
+                                state && Clutter.ModifierType.SHIFT_MASK
+                            );
+                            break;
+                        default:
+                            return Clutter.EVENT_PROPAGATE;
+                    }
+                }
+            );
+
+            this.resize_keymon_release = global.stage.connect(
+                'key-release-event',
+                (_: any, event: any) => {
+                    switch (event.get_key_symbol()) {
+                        case Clutter.KEY_Shift_L:
+                        case Clutter.KEY_Shift_R:
+                            this.reset_arrows();
+                        default:
+                            return Clutter.EVENT_PROPAGATE;
+                    }
+                }
+            );
+
+            this.resize_grab = Main.pushModal(global.stage);
+
+            this.window = win.entity;
+
+            ext.keybindings
+                .disable(ext.keybindings.window_focus)
+                .disable(this.keybindings)
+                .enable(this.resize_bindings);
+
+            this.update_resize_position(ext);
+
+            const [major] = Config.PACKAGE_VERSION.split('.').map((s: string) =>
+                Number(s)
+            );
+
+            var background: string;
+            var color: string;
+
+            if (major > 46) {
+                background = '-st-accent-color';
+                color = '-st-fg-accent-color';
+            } else {
+                background = ext.settings.gnome_legacy_accent_color();
+                const background_rgba = utils.hex_to_rgba(background);
+                color = utils.is_dark(background_rgba) ? 'white' : 'black';
+            }
+
+            const css = `background: ${background}; color: ${color}`;
+
+            this.resize_up.set_style(css);
+            this.resize_down.set_style(css);
+            this.resize_left.set_style(css);
+            this.resize_right.set_style(css);
+        }
+    }
+
+    private reverse_arrows() {
+        this.resize_up.icon_name = ICON_DOWN_ARROW;
+        this.resize_down.icon_name = ICON_UP_ARROW;
+        this.resize_left.icon_name = ICON_RIGHT_ARROW;
+        this.resize_right.icon_name = ICON_LEFT_ARROW;
+    }
+
+    private reset_arrows() {
+        this.resize_up.icon_name = ICON_UP_ARROW;
+        this.resize_down.icon_name = ICON_DOWN_ARROW;
+        this.resize_left.icon_name = ICON_LEFT_ARROW;
+        this.resize_right.icon_name = ICON_RIGHT_ARROW;
     }
 
     toggle_orientation(ext: Ext) {
@@ -71,6 +305,36 @@ export class Tiler {
         const rows = Math.floor(monitor.height / ext.row_size);
 
         return monitor_rect(monitor, columns, rows);
+    }
+
+    update_resize_position(ext: Ext) {
+        ext.register_fn(() => {
+            if (this.window) {
+                const window = ext.windows.get(this.window);
+                if (window) {
+                    const area = window.rect();
+                    const work_area = ext.monitor_work_area(
+                        window.meta.get_monitor()
+                    );
+                    this.resize_hint.visible = true;
+                    this.resize_hint.x = area.x;
+                    this.resize_hint.y = area.y;
+                    this.resize_hint.width = area.width;
+                    this.resize_hint.height = area.height;
+
+                    let {x, y, width, height} = this.resize_hint;
+                    const wy = work_area.y + ext.gap_outer;
+                    const wx = work_area.x + ext.gap_outer;
+                    const wh = work_area.height - ext.gap_outer * 2;
+                    const ww = work_area.width - ext.gap_outer * 2;
+
+                    this.resize_up.visible = y > wy;
+                    this.resize_left.visible = x > wx;
+                    this.resize_down.visible = y + height < wy + wh;
+                    this.resize_right.visible = x + width < wx + ww;
+                }
+            }
+        });
     }
 
     change(
@@ -204,74 +468,6 @@ export class Tiler {
         }
     }
 
-    move_auto_(
-        ext: Ext,
-        mov1: Rectangle,
-        mov2: Rectangle,
-        callback: (m: Rectangle, a: Rectangle, mov: Rectangle) => boolean
-    ) {
-        if (ext.auto_tiler && this.window) {
-            const entity = ext.auto_tiler.attached.get(this.window);
-            if (entity) {
-                const fork = ext.auto_tiler.forest.forks.get(entity);
-                const window = ext.windows.get(this.window);
-
-                if (!fork || !window) return;
-
-                const workspace_id = ext.workspace_id(window);
-
-                const toplevel =
-                    ext.auto_tiler.forest.find_toplevel(workspace_id);
-
-                if (!toplevel) return;
-
-                const topfork = ext.auto_tiler.forest.forks.get(toplevel);
-
-                if (!topfork) return;
-
-                const toparea = topfork.area as Rect.Rectangle;
-
-                const before = window.rect();
-
-                const grab_op = new GrabOp.GrabOp(
-                    this.window as Entity,
-                    before
-                );
-
-                let crect = grab_op.rect.clone();
-
-                let resize = (
-                    mov: Rectangle,
-                    func: (
-                        m: Rectangle,
-                        a: Rectangle,
-                        mov: Rectangle
-                    ) => boolean
-                ) => {
-                    if (func(toparea, crect, mov) || crect.eq(grab_op.rect))
-                        return;
-
-                    (ext.auto_tiler as AutoTiler).forest.resize(
-                        ext,
-                        entity,
-                        fork,
-                        this.window as Entity,
-                        grab_op.operation(crect),
-                        crect
-                    );
-                    grab_op.rect = crect.clone();
-                };
-
-                resize(mov1, callback);
-                resize(mov2, callback);
-
-                ext.auto_tiler.forest.arrange(ext, fork.workspace);
-
-                ext.register_fn(() => ext.set_overlay(window.rect()));
-            }
-        }
-    }
-
     overlay_watch(ext: Ext, window: window.ShellWindow) {
         ext.register_fn(() => {
             if (window) {
@@ -296,46 +492,6 @@ export class Tiler {
                 }
             }
         }
-    }
-
-    resize_auto(ext: Ext, direction: Direction) {
-        let mov1: [number, number, number, number],
-            mov2: [number, number, number, number];
-
-        const hrow = 64;
-        const hcolumn = 64;
-
-        switch (direction) {
-            case Direction.Left:
-                mov1 = [hrow, 0, -hrow, 0];
-                mov2 = [0, 0, -hrow, 0];
-                break;
-            case Direction.Right:
-                mov1 = [0, 0, hrow, 0];
-                mov2 = [-hrow, 0, hrow, 0];
-                break;
-            case Direction.Up:
-                mov1 = [0, hcolumn, 0, -hcolumn];
-                mov2 = [0, 0, 0, -hcolumn];
-                break;
-            default:
-                mov1 = [0, 0, 0, hcolumn];
-                mov2 = [0, -hcolumn, 0, hcolumn];
-        }
-
-        this.move_auto_(
-            ext,
-            new Rect.Rectangle(mov1),
-            new Rect.Rectangle(mov2),
-            (work_area, crect, mov) => {
-                crect.apply(mov);
-                let before = crect.clone();
-                crect.clamp(work_area);
-                const diff = before.diff(crect);
-                crect.apply(new Rect.Rectangle([0, 0, -diff.x, -diff.y]));
-                return false;
-            }
-        );
     }
 
     move_auto(
@@ -462,44 +618,109 @@ export class Tiler {
         );
     }
 
-    resize(ext: Ext, direction: Direction) {
+    resize(ext: Ext, direction: Direction, inverse: boolean) {
         if (!this.window) return;
-        this.resizing_window = true;
 
-        if (ext.auto_tiler && !ext.contains_tag(this.window, Tags.Floating)) {
-            this.resize_auto(ext, direction);
-        } else {
-            let array: [number, number, number, number];
-            switch (direction) {
-                case Direction.Down:
-                    array = [0, 0, 0, 1];
-                    break;
-                case Direction.Left:
-                    array = [0, 0, -1, 0];
-                    break;
-                case Direction.Up:
-                    array = [0, 0, 0, -1];
-                    break;
-                default:
-                    array = [0, 0, 1, 0];
+        const window = ext.windows.get(this.window);
+        if (!window) return;
+
+        if (ext.auto_tiler) {
+            const fork_entity = ext.auto_tiler.attached.get(window.entity);
+            if (fork_entity) {
+                const forest = ext.auto_tiler.forest;
+                const fork = forest.forks.get(fork_entity);
+                if (fork) {
+                    let top_level = forest.find_toplevel(ext.workspace_id());
+                    if (top_level) {
+                        const work_area = (forest.forks.get(top_level) as Fork)
+                            .area;
+                        const before = window.rect();
+
+                        let [x, y, width, height] = before.array;
+
+                        const step = 64;
+
+                        const is_leftmost = x <= work_area.x;
+                        const is_topmost = y <= work_area.y;
+                        const is_rightmost =
+                            x + width + step >= work_area.x + work_area.width;
+                        const is_bottommost =
+                            y + height + step >= work_area.y + work_area.height;
+
+                        switch (direction) {
+                            case Direction.Up:
+                                if (!inverse) {
+                                    if (is_topmost) return;
+                                    y -= step;
+                                    height += step;
+                                } else {
+                                    if (is_bottommost) return;
+                                    height -= step;
+                                }
+                                break;
+                            case Direction.Down:
+                                if (!inverse) {
+                                    if (is_bottommost) return;
+                                    height += step;
+                                } else {
+                                    if (is_topmost) return;
+                                    y += step;
+                                    height -= step;
+                                }
+                                break;
+                            case Direction.Left:
+                                if (!inverse) {
+                                    if (is_leftmost) return;
+                                    x -= step;
+                                    width += step;
+                                } else {
+                                    if (is_rightmost) return;
+                                    width -= step;
+                                }
+                                break;
+                            case Direction.Right:
+                                if (!inverse) {
+                                    if (is_rightmost) return;
+                                    width += step;
+                                } else {
+                                    if (is_leftmost) return;
+                                    x += step;
+                                    width -= step;
+                                }
+                                break;
+                        }
+
+                        const after = new Rect.Rectangle([x, y, width, height]);
+
+                        after.clamp(work_area);
+
+                        const change = movement.calculate(before, after);
+                        window.meta.move_resize_frame(
+                            true,
+                            after.x,
+                            after.y,
+                            after.width,
+                            after.height
+                        );
+                        if (ext.movement_is_valid(window, change)) {
+                            forest.resize(
+                                ext,
+                                fork_entity,
+                                fork,
+                                window.entity,
+                                change,
+                                after
+                            );
+                            forest.arrange(ext, fork.workspace);
+                        } else {
+                            forest.tile(ext, fork, fork.area);
+                        }
+
+                        this.update_resize_position(ext);
+                    }
+                }
             }
-
-            const [x, y, w, h] = array;
-
-            this.swap_window = null;
-            this.rect_by_active_area(ext, (_monitor, rect) => {
-                this.change(ext.overlay, rect, x, y, w, h).change(
-                    ext.overlay,
-                    rect,
-                    0,
-                    0,
-                    0,
-                    0
-                );
-            });
         }
-
-        this.resizing_window = false;
     }
 
     swap(ext: Ext, selector: window.ShellWindow | null) {
@@ -627,8 +848,19 @@ export class Tiler {
     exit(ext: Ext) {
         this.queue.clear();
 
+        if (this.resize_keymon !== null) {
+            global.stage.disconnect(this.resize_keymon);
+            this.resize_keymon = null;
+            Main.popModal(this.resize_grab);
+        }
+
+        if (this.resize_keymon_release !== null) {
+            global.stage.disconnect(this.resize_keymon_release);
+        }
+
         if (this.window) {
             this.window = null;
+            this.resize_hint.visible = false;
 
             // Disable overlay
             ext.overlay.visible = false;
@@ -636,6 +868,7 @@ export class Tiler {
             // Disable tiling keybindings
             ext.keybindings
                 .disable(this.keybindings)
+                .disable(this.resize_bindings)
                 .enable(ext.keybindings.window_focus);
         }
     }
