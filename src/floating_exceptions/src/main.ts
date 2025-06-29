@@ -150,7 +150,8 @@ export class MainView implements View {
         widget.set_margin_start(12);
 
         button.connect('clicked', () => {
-            widget.destroy();
+            this.list.remove(widget);
+            widget.set_visible(false);
             this.callback({tag: 3, wmclass, wmtitle});
         });
 
@@ -209,6 +210,7 @@ export class ExceptionsView implements View {
         let button = Gtk.Switch.new();
         button.set_valign(Gtk.Align.CENTER);
         button.set_state(enabled);
+        button.set_active(true);
         button.connect('notify::state', () => {
             this.callback({
                 tag: 2,
@@ -266,7 +268,6 @@ class App {
         win.default_width = 550;
         win.default_height = 700;
         win.set_child(this.stack);
-        // win.connect('delete-event', () => app.quit());
 
         back.hide();
 
