@@ -99,7 +99,7 @@ export class MainView implements View {
         label.set_hexpand(true);
         label.set_ellipsize(Pango.EllipsizeMode.END);
 
-        let button = Gtk.Button.new_from_icon_name('edit-delete');
+        let button = Gtk.Button.new_from_icon_name('window-close-symbolic');
         button.set_valign(Gtk.Align.CENTER);
 
         let widget = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 24);
