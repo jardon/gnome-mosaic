@@ -3,7 +3,7 @@
 import Gio from 'gi://Gio';
 import GioUnix from 'gi://GioUnix';
 import GLib from 'gi://GLib';
-import Gtk from 'gi://Gtk?version=4.0';
+import Gtk from 'gi://Gtk';
 import Pango from 'gi://Pango';
 
 /** The directory that this script is executed from. */
