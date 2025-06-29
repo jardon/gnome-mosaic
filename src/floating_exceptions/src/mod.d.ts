@@ -7,7 +7,7 @@ declare module 'gi://*' {
     export default data;
 }
 
-declare module 'gi://Gtk?version=3.0' {
+declare module 'gi://Gtk?version=4.0' {
     let Gtk: any;
     export default Gtk;
 }

@@ -1,8 +1,9 @@
 #!/usr/bin/gjs --module
 
 import Gio from 'gi://Gio';
+import GioUnix from 'gi://GioUnix';
 import GLib from 'gi://GLib';
-import Gtk from 'gi://Gtk?version=3.0';
+import Gtk from 'gi://Gtk?version=4.0';
 import Pango from 'gi://Pango';
 
 /** The directory that this script is executed from. */
@@ -14,6 +15,8 @@ const SCRIPT_DIR = GLib.path_get_dirname(
 imports.searchPath.push(SCRIPT_DIR);
 
 import * as config from './config.js';
+
+let app;
 
 interface SelectWindow {
     tag: 0;
@@ -60,21 +63,22 @@ function exceptions_button(): any {
 
     let icon = Gtk.Image.new_from_icon_name(
         'go-next-symbolic',
-        Gtk.IconSize.BUTTON
     );
     icon.set_hexpand(true);
     icon.set_halign(Gtk.Align.END);
 
     let layout = Gtk.Grid.new();
     layout.set_row_spacing(4);
-    layout.set_border_width(12);
+    layout.set_margin_top(12);
+    layout.set_margin_bottom(12);
+    layout.set_margin_start(12);
+    layout.set_margin_end(12);
     layout.attach(title, 0, 0, 1, 1);
     layout.attach(description, 0, 1, 1, 1);
     layout.attach(icon, 1, 0, 1, 2);
 
     let button = Gtk.Button.new();
-    button.relief = Gtk.ReliefStyle.NONE;
-    button.add(layout);
+    button.set_child(layout);
 
     return button;
 }
@@ -100,30 +104,30 @@ export class MainView implements View {
         this.list = Gtk.ListBox.new();
         this.list.set_selection_mode(Gtk.SelectionMode.NONE);
         this.list.set_header_func(list_header_func);
-        this.list.add(exceptions);
+        this.list.append(exceptions);
 
         let scroller = new Gtk.ScrolledWindow();
         scroller.hscrollbar_policy = Gtk.PolicyType.NEVER;
         scroller.set_propagate_natural_width(true);
         scroller.set_propagate_natural_height(true);
-        scroller.add(this.list);
+        scroller.set_child(this.list);
 
         let list_frame = Gtk.Frame.new(null);
-        list_frame.add(scroller);
+        list_frame.set_child(scroller);
 
         let desc = new Gtk.Label({
             label: 'Add exceptions by selecting currently running applications and windows.',
+            wrap: true,
         });
-        desc.set_line_wrap(true);
         desc.set_halign(Gtk.Align.CENTER);
         desc.set_justify(Gtk.Justification.CENTER);
         desc.set_max_width_chars(55);
         desc.set_margin_top(12);
 
         this.widget = Gtk.Box.new(Gtk.Orientation.VERTICAL, 24);
-        this.widget.add(desc);
-        this.widget.add(select);
-        this.widget.add(list_frame);
+        this.widget.append(desc);
+        this.widget.append(select);
+        this.widget.append(list_frame);
     }
 
     add_rule(wmclass: string | undefined, wmtitle: string | undefined) {
@@ -136,23 +140,25 @@ export class MainView implements View {
 
         let button = Gtk.Button.new_from_icon_name(
             'edit-delete',
-            Gtk.IconSize.BUTTON
         );
         button.set_valign(Gtk.Align.CENTER);
 
         let widget = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 24);
-        widget.add(label);
-        widget.add(button);
-        widget.set_border_width(12);
+        widget.append(label);
+        widget.append(button);
+        widget.set_margin_top(12);
+        widget.set_margin_bottom(12);
         widget.set_margin_start(12);
-        widget.show_all();
+        widget.set_margin_end(12);
+        
+        widget.set_margin_start(12);
 
         button.connect('clicked', () => {
             widget.destroy();
             this.callback({tag: 3, wmclass, wmtitle});
         });
 
-        this.list.add(widget);
+        this.list.append(widget);
     }
 }
 
@@ -178,18 +184,18 @@ export class ExceptionsView implements View {
         scroller.hscrollbar_policy = Gtk.PolicyType.NEVER;
         scroller.set_propagate_natural_width(true);
         scroller.set_propagate_natural_height(true);
-        scroller.add(this.exceptions);
+        scroller.set_child(this.exceptions);
 
         let exceptions_frame = Gtk.Frame.new(null);
-        exceptions_frame.add(scroller);
+        exceptions_frame.set_child(scroller);
 
         this.exceptions.set_selection_mode(Gtk.SelectionMode.NONE);
         this.exceptions.set_header_func(list_header_func);
 
         this.widget = Gtk.Box.new(Gtk.Orientation.VERTICAL, 6);
-        this.widget.add(desc_title);
-        this.widget.add(desc_desc);
-        this.widget.add(exceptions_frame);
+        this.widget.append(desc_title);
+        this.widget.append(desc_desc);
+        this.widget.append(exceptions_frame);
     }
 
     add_rule(
@@ -217,12 +223,14 @@ export class ExceptionsView implements View {
         });
 
         let widget = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 24);
-        widget.add(label);
-        widget.add(button);
-        widget.show_all();
-        widget.set_border_width(12);
+        widget.append(label);
+        widget.append(button);
+        widget.set_margin_top(12);
+        widget.set_margin_bottom(12);
+        widget.set_margin_start(12);
+        widget.set_margin_end(12);
 
-        this.exceptions.add(widget);
+        this.exceptions.append(widget);
     }
 }
 
@@ -235,31 +243,36 @@ class App {
     config: config.Config = new config.Config();
 
     constructor() {
-        this.stack.set_border_width(16);
-        this.stack.add(this.main_view.widget);
-        this.stack.add(this.exceptions_view.widget);
+        this.stack.set_margin_top(16);
+        this.stack.set_margin_bottom(16);
+        this.stack.set_margin_start(16);
+        this.stack.set_margin_end(16);
+        this.stack.add_child(this.main_view.widget);
+        this.stack.add_child(this.exceptions_view.widget);
+
+        let header = new Gtk.HeaderBar();
 
         let back = Gtk.Button.new_from_icon_name(
             'go-previous-symbolic',
-            Gtk.IconSize.BUTTON
         );
+        back.set_valign(Gtk.Align.CENTER);
+        back.set_halign(Gtk.Align.START);
 
         const TITLE = 'Floating Window Exceptions';
 
-        let win = new Gtk.Dialog({use_header_bar: true});
-        let headerbar = win.get_header_bar();
-        headerbar.set_show_close_button(true);
-        headerbar.set_title(TITLE);
-        headerbar.pack_start(back);
+        let win = new Gtk.Window();
+        this.window = win;
+        header.pack_start(back);;
+        win.set_deletable(true);
+        win.set_title(TITLE);
 
         Gtk.Window.set_default_icon_name('application-default');
 
-        win.set_wmclass(config.WM_CLASS_ID, TITLE);
-
-        win.set_default_size(550, 700);
-        win.get_content_area().add(this.stack);
-        win.show_all();
-        win.connect('delete-event', () => Gtk.main_quit());
+        win.set_titlebar(header)
+        win.default_width = 550;
+        win.default_height = 700;
+        win.set_child(this.stack);
+        // win.connect('delete-event', () => app.quit());
 
         back.hide();
 
@@ -287,7 +300,7 @@ class App {
                 // SelectWindow
                 case 0:
                     println('SELECT');
-                    Gtk.main_quit();
+                    app.quit();
                     break;
 
                 // SwitchTo
@@ -344,26 +357,30 @@ function list_header_func(row: any, before: null | any) {
     }
 }
 
-/** We'll use stdout for printing events for the shell to handle */
 const STDOUT = new Gio.DataOutputStream({
-    base_stream: new Gio.UnixOutputStream({fd: 1}),
+    base_stream: new GioUnix.OutputStream({fd: 1}),
 });
 
-/** Utility function for printing a message to stdout with an added newline */
 function println(message: string) {
     STDOUT.put_string(message + '\n', null);
 }
 
-/** Initialize GTK and start the application */
 function main() {
-    GLib.set_prgname(config.WM_CLASS_ID);
-    GLib.set_application_name('GNOME Mosaic Floating Window Exceptions');
+    app = new Gtk.Application({
+        application_id: 'com.github.jardon.gnome-mosaic-exceptions',
+        flags: Gio.ApplicationFlags.FLAGS_NONE,
+    });
 
-    Gtk.init(null);
+    app.connect('activate', () => {
+        GLib.set_prgname(config.WM_CLASS_ID);
+        GLib.set_application_name('GNOME Mosaic Floating Window Exceptions');
 
-    new App();
+        let instance = new App();
+        instance.window.set_application(app);
+        instance.window.present();
+    });
 
-    Gtk.main();
+    app.run([]);
 }
 
 main();
