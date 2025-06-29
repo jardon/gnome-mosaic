@@ -53,34 +53,6 @@ interface View {
     callback: (event: Event) => void;
 }
 
-function exceptions_button(): any {
-    let title = Gtk.Label.new('System Exceptions');
-    title.set_xalign(0);
-
-    let description = Gtk.Label.new('Updated based on validated user reports.');
-    description.set_xalign(0);
-    description.get_style_context().add_class('dim-label');
-
-    let icon = Gtk.Image.new_from_icon_name('go-next-symbolic');
-    icon.set_hexpand(true);
-    icon.set_halign(Gtk.Align.END);
-
-    let layout = Gtk.Grid.new();
-    layout.set_row_spacing(4);
-    layout.set_margin_top(12);
-    layout.set_margin_bottom(12);
-    layout.set_margin_start(12);
-    layout.set_margin_end(12);
-    layout.attach(title, 0, 0, 1, 1);
-    layout.attach(description, 0, 1, 1, 1);
-    layout.attach(icon, 1, 0, 1, 2);
-
-    let button = Gtk.Button.new();
-    button.set_child(layout);
-
-    return button;
-}
-
 export class MainView implements View {
     widget: any;
 
@@ -89,10 +61,7 @@ export class MainView implements View {
     private list: any;
 
     constructor() {
-        let exceptions = exceptions_button();
-        exceptions.connect('clicked', () =>
-            this.callback({tag: 1, view: ViewNum.Exceptions})
-        );
+        let exceptions = this.exceptions_button();
 
         this.list = Gtk.ListBox.new();
         this.list.set_selection_mode(Gtk.SelectionMode.NONE);
@@ -150,6 +119,39 @@ export class MainView implements View {
         });
 
         this.list.append(widget);
+    }
+
+    exceptions_button(): any {
+        let label = Gtk.Label.new('System Exceptions');
+        label.set_xalign(0);
+        label.set_hexpand(true);
+        label.set_ellipsize(Pango.EllipsizeMode.END);
+
+        let description = Gtk.Label.new(
+            'Updated based on validated user reports.'
+        );
+        description.set_xalign(0);
+        description.get_style_context().add_class('dim-label');
+
+        let button = Gtk.Button.new_from_icon_name('go-next-symbolic');
+        button.set_valign(Gtk.Align.CENTER);
+
+        let widget = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 24);
+        widget.append(label);
+        widget.append(description);
+        widget.append(button);
+        widget.set_margin_top(12);
+        widget.set_margin_bottom(12);
+        widget.set_margin_start(12);
+        widget.set_margin_end(12);
+
+        widget.set_margin_start(12);
+
+        button.connect('clicked', () =>
+            this.callback({tag: 1, view: ViewNum.Exceptions})
+        );
+
+        return widget;
     }
 }
 
