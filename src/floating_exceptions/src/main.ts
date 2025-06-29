@@ -89,11 +89,6 @@ export class MainView implements View {
     private list: any;
 
     constructor() {
-        let select = Gtk.Button.new_with_label('Select');
-        select.set_halign(Gtk.Align.CENTER);
-        select.connect('clicked', () => this.callback({tag: 0}));
-        select.set_margin_bottom(12);
-
         let exceptions = exceptions_button();
         exceptions.connect('clicked', () =>
             this.callback({tag: 1, view: ViewNum.Exceptions})
@@ -124,7 +119,6 @@ export class MainView implements View {
 
         this.widget = Gtk.Box.new(Gtk.Orientation.VERTICAL, 24);
         this.widget.append(desc);
-        this.widget.append(select);
         this.widget.append(list_frame);
     }
 
@@ -250,6 +244,10 @@ class App {
 
         let header = new Gtk.HeaderBar();
 
+        let add_exception = Gtk.Button.new_from_icon_name('list-add-symbolic');
+        add_exception.set_valign(Gtk.Align.CENTER);
+        add_exception.set_halign(Gtk.Align.START);
+
         let back = Gtk.Button.new_from_icon_name('go-previous-symbolic');
         back.set_valign(Gtk.Align.CENTER);
         back.set_halign(Gtk.Align.START);
@@ -258,6 +256,7 @@ class App {
 
         let win = new Gtk.Window();
         this.window = win;
+        header.pack_start(add_exception);
         header.pack_start(back);
         win.set_deletable(true);
         win.set_title(TITLE);
@@ -304,12 +303,14 @@ class App {
                         case ViewNum.MainView:
                             this.stack.set_visible_child(this.main_view.widget);
                             back.hide();
+                            add_exception.show();
                             break;
                         case ViewNum.Exceptions:
                             this.stack.set_visible_child(
                                 this.exceptions_view.widget
                             );
                             back.show();
+                            add_exception.hide();
                             break;
                     }
 
@@ -343,6 +344,7 @@ class App {
         back.connect('clicked', () =>
             event_handler({tag: 1, view: ViewNum.MainView})
         );
+        add_exception.connect('clicked', () => event_handler({tag: 0}));
     }
 }
 
