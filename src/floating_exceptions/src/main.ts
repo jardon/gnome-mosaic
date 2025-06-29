@@ -61,9 +61,7 @@ function exceptions_button(): any {
     description.set_xalign(0);
     description.get_style_context().add_class('dim-label');
 
-    let icon = Gtk.Image.new_from_icon_name(
-        'go-next-symbolic',
-    );
+    let icon = Gtk.Image.new_from_icon_name('go-next-symbolic');
     icon.set_hexpand(true);
     icon.set_halign(Gtk.Align.END);
 
@@ -138,9 +136,7 @@ export class MainView implements View {
         label.set_hexpand(true);
         label.set_ellipsize(Pango.EllipsizeMode.END);
 
-        let button = Gtk.Button.new_from_icon_name(
-            'edit-delete',
-        );
+        let button = Gtk.Button.new_from_icon_name('edit-delete');
         button.set_valign(Gtk.Align.CENTER);
 
         let widget = Gtk.Box.new(Gtk.Orientation.HORIZONTAL, 24);
@@ -150,7 +146,7 @@ export class MainView implements View {
         widget.set_margin_bottom(12);
         widget.set_margin_start(12);
         widget.set_margin_end(12);
-        
+
         widget.set_margin_start(12);
 
         button.connect('clicked', () => {
@@ -252,9 +248,7 @@ class App {
 
         let header = new Gtk.HeaderBar();
 
-        let back = Gtk.Button.new_from_icon_name(
-            'go-previous-symbolic',
-        );
+        let back = Gtk.Button.new_from_icon_name('go-previous-symbolic');
         back.set_valign(Gtk.Align.CENTER);
         back.set_halign(Gtk.Align.START);
 
@@ -262,13 +256,13 @@ class App {
 
         let win = new Gtk.Window();
         this.window = win;
-        header.pack_start(back);;
+        header.pack_start(back);
         win.set_deletable(true);
         win.set_title(TITLE);
 
         Gtk.Window.set_default_icon_name('application-default');
 
-        win.set_titlebar(header)
+        win.set_titlebar(header);
         win.default_width = 550;
         win.default_height = 700;
         win.set_child(this.stack);
