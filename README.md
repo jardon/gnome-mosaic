@@ -108,6 +108,7 @@ Disabled by default, this mode manages windows using a tree-based tiling window 
 | ------------- | ------------------------------------------------------ |
 | `Super` + `O` | Toggles the orientation of a fork's tiling orientation |
 | `Super` + `G` | Toggles a window between floating and tiling.          |
+| `Super` + `R` | Enter window resizing mode                             |
 
 ### Customizing the Floating Window List
 
