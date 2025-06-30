@@ -17,6 +17,8 @@ imports.searchPath.push(SCRIPT_DIR);
 import * as config from './config.js';
 
 let app;
+const SYS_EXEMPTION_TITLE = 'System Exceptions';
+const SYS_EXCEPTION_DESC = 'Updated based on validated user reports.';
 
 interface SelectWindow {
     tag: 0;
@@ -122,14 +124,12 @@ export class MainView implements View {
     }
 
     exceptions_button(): any {
-        let label = Gtk.Label.new('System Exceptions');
+        let label = Gtk.Label.new(SYS_EXEMPTION_TITLE);
         label.set_xalign(0);
         label.set_hexpand(true);
         label.set_ellipsize(Pango.EllipsizeMode.END);
 
-        let description = Gtk.Label.new(
-            'Updated based on validated user reports.'
-        );
+        let description = Gtk.Label.new(SYS_EXCEPTION_DESC);
         description.set_xalign(0);
         description.get_style_context().add_class('dim-label');
 
@@ -162,13 +162,11 @@ export class ExceptionsView implements View {
     exceptions: any = Gtk.ListBox.new();
 
     constructor() {
-        let desc_title = Gtk.Label.new('<b>System Exceptions</b>');
+        let desc_title = Gtk.Label.new(`<b>${SYS_EXEMPTION_TITLE}</b>`);
         desc_title.set_use_markup(true);
         desc_title.set_xalign(0);
 
-        let desc_desc = Gtk.Label.new(
-            'Updated based on validated user reports.'
-        );
+        let desc_desc = Gtk.Label.new(SYS_EXCEPTION_DESC);
         desc_desc.set_xalign(0);
         desc_desc.get_style_context().add_class('dim-label');
         desc_desc.set_margin_bottom(6);
