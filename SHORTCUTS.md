@@ -15,6 +15,7 @@ Directional actions can use either the standard arrow keys or their Vim equivale
 | -------------------------------- | ---------------------------------------- |
 | `SUPER` + `Direction keys`       | Switch focus between windows             |
 | `SUPER` + `Enter`                | Enter window adjustment mode             |
+| `SUPER` + `r`                    | Enter window resize mode                 |
 | `Direction keys`                 | Move window (while in adjustment mode)   |
 | `Shift` + `Direction keys`       | Resize window (while in adjustment mode) |
 | `Ctrl` + `Direction keys`        | Swap windows (while in adjustment mode)  |
@@ -27,7 +28,6 @@ Directional actions can use either the standard arrow keys or their Vim equivale
 
 | Shortcut                 | Action                                     |
 | ------------------------ | ------------------------------------------ |
-| `SUPER` + `S`            | Toggle stacking                            |
 | `SUPER` + `O`            | Change window orientation (while stacking) |
 | `SUPER` + `G`            | Float/un-float window (while stacking)     |
 | `SUPER` + `M`            | Maximize/un-maximize window                |
