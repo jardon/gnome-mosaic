@@ -24,12 +24,12 @@
         </key>
 
         <key type="u" name="gap-inner">
-            <default>4</default>
+            <default>6</default>
             <summary>Gap between tiled windows, in pixels</summary>
         </key>
 
         <key type="u" name="gap-outer">
-            <default>2</default>
+            <default>6</default>
             <summary>Gap surrounding tiled windows, in pixels</summary>
         </key>
 
