@@ -17,6 +17,7 @@ imports.searchPath.push(SCRIPT_DIR);
 import * as config from './config.js';
 
 let app;
+let instance = null;
 const SYS_EXEMPTION_TITLE = 'System Exceptions';
 const SYS_EXCEPTION_DESC = 'Updated based on validated user reports.';
 
@@ -372,9 +373,18 @@ function main() {
         GLib.set_prgname(config.WM_CLASS_ID);
         GLib.set_application_name('GNOME Mosaic Floating Window Exceptions');
 
-        let instance = new App();
+        if (instance !== null) {
+            instance.window.present();
+            return;
+        }
+
+        instance = new App();
         instance.window.set_application(app);
         instance.window.present();
+    });
+
+    app.connect('window-removed', () => {
+        instance = null;
     });
 
     app.run([]);
