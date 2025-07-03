@@ -23,7 +23,7 @@ If you want to uninstall the extension, you may invoke `make uninstall`, and the
 
 ## Shared Features
 
-Features that are shared between stacking and auto-tiling modes.
+Features that are shared between floating and auto-tiling modes.
 
 ### Directional Keys
 
@@ -53,7 +53,7 @@ These are key to many of the shortcuts utilized by tiling window managers. This 
 
 This mode is activated with `Super` + `Return`.
 
-Window management mode activates additional keyboard control over the size and location of the currently-focused window. The behavior of this mode changes slightly based on whether you are in auto-tile mode, or in the default stacking mode. In the default mode, an overlay is displayed snapped to a grid, which represents a possible future location and size of your focused window. This behavior changes slightly in auto-tiling mode, where resizes are performed immediately and overlays are only shown when swapping windows.
+Window management mode activates additional keyboard control over the size and location of the currently-focused window. The behavior of this mode changes slightly based on whether you are in auto-tile mode, or in the default floating mode. In the default mode, an overlay is displayed snapped to a grid, which represents a possible future location and size of your focused window. This behavior changes slightly in auto-tiling mode, where resizes are performed immediately and overlays are only shown when swapping windows.
 
 Activating this enables the following behaviors:
 
@@ -84,7 +84,7 @@ Windows with server-side decorations may have their title bars completely hidden
 
 ## Floating Mode
 
-This is the default mode of Mosaic, which combines traditional stacking window management, with optional tiling window management features.
+This is the default mode of Mosaic, which combines traditional floating window management, with optional tiling window management features.
 
 ### Display Grid
 

@@ -26,13 +26,13 @@ Directional actions can use either the standard arrow keys or their Vim equivale
 
 ### Manipulate windows
 
-| Shortcut                 | Action                                     |
-| ------------------------ | ------------------------------------------ |
-| `SUPER` + `O`            | Change window orientation (while stacking) |
-| `SUPER` + `G`            | Float/un-float window (while stacking)     |
-| `SUPER` + `M`            | Maximize/un-maximize window                |
-| `SUPER` + `Ctrl` + `←/→` | Snap window to left/right side of display  |
-| `SUPER` + `Q`            | Close window                               |
+| Shortcut                 | Action                                             |
+| ------------------------ | -------------------------------------------------- |
+| `SUPER` + `O`            | Change window orientation (while in floating mode) |
+| `SUPER` + `G`            | Float/un-float window (while in floating mode)     |
+| `SUPER` + `M`            | Maximize/un-maximize window                        |
+| `SUPER` + `Ctrl` + `←/→` | Snap window to left/right side of display          |
+| `SUPER` + `Q`            | Close window                                       |
 
 ### Manage workspaces and displays
 
