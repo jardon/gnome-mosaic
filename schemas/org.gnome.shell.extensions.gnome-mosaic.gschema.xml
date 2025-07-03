@@ -18,11 +18,6 @@
             <summary>Color to use for accents on pre-Gnome 47</summary>
         </key>
 
-        <key type="b" name="fullscreen-launcher">
-            <default>false</default>
-            <summary>Allow showing launcher above fullscreen windows</summary>
-        </key>
-
         <key type="u" name="gap-inner">
             <default>6</default>
             <summary>Gap between tiled windows, in pixels</summary>
@@ -103,12 +98,6 @@
         <key type="as" name="focus-right">
             <default><![CDATA[['<Super>Right','<Super>KP_Right','<Super>l']]]></default>
             <summary>Focus right window</summary>
-        </key>
-
-        <!-- Launcher -->
-        <key type="as" name="activate-launcher">
-            <default><![CDATA[['<Super>slash']]]></default>
-            <summary>Search key combo</summary>
         </key>
 
         <key type="as" name="management-orientation">

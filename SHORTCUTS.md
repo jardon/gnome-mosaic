@@ -45,21 +45,6 @@ Directional actions can use either the standard arrow keys or their Vim equivale
 | `SUPER` + `Ctrl` + `Shift` + `↑/↓` | Move the active window between upper/lower displays |
 | `SUPER` + `ESC`                    | Lock the screen                                     |
 
-### Use the launcher
-
-The launcher allows searching through open windows and installed applications. It also has the additional functions listed below.
-
-| Shortcut/Command | Action                                   |
-| ---------------- | ---------------------------------------- |
-| `SUPER`          | Activate the launcher                    |
-| `recent`         | filename Browse and search recent files  |
-| `/` / `~/`       | Browse the filesystem                    |
-| `find filename`  | Search the filesystem for a certain file |
-| `t:`             | Execute a command in a terminal          |
-| `:`              | Execute a command in sh                  |
-| `=`              | Calculate an equation                    |
-| `?`              | Help menu                                |
-
 ### Switch between apps and windows
 
 | Shortcut                  | Action                                         |

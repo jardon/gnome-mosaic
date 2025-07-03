@@ -63,25 +63,6 @@ Tasks for a tester to verify when approving a patch. Use complex window layouts 
 - [ ] Plug an additional display into a laptop - windows and workspaces don't changes
 - [ ] NOTE: Add vertical monitor layout test
 
-### Launcher
-
-- [ ] All windows on all workspaces appear on launch
-- [ ] Choosing an app on another workspace moves workspaces and focus to that app
-- [ ] Launching an application works
-- [ ] Typing text and then removing it will re-show those windows
-- [ ] Search works for applications and windows
-- [ ] Search works for GNOME settings panels
-- [ ] Search for "Extensions". There should be only one entry.
-- [ ] The overlay hint correctly highlights the selected window
-- [ ] Open windows are sorted above applications (e.g. "web browser")
-- [ ] t: executes a command in a terminal
-- [ ] : executes a command in sh
-- [ ] = calculates an equation
-- [ ] Search results are as expected:
-    - `cal` returns Calendar and Calculator before Color
-    - `pops` returns Popsicle first
-    - `shop` returns the Pop!\_Shop first
-
 ### Window Titles
 
 - [ ] Disabling window titles using global (GNOME Mosaic) option works for Shell Shortcuts, LibreOffice, etc.
@@ -117,4 +98,3 @@ Tasks for a tester to verify when approving a patch. Use complex window layouts 
 - [ ] Open a window, enable tiling, stack the window, move to a different workspace, and disable tiling. The window should not become visible on the empty workspace.
 - [ ] With tiling still disabled, minimize the single window. The active hint should go away.
 - [ ] Maximize a window, then open another app with the Activities overview. The newly-opened app should be visible and focused.
-- [ ] Maximize a window, then open another app with the launcher. The newly-opened app should be visible and focused.
