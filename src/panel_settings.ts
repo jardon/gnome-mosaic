@@ -205,7 +205,6 @@ function shortcuts(menu: any): any {
     layout_manager.set_column_spacing(30);
     layout_manager.attach(create_label(_('Shortcuts')), 0, 0, 2, 1);
 
-    let launcher_shortcut = _('Super + /');
     // const cosmic_settings = Settings.settings_new_id(
     //   'org.gnome.shell.extensions.pop-cosmic'
     // );
@@ -216,7 +215,6 @@ function shortcuts(menu: any): any {
     // }
 
     [
-        [_('Launcher'), launcher_shortcut],
         [_('Navigate Windows'), _('Super + Arrow Keys')],
         [_('Toggle Tiling'), _('Super + Y')],
     ].forEach((section, idx) => {

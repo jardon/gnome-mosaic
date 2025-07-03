@@ -8,11 +8,9 @@ endif
 
 ifeq ($(strip $(DESTDIR)),)
 INSTALLBASE = $(XDG_DATA_HOME)/gnome-shell/extensions
-PLUGIN_BASE = $(XDG_DATA_HOME)/gnome-mosaic/launcher
 SCRIPTS_BASE = $(XDG_DATA_HOME)/gnome-mosaic/scripts
 else
 INSTALLBASE = $(DESTDIR)/usr/share/gnome-shell/extensions
-PLUGIN_BASE = $(DESTDIR)/usr/lib/gnome-mosaic/launcher
 SCRIPTS_BASE = $(DESTDIR)/usr/lib/gnome-mosaic/scripts
 endif
 INSTALLNAME = $(UUID)
@@ -61,7 +59,7 @@ local-install: depcheck compile install configure restart-shell enable
 
 install:
 	rm -rf $(INSTALLBASE)/$(INSTALLNAME)
-	mkdir -p $(INSTALLBASE)/$(INSTALLNAME) $(PLUGIN_BASE) $(SCRIPTS_BASE)
+	mkdir -p $(INSTALLBASE)/$(INSTALLNAME) $(SCRIPTS_BASE)
 	cp -r _build/* $(INSTALLBASE)/$(INSTALLNAME)/
 
 uninstall:
