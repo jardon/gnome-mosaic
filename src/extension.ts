@@ -1156,7 +1156,7 @@ export class Ext extends Ecs.System<ExtEvent> {
                             );
                         }
 
-                        const movements = [grab_op.operation(crect)];
+                        const movements = grab_op.operation(crect);
                         // log.debug(movements.toString());
                         // log.debug(this.movements_are_valid(win, movements).toString())
 

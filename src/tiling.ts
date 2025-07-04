@@ -702,8 +702,8 @@ export class Tiler {
                             after.width,
                             after.height
                         );
-                        if (ext.movements_are_valid(window, [movements])) {
-                            for (const movement of [movements]) {
+                        if (ext.movements_are_valid(window, movements)) {
+                            for (const movement of movements) {
                                 forest.resize(
                                     ext,
                                     fork_entity,

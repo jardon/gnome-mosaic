@@ -12,7 +12,7 @@ export class GrabOp {
         this.rect = rect;
     }
 
-    operation(change: Rectangle): Movement.Movement {
+    operation(change: Rectangle): Movement.Movement[] {
         return Movement.calculate(this.rect, change);
     }
 }

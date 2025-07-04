@@ -9,37 +9,37 @@ export enum Movement {
     DOWN = 0b1000000,
 }
 
-export function calculate(from: Rectangular, change: Rectangular): Movement {
+export function calculate(from: Rectangular, change: Rectangular): Movement[] {
     const xpos = from.x == change.x;
     const ypos = from.y == change.y;
 
     if (xpos && ypos) {
         if (from.width == change.width) {
             if (from.height == change.width) {
-                return Movement.NONE;
+                return [Movement.NONE];
             } else if (from.height < change.height) {
-                return Movement.GROW | Movement.DOWN;
+                return [Movement.GROW | Movement.DOWN];
             } else {
-                return Movement.SHRINK | Movement.UP;
+                return [Movement.SHRINK | Movement.UP];
             }
         } else if (from.width < change.width) {
-            return Movement.GROW | Movement.RIGHT;
+            return [Movement.GROW | Movement.RIGHT];
         } else {
-            return Movement.SHRINK | Movement.LEFT;
+            return [Movement.SHRINK | Movement.LEFT];
         }
     } else if (xpos) {
         if (from.height < change.height) {
-            return Movement.GROW | Movement.UP;
+            return [Movement.GROW | Movement.UP];
         } else {
-            return Movement.SHRINK | Movement.DOWN;
+            return [Movement.SHRINK | Movement.DOWN];
         }
     } else if (ypos) {
         if (from.width < change.width) {
-            return Movement.GROW | Movement.LEFT;
+            return [Movement.GROW | Movement.LEFT];
         } else {
-            return Movement.SHRINK | Movement.RIGHT;
+            return [Movement.SHRINK | Movement.RIGHT];
         }
     } else {
-        return Movement.MOVED;
+        return [Movement.MOVED];
     }
 }
