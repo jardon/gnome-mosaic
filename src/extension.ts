@@ -1157,8 +1157,6 @@ export class Ext extends Ecs.System<ExtEvent> {
                         }
 
                         const movements = grab_op.operation(crect);
-                        // log.debug(movements.toString());
-                        // log.debug(this.movements_are_valid(win, movements).toString())
 
                         if (this.movements_are_valid(win, movements)) {
                             for (const movement of movements) {
@@ -1198,58 +1196,32 @@ export class Ext extends Ecs.System<ExtEvent> {
         return null;
     }
 
-    movements_are_valid(win: Window.ShellWindow, movements: movement.Movement[]) {
+    movements_are_valid(
+        win: Window.ShellWindow,
+        movements: movement.Movement[]
+    ) {
         for (const movement of movements) {
-            log.debug(`Movement: ${movement}, Binary: ${movement.toString(2)}`);
-            // log.debug("SHRINK:", (movement & Movement.SHRINK) !== 0);
-            // log.debug("LEFT:", ((movement & Movement.LEFT) !== 0).toString());
-            // log.debug("Current window rect:", win.rect());
-            // log.debug("Neighbor rect:", r);
             if ((movement & Movement.SHRINK) !== 0) {
                 if ((movement & Movement.DOWN) !== 0) {
                     const w = this.focus_selector.up(this, win);
-                    if (!w) {
-                        log.debug("NO WINDOW FOUND")
-                        return false
-                    };
+                    if (!w) return false;
                     const r = w.rect();
-                    if (r.y + r.height > win.rect().y) {
-                        log.debug("MATH FAILED")
-                        return false
-                    };
+                    if (r.y + r.height > win.rect().y) return false;
                 } else if ((movement & Movement.UP) !== 0) {
                     const w = this.focus_selector.down(this, win);
-                    if (!w) {
-                        log.debug("NO WINDOW FOUND")
-                        return false
-                    };
+                    if (!w) return false;
                     const r = w.rect();
-                    if (r.y + r.height < win.rect().y) {
-                        log.debug("MATH FAILED")
-                        return false
-                    };
+                    if (r.y + r.height < win.rect().y) return false;
                 } else if ((movement & Movement.LEFT) !== 0) {
                     const w = this.focus_selector.right(this, win);
-                    if (!w) {
-                        log.debug("NO WINDOW FOUND")
-                        return false
-                    };
+                    if (!w) return false;
                     const r = w.rect();
-                    if (r.x + r.width < win.rect().x) {
-                        log.debug("MATH FAILED")
-                        return false
-                    };
+                    if (r.x + r.width < win.rect().x) return false;
                 } else if ((movement & Movement.RIGHT) !== 0) {
                     const w = this.focus_selector.left(this, win);
-                    if (!w) {
-                        log.debug("NO WINDOW FOUND")
-                        return false
-                    };
+                    if (!w) return false;
                     const r = w.rect();
-                    if (r.x + r.width > win.rect().x) {
-                        log.debug("MATH FAILED")
-                        return false
-                    };
+                    if (r.x + r.width > win.rect().x) return false;
                 }
             }
         }
