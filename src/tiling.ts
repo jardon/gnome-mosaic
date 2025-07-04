@@ -694,7 +694,7 @@ export class Tiler {
 
                         after.clamp(work_area);
 
-                        const change = movement.calculate(before, after);
+                        const movements = movement.calculate(before, after);
                         window.meta.move_resize_frame(
                             true,
                             after.x,
@@ -702,15 +702,17 @@ export class Tiler {
                             after.width,
                             after.height
                         );
-                        if (ext.movement_is_valid(window, change)) {
-                            forest.resize(
-                                ext,
-                                fork_entity,
-                                fork,
-                                window.entity,
-                                change,
-                                after
-                            );
+                        if (ext.movements_are_valid(window, [movements])) {
+                            for (const movement of [movements]) {
+                                forest.resize(
+                                    ext,
+                                    fork_entity,
+                                    fork,
+                                    window.entity,
+                                    movement,
+                                    after
+                                );
+                            }
                             forest.arrange(ext, fork.workspace);
                         } else {
                             forest.tile(ext, fork, fork.area);
