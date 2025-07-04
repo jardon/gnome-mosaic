@@ -10,36 +10,48 @@ export enum Movement {
 }
 
 export function calculate(from: Rectangular, change: Rectangular): Movement[] {
-    const xpos = from.x == change.x;
-    const ypos = from.y == change.y;
+    const xchange = change.x - from.x;
+    const ychange = change.y - from.y;
+    const wchange = change.width - from.width;
+    const hchange = change.height - from.height;
 
-    if (xpos && ypos) {
-        if (from.width == change.width) {
-            if (from.height == change.width) {
-                return [Movement.NONE];
-            } else if (from.height < change.height) {
-                return [Movement.GROW | Movement.DOWN];
-            } else {
-                return [Movement.SHRINK | Movement.UP];
-            }
-        } else if (from.width < change.width) {
-            return [Movement.GROW | Movement.RIGHT];
-        } else {
-            return [Movement.SHRINK | Movement.LEFT];
-        }
-    } else if (xpos) {
-        if (from.height < change.height) {
-            return [Movement.GROW | Movement.UP];
-        } else {
-            return [Movement.SHRINK | Movement.DOWN];
-        }
-    } else if (ypos) {
-        if (from.width < change.width) {
-            return [Movement.GROW | Movement.LEFT];
-        } else {
-            return [Movement.SHRINK | Movement.RIGHT];
-        }
-    } else {
-        return [Movement.MOVED];
+    const result: Movement[] = [];
+
+    if (xchange === 0 && ychange === 0 && wchange === 0 && hchange === 0) {
+        return [Movement.NONE];
     }
+
+    // Width change
+    if (wchange !== 0) {
+        if (wchange > 0) {
+            // Width increased → GROW
+            // If x changed, the left edge moved left → LEFT
+            // If x stayed, the right edge moved right → RIGHT
+            result.push(Movement.GROW | (xchange < 0 ? Movement.LEFT : Movement.RIGHT));
+        } else {
+            // Width decreased → SHRINK
+            // If x changed, the left edge moved right → LEFT
+            // If x stayed, the right edge moved left → RIGHT
+            result.push(Movement.SHRINK | (xchange > 0 ? Movement.RIGHT : Movement.LEFT));
+        }
+    }
+
+    // Height change
+    if (hchange !== 0) {
+        if (hchange > 0) {
+            // Height increased → GROW
+            result.push(Movement.GROW | (ychange < 0 ? Movement.UP : Movement.DOWN));
+        } else {
+            // Height decreased → SHRINK
+            result.push(Movement.SHRINK | (ychange > 0 ? Movement.DOWN : Movement.UP));
+        }
+    }
+
+    // Pure movement
+    if (result.length === 0 && (xchange !== 0 || ychange !== 0)) {
+        result.push(Movement.MOVED);
+    }
+
+    return result;
 }
+
