@@ -1156,17 +1156,19 @@ export class Ext extends Ecs.System<ExtEvent> {
                             );
                         }
 
-                        const movement = grab_op.operation(crect);
+                        const movements = grab_op.operation(crect);
 
-                        if (this.movement_is_valid(win, movement)) {
-                            forest.resize(
-                                this,
-                                fork_entity,
-                                fork,
-                                win.entity,
-                                movement,
-                                crect
-                            );
+                        if (this.movements_are_valid(win, movements)) {
+                            for (const movement of movements) {
+                                forest.resize(
+                                    this,
+                                    fork_entity,
+                                    fork,
+                                    win.entity,
+                                    movement,
+                                    crect
+                                );
+                            }
                             forest.arrange(this, fork.workspace);
                         } else {
                             forest.tile(this, fork, fork.area);
@@ -1194,28 +1196,33 @@ export class Ext extends Ecs.System<ExtEvent> {
         return null;
     }
 
-    movement_is_valid(win: Window.ShellWindow, movement: movement.Movement) {
-        if ((movement & Movement.SHRINK) !== 0) {
-            if ((movement & Movement.DOWN) !== 0) {
-                const w = this.focus_selector.up(this, win);
-                if (!w) return false;
-                const r = w.rect();
-                if (r.y + r.height > win.rect().y) return false;
-            } else if ((movement & Movement.UP) !== 0) {
-                const w = this.focus_selector.down(this, win);
-                if (!w) return false;
-                const r = w.rect();
-                if (r.y + r.height < win.rect().y) return false;
-            } else if ((movement & Movement.LEFT) !== 0) {
-                const w = this.focus_selector.right(this, win);
-                if (!w) return false;
-                const r = w.rect();
-                if (r.x + r.width < win.rect().x) return false;
-            } else if ((movement & Movement.RIGHT) !== 0) {
-                const w = this.focus_selector.left(this, win);
-                if (!w) return false;
-                const r = w.rect();
-                if (r.x + r.width > win.rect().x) return false;
+    movements_are_valid(
+        win: Window.ShellWindow,
+        movements: movement.Movement[]
+    ) {
+        for (const movement of movements) {
+            if ((movement & Movement.SHRINK) !== 0) {
+                if ((movement & Movement.DOWN) !== 0) {
+                    const w = this.focus_selector.up(this, win);
+                    if (!w) return false;
+                    const r = w.rect();
+                    if (r.y + r.height > win.rect().y) return false;
+                } else if ((movement & Movement.UP) !== 0) {
+                    const w = this.focus_selector.down(this, win);
+                    if (!w) return false;
+                    const r = w.rect();
+                    if (r.y + r.height < win.rect().y) return false;
+                } else if ((movement & Movement.LEFT) !== 0) {
+                    const w = this.focus_selector.right(this, win);
+                    if (!w) return false;
+                    const r = w.rect();
+                    if (r.x + r.width < win.rect().x) return false;
+                } else if ((movement & Movement.RIGHT) !== 0) {
+                    const w = this.focus_selector.left(this, win);
+                    if (!w) return false;
+                    const r = w.rect();
+                    if (r.x + r.width > win.rect().x) return false;
+                }
             }
         }
 

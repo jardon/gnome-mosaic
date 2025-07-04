@@ -9,37 +9,45 @@ export enum Movement {
     DOWN = 0b1000000,
 }
 
-export function calculate(from: Rectangular, change: Rectangular): Movement {
-    const xpos = from.x == change.x;
-    const ypos = from.y == change.y;
+export function calculate(from: Rectangular, change: Rectangular): Movement[] {
+    const xchange = change.x - from.x;
+    const ychange = change.y - from.y;
+    const wchange = change.width - from.width;
+    const hchange = change.height - from.height;
 
-    if (xpos && ypos) {
-        if (from.width == change.width) {
-            if (from.height == change.width) {
-                return Movement.NONE;
-            } else if (from.height < change.height) {
-                return Movement.GROW | Movement.DOWN;
-            } else {
-                return Movement.SHRINK | Movement.UP;
-            }
-        } else if (from.width < change.width) {
-            return Movement.GROW | Movement.RIGHT;
-        } else {
-            return Movement.SHRINK | Movement.LEFT;
-        }
-    } else if (xpos) {
-        if (from.height < change.height) {
-            return Movement.GROW | Movement.UP;
-        } else {
-            return Movement.SHRINK | Movement.DOWN;
-        }
-    } else if (ypos) {
-        if (from.width < change.width) {
-            return Movement.GROW | Movement.LEFT;
-        } else {
-            return Movement.SHRINK | Movement.RIGHT;
-        }
-    } else {
-        return Movement.MOVED;
+    const result: Movement[] = [];
+
+    if (xchange === 0 && ychange === 0 && wchange === 0 && hchange === 0) {
+        return [Movement.NONE];
     }
+
+    if (wchange !== 0) {
+        if (wchange > 0) {
+            result.push(
+                Movement.GROW | (xchange < 0 ? Movement.LEFT : Movement.RIGHT)
+            );
+        } else {
+            result.push(
+                Movement.SHRINK | (xchange > 0 ? Movement.RIGHT : Movement.LEFT)
+            );
+        }
+    }
+
+    if (hchange !== 0) {
+        if (hchange > 0) {
+            result.push(
+                Movement.GROW | (ychange < 0 ? Movement.UP : Movement.DOWN)
+            );
+        } else {
+            result.push(
+                Movement.SHRINK | (ychange > 0 ? Movement.DOWN : Movement.UP)
+            );
+        }
+    }
+
+    if (result.length === 0 && (xchange !== 0 || ychange !== 0)) {
+        result.push(Movement.MOVED);
+    }
+
+    return result;
 }
