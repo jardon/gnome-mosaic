@@ -21,6 +21,7 @@ let app;
 let instance = null;
 const SYS_EXEMPTION_TITLE = 'System Exceptions';
 const SYS_EXCEPTION_DESC = 'Updated based on validated user reports.';
+const APPLICATION_ID = 'com.github.jardon.gnome-mosaic-exceptions';
 
 interface SelectWindow {
     tag: 0;
@@ -369,7 +370,7 @@ function println(message: string) {
 
 function main() {
     app = new Adw.Application({
-        application_id: 'com.github.jardon.gnome-mosaic-exceptions',
+        application_id: APPLICATION_ID,
         flags: Gio.ApplicationFlags.FLAGS_NONE,
     });
 
@@ -384,6 +385,7 @@ function main() {
 
         instance = new App();
         instance.window.set_application(app);
+        instance.window.set_icon_name(APPLICATION_ID);
         instance.window.present();
     });
 
