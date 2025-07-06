@@ -1,5 +1,6 @@
 #!/usr/bin/gjs --module
 
+import Adw from 'gi://Adw';
 import Gio from 'gi://Gio';
 import GioUnix from 'gi://GioUnix';
 import GLib from 'gi://GLib';
@@ -243,7 +244,7 @@ class App {
         this.stack.add_child(this.main_view.widget);
         this.stack.add_child(this.exceptions_view.widget);
 
-        let header = new Gtk.HeaderBar();
+        let header = new Adw.HeaderBar();
 
         let add_exception = Gtk.Button.new_from_icon_name('list-add-symbolic');
         add_exception.set_valign(Gtk.Align.CENTER);
@@ -255,19 +256,22 @@ class App {
 
         const TITLE = 'Floating Window Exceptions';
 
-        let win = new Gtk.Window();
+        let win = new Adw.Window();
         this.window = win;
         header.pack_start(add_exception);
         header.pack_start(back);
         win.set_deletable(true);
         win.set_title(TITLE);
 
-        Gtk.Window.set_default_icon_name('application-default');
+        Adw.Window.set_default_icon_name('application-default');
 
-        win.set_titlebar(header);
+        const vbox = new Gtk.Box({orientation: Gtk.Orientation.VERTICAL});
+        vbox.append(header);
+        vbox.append(this.stack);
+
         win.default_width = 550;
         win.default_height = 700;
-        win.set_child(this.stack);
+        win.set_content(vbox);
 
         back.hide();
 
@@ -364,7 +368,7 @@ function println(message: string) {
 }
 
 function main() {
-    app = new Gtk.Application({
+    app = new Adw.Application({
         application_id: 'com.github.jardon.gnome-mosaic-exceptions',
         flags: Gio.ApplicationFlags.FLAGS_NONE,
     });
