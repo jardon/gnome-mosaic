@@ -1,0 +1,36 @@
+name: Release on Tag
+on:
+    push:
+        tags:
+            - '*'
+
+jobs:
+    build-and-release:
+        name: Build and Release
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+            - name: Install dependencies
+              run: |
+                  sudo apt update
+                  sudo apt install -y make
+                  npm install typescript@latest
+            - name: Run build and create ZIP file
+              run: make zip-file
+            - name: Get tag name
+              id: get_tag
+              run: echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+            - name: Create GitHub Release
+              uses: softprops/action-gh-release@v2
+              with:
+                  tag_name: ${{ steps.get_tag.outputs.tag }}
+                  name: Release ${{ steps.get_tag.outputs.tag }}
+                  files: |
+                      *.zip
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
