@@ -6,7 +6,7 @@ This document provides a guideline for testing and verifying the expected behavi
 
 To begin watching logs, open a terminal with the following command:
 
-```
+```bash
 journalctl -o cat -n 0 -f "$(which gnome-shell)" | grep -v warning
 ```
 
@@ -28,18 +28,18 @@ Tasks for a tester to verify when approving a patch. Use complex window layouts 
 - [ ] Windows can be resized with the mouse
 - [ ] Minimizing a window detaches it from the tree and re-tiles remaining windows
 - [ ] Unminimizing a window re-tiles the window
-- [ ] Maximizing with the keyboard (`Super` `M`) covers tiled windows
-- [ ] Unmaximizing with keyboard (`Super` `M`) re-tiles into place
+- [ ] Maximizing with the keyboard (`Super` + `M`) covers tiled windows
+- [ ] Unmaximizing with keyboard (`Super` + `M`) re-tiles into place
 - [ ] Maximizing with the mouse covers tiled windows
 - [ ] Unmaximizing with mouse re-tiles into place
 - [ ] Full-screening removes the active hint and full-screens on one display
 - [ ] Unfull-screening adds the active hint and re-tiles into place
 - [ ] Maximizing a YouTube video fills the screen and unmaximizing retiles the browser in place
 - [ ] VIM shortcuts work as direction keys
-- [ ] `Super` `O` changes window orientation
-- [ ] `Super` `G` floats and then re-tiles a window
-- [ ] Float a window with `Super` `G`. It should be movable and resizeable in window management mode with keyboard keys
-- [ ] `Super` `Q` Closes a window
+- [ ] `Super` + `O` changes window orientation
+- [ ] `Super` + `G` floats and then re-tiles a window
+- [ ] Float a window with `Super` + `G`. It should be movable and resizeable in window management mode with keyboard keys
+- [ ] `Super` + `Q` Closes a window
 - [ ] Turn off auto-tiling. New windows launch floating.
 - [ ] Turn on auto-tiling. Windows automatically tile.
 - [ ] Disabling and enabling auto-tiling correctly handles minimized, maximized, fullscreen, floating, and non-floating windows (This test needs a better definition, steps, or to be separated out.)
@@ -85,7 +85,7 @@ Tasks for a tester to verify when approving a patch. Use complex window layouts 
 - [ ] Windows swap with the keyboard (test with different size windows)
 - [ ] Windows can be resized with the keyboard
 - [ ] Windows can be resized with the mouse
-- [ ] Windows can be half-tiled left and right with `Ctrl``Super``left`/`right`
+- [ ] Windows can be half-tiled left and right with `Ctrl` + `Super` + `left`/`right`
 
 ### Displays
 
