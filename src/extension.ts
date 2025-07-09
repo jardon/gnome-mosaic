@@ -21,7 +21,6 @@ import * as movement from './movement.js';
 import * as add_exception from './dialog_add_exception.js';
 import * as exec from './executor.js';
 import * as dbus_service from './dbus_service.js';
-import * as scheduler from './scheduler.js';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 import type {Entity} from './ecs.js';
 import type {ExtEvent} from './events.js';
@@ -854,7 +853,6 @@ export class Ext extends Ecs.System<ExtEvent> {
     /** Triggered when a window has been focused */
     on_focused(win: Window.ShellWindow) {
         this.workspace_active.set(this.active_workspace(), win.entity);
-        scheduler.setForeground(win.meta);
 
         this.size_signals_unblock(win);
 
