@@ -217,6 +217,7 @@ function shortcuts(menu: any): any {
     [
         [_('Navigate Windows'), _('Super + Arrow Keys')],
         [_('Toggle Tiling'), _('Super + Y')],
+        [_('Resize Windows'), 'Super + R'],
     ].forEach((section, idx) => {
         let key = create_label(section[0]);
         key.get_clutter_text().set_margin_left(12);
