@@ -42,6 +42,7 @@ import St from 'gi://St';
 import Shell from 'gi://Shell';
 import Meta from 'gi://Meta';
 import Mtk from 'gi://Mtk';
+import Clutter from 'gi://Clutter';
 const {GlobalEvent, WindowEvent} = Events;
 const {cursor_rect, is_keyboard_op, is_resize_op, is_move_op} = Lib;
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
@@ -331,7 +332,36 @@ export class Ext extends Ecs.System<ExtEvent> {
                     actor.remove_all_transitions();
                     const {x, y, width, height} = movement;
 
-                    window.meta.move_resize_frame(true, x, y, width, height);
+                    if (actor) {
+                        try {
+                            actor.ease({
+                                x: x,
+                                y: y,
+                                width: width,
+                                height: height,
+                                duration: 200,
+                                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                                onComplete: () => {
+                                    window.meta.move_resize_frame(
+                                        true,
+                                        x,
+                                        y,
+                                        width,
+                                        height
+                                    );
+                                }
+                            });
+                        } catch (e) {
+                            log.debug('Animation failed: ' + e);
+                            window.meta.move_resize_frame(
+                                true,
+                                x,
+                                y,
+                                width,
+                                height
+                            );
+                        }
+                    }
                     window.meta.move_frame(true, x, y);
 
                     this.monitors.insert(window.entity, [
