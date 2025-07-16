@@ -699,8 +699,8 @@ export class Tiler {
                         if (actor) {
                             try {
                                 actor.ease({
-                                    x: x - 60,
-                                    y: y - 56,
+                                    x: after.x,
+                                    y: after.y,
                                     width: after.width,
                                     height: after.height,
                                     duration: 200,
@@ -710,8 +710,8 @@ export class Tiler {
                                             true,
                                             after.x,
                                             after.y,
-                                            width,
-                                            height
+                                            after.width,
+                                            after.height
                                         );
                                     }
                                 });
@@ -726,6 +726,7 @@ export class Tiler {
                                 );
                             }
                         }
+                        log.debug(`TILING: ${window.title()} ${after.x} ${after.y} ${after.height} ${after.width}`)
                         if (ext.movements_are_valid(window, movements)) {
                             for (const movement of movements) {
                                 forest.resize(
