@@ -693,7 +693,7 @@ export class Tiler {
                                             after.width,
                                             after.height
                                         );
-                                    }
+                                    },
                                 });
                             } catch (e) {
                                 log.debug('Animation failed: ' + e);

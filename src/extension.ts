@@ -349,7 +349,7 @@ export class Ext extends Ecs.System<ExtEvent> {
                                         width,
                                         height
                                     );
-                                }
+                                },
                             });
                         } catch (e) {
                             log.debug('Animation failed: ' + e);
@@ -364,7 +364,9 @@ export class Ext extends Ecs.System<ExtEvent> {
                     }
                     window.meta.move_frame(true, x, y);
 
-                    log.debug(`EXTENSION: ${window.title()} ${x} ${y} ${height} ${width}`)
+                    log.debug(
+                        `EXTENSION: ${window.title()} ${x} ${y} ${height} ${width}`
+                    );
 
                     this.monitors.insert(window.entity, [
                         win.meta.get_monitor(),
