@@ -713,7 +713,7 @@ export class Tiler {
                                             after.width,
                                             after.height
                                         );
-                                    }
+                                    },
                                 });
                             } catch (e) {
                                 log.debug('Animation failed: ' + e);
@@ -726,7 +726,9 @@ export class Tiler {
                                 );
                             }
                         }
-                        log.debug(`TILING: ${window.title()} ${after.x} ${after.y} ${after.height} ${after.width}`)
+                        log.debug(
+                            `TILING: ${window.title()} ${after.x} ${after.y} ${after.height} ${after.width}`
+                        );
                         if (ext.movements_are_valid(window, movements)) {
                             for (const movement of movements) {
                                 forest.resize(
