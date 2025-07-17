@@ -40,6 +40,7 @@ import Gio from 'gi://Gio';
 import St from 'gi://St';
 import Shell from 'gi://Shell';
 import Meta from 'gi://Meta';
+import Mtk from 'gi://Mtk';
 const {GlobalEvent, WindowEvent} = Events;
 const {cursor_rect, is_keyboard_op, is_resize_op, is_move_op} = Lib;
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
@@ -2809,7 +2810,7 @@ export class Ext extends Ecs.System<ExtEvent> {
 
     cursor_status(): [Rectangle, number] {
         const cursor = cursor_rect();
-        const rect = new Meta.Rectangle({
+        const rect = new Mtk.Rectangle({
             x: cursor.x,
             y: cursor.y,
             width: 1,
