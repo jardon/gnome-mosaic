@@ -67,6 +67,11 @@ declare module 'gi://Meta' {
     export default Meta;
 }
 
+declare module 'gi://Mtk' {
+    let Mtk: any;
+    export default Mtk;
+}
+
 declare module 'gi://Gtk' {
     let Gtk: any;
     export default Gtk;
