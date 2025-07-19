@@ -332,40 +332,43 @@ export class Ext extends Ecs.System<ExtEvent> {
                     actor.remove_all_transitions();
                     const {x, y, width, height} = movement;
 
+                    let resize = (
+                        x: number,
+                        y: number,
+                        width: number,
+                        height: number
+                    ) => {
+                        window.meta.move_resize_frame(
+                            true,
+                            x,
+                            y,
+                            width,
+                            height
+                        );
+                        window.meta.move_frame(true, x, y);
+                    };
+
                     if (actor) {
                         try {
+                            let geom = window.meta.get_buffer_rect();
                             actor.ease({
-                                x: x,
-                                y: y,
-                                width: width,
-                                height: height,
-                                duration: 200,
-                                mode: Clutter.AnimationMode.EASE_OUT_QUAD,
-                                onComplete: () => {
-                                    window.meta.move_resize_frame(
-                                        true,
-                                        x,
-                                        y,
-                                        width,
-                                        height
-                                    );
-                                },
+                                x: geom.x,
+                                y: geom.y,
+                                width: geom.width,
+                                height: geom.height,
+                                duration: 100,
+                                mode: Clutter.AnimationMode
+                                    .CLUTTER_EASE_IN_OUT_SINE,
+                                onComplete: () => resize(x, y, width, height),
                             });
                         } catch (e) {
                             log.debug('Animation failed: ' + e);
-                            window.meta.move_resize_frame(
-                                true,
-                                x,
-                                y,
-                                width,
-                                height
-                            );
+                            resize(x, y, width, height);
                         }
                     }
-                    window.meta.move_frame(true, x, y);
 
                     log.debug(
-                        `EXTENSION: ${window.title()} ${x} ${y} ${height} ${width}`
+                        `EVENT: ${window.title()} ${x} ${y} ${height} ${width}`
                     );
 
                     this.monitors.insert(window.entity, [
