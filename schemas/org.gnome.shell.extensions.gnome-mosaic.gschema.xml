@@ -48,6 +48,11 @@
             <summary>The location the mouse cursor focuses when selecting a window</summary>
         </key>
 
+        <key type="b" name="show-indicator">
+            <default>true</default>
+            <summary>Hide the indicator settings panel</summary>
+        </key>
+
         <!-- Tiling Options -->
         <key type="u" name="column-size">
             <default>64</default>

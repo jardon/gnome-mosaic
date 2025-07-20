@@ -19,6 +19,7 @@ interface AppWidgets {
     mouse_cursor_focus_position: any;
     log_level: any;
     max_window_width: any;
+    show_indicator: any;
 }
 
 export default class PopShellPreferences extends ExtensionPreferences {
@@ -80,6 +81,12 @@ function settings_dialog_new(): Gtk.Container {
     app.log_level.connect('changed', () => {
         let active_id = app.log_level.get_active_id();
         ext.set_log_level(active_id);
+    });
+
+    app.show_indicator.set_active(ext.show_indicator());
+    app.show_indicator.connect('state-set', (_widget: any, state: boolean) => {
+        ext.set_show_indicator(state);
+        Settings.sync();
     });
 
     app.show_skip_taskbar.set_active(ext.show_skiptaskbar());
@@ -163,7 +170,13 @@ function settings_dialog_view(): [AppWidgets, Gtk.Container] {
         xalign: 0.0,
     });
 
-    const [inner_gap, outer_gap] = gaps_section(grid, 9);
+    const show_indicator_label = new Gtk.Label({
+        label: 'Show Indicator Panel',
+        xalign: 0.0,
+        hexpand: true,
+    });
+
+    const [inner_gap, outer_gap] = gaps_section(grid, 10);
 
     const settings = {
         inner_gap,
@@ -172,16 +185,17 @@ function settings_dialog_view(): [AppWidgets, Gtk.Container] {
         snap_to_grid: new Gtk.Switch({halign: Gtk.Align.END}),
         window_titles: new Gtk.Switch({halign: Gtk.Align.END}),
         show_skip_taskbar: new Gtk.Switch({halign: Gtk.Align.END}),
+        show_indicator: new Gtk.Switch({halign: Gtk.Align.END}),
         mouse_cursor_follows_active_window: new Gtk.Switch({
             halign: Gtk.Align.END,
         }),
         mouse_cursor_focus_position: build_combo(
             grid,
-            7,
+            8,
             focus.FocusPosition,
             'Mouse Cursor Focus Position'
         ),
-        log_level: build_combo(grid, 8, log.LOG_LEVELS, 'Log Level'),
+        log_level: build_combo(grid, 9, log.LOG_LEVELS, 'Log Level'),
         max_window_width: number_entry(),
     };
 
@@ -197,11 +211,14 @@ function settings_dialog_view(): [AppWidgets, Gtk.Container] {
     grid.attach(show_skip_taskbar_label, 0, 5, 1, 1);
     grid.attach(settings.show_skip_taskbar, 1, 5, 1, 1);
 
-    grid.attach(mouse_cursor_follows_active_window_label, 0, 6, 1, 1);
-    grid.attach(settings.mouse_cursor_follows_active_window, 1, 6, 1, 1);
+    grid.attach(show_indicator_label, 0, 6, 1, 1);
+    grid.attach(settings.show_indicator, 1, 6, 1, 1);
 
-    grid.attach(max_window_width_label, 0, 12, 1, 1);
-    grid.attach(settings.max_window_width, 1, 12, 1, 1);
+    grid.attach(mouse_cursor_follows_active_window_label, 0, 7, 1, 1);
+    grid.attach(settings.mouse_cursor_follows_active_window, 1, 7, 1, 1);
+
+    grid.attach(max_window_width_label, 0, 13, 1, 1);
+    grid.attach(settings.max_window_width, 1, 13, 1, 1);
 
     return [settings, grid];
 }
