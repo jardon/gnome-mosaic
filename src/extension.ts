@@ -947,17 +947,13 @@ export class Ext extends Ecs.System<ExtEvent> {
         if (focus) focus.show_border();
     }
 
-    show_indicator() {
-        if (!indicator) {
-            indicator = new PanelSettings.Indicator(this);
-            panel.addToStatusArea('gnome-mosaic', indicator.button);
-        }
-    }
-
-    hide_indicator() {
-        if (indicator) {
+    toggle_indicator() {
+        if (indicator && !this.settings.show_indicator()) {
             indicator.destroy();
             indicator = null;
+        } else {
+            indicator = new PanelSettings.Indicator(this);
+            panel.addToStatusArea('gnome-mosaic', indicator.button);
         }
     }
 
@@ -2034,11 +2030,7 @@ export class Ext extends Ecs.System<ExtEvent> {
                         _hide_skip_taskbar_windows();
                     }
                 case 'show-indicator':
-                    if (this.settings.show_indicator()) {
-                        this.show_indicator();
-                    } else {
-                        this.hide_indicator();
-                    }
+                    this.toggle_indicator();
             }
         });
 
