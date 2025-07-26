@@ -13,6 +13,12 @@
             <summary>Border radius for active window hint, in pixels</summary>
         </key>
 
+        <key type="u" name="active-hint-border-width">
+            <default>6</default>
+            <range min="1" max="10"/>
+            <summary>Border width for active window hint, in pixels</summary>
+        </key>
+
         <key type="s" name="gnome-legacy-accent-color">
             <default>'#1c71d8'</default>
             <summary>Color to use for accents on pre-Gnome 47</summary>
