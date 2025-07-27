@@ -14,6 +14,8 @@ import Meta from 'gi://Meta';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
 import GLib from 'gi://GLib';
+import Gio from 'gi://Gio';
+import Mtk from 'gi://Mtk';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 
@@ -545,12 +547,18 @@ export class ShellWindow {
         }
     }
 
-    update_border_style() {
+    async update_border_style() {
         const {settings} = this.ext;
-        const radius_value = settings.active_hint_border_radius();
+        const radii = await getBorderRadii(
+            this.meta.get_compositor_private() as Meta.WindowActor
+        );
+        const radii_values =
+            radii?.map(v => `${v}px`).join(' ') || '0px 0px 0px 0px';
         if (this.border) {
             this.border.set_style(
-                `border-radius: ${radius_value}px; border-width: ${settings.active_hint_border_width()}px; border-color: ${major > 46 ? '-st-accent-color' : settings.gnome_legacy_accent_color()}`
+                `border-radius: ${radii_values};` +
+                    `border-width: ${settings.active_hint_border_width()}px;` +
+                    `border-color: ${major > 46 ? '-st-accent-color' : settings.gnome_legacy_accent_color()}`
             );
         }
     }
@@ -665,4 +673,62 @@ function pointer_already_on_window(meta: Meta.Window): boolean {
     const cursor = lib.cursor_rect();
 
     return cursor.intersects(meta.get_frame_rect());
+}
+
+async function getBorderRadii(
+    actor: Meta.WindowActor
+): Promise<[number, number, number, number] | undefined> {
+    const width = 90;
+    const opaqueLimit = 254;
+    const margin = 6;
+    const {x, y, height} = actor.get_meta_window().get_frame_rect();
+
+    if (height <= 0) return;
+
+    const capture = (actor as any).paint_to_content(
+        new Mtk.Rectangle({x, y, width, height})
+    );
+    if (!capture) return;
+
+    const memoryBuffer = Gio.MemoryOutputStream.new_resizable();
+    const surface = capture.get_texture();
+
+    const imageBuf = await Shell.Screenshot.composite_to_stream(
+        surface,
+        0,
+        0,
+        width,
+        height,
+        1,
+        null,
+        0,
+        0,
+        1,
+        memoryBuffer
+    );
+
+    const rawPixels = imageBuf.get_pixels();
+    if (!rawPixels) return;
+
+    memoryBuffer.close(null);
+
+    const scanAlpha = (start: number): number => {
+        for (let x = 0; x < width; x++) {
+            const idx = (start * width + x) * 4;
+            const alpha = rawPixels[idx + 3];
+            if (alpha > opaqueLimit) {
+                return x;
+            }
+        }
+        return 0;
+    };
+
+    const topRadius = scanAlpha(0);
+
+    const bottomRadius = height - scanAlpha(height - 1);
+
+    const radius = topRadius + margin;
+    const radiusBottom = bottomRadius + margin;
+
+    return [radius, radius, radiusBottom, radiusBottom];
 }
