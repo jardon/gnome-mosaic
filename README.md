@@ -42,7 +42,7 @@ These are key to many of the shortcuts utilized by tiling window managers. This 
 | --------------- | --------------------------- |
 | `Super` + `q`   | Close window                |
 | `Super` + `m`   | Maximize the focused window |
-| `Super` + `,`   | inimize the focused window  |
+| `Super` + `,`   | Minimize the focused window |
 | `Super` + `Esc` | Lock screen                 |
 | `Super` + `f`   | Files                       |
 | `Super` + `e`   | Email                       |
