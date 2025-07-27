@@ -7,12 +7,6 @@
             <summary>Show a hint around the active window</summary>
         </key>
 
-        <key type="u" name="active-hint-border-radius">
-            <default>19</default>
-            <range min="0" max="30"/>
-            <summary>Border radius for active window hint, in pixels</summary>
-        </key>
-
         <key type="u" name="active-hint-border-width">
             <default>6</default>
             <range min="1" max="10"/>

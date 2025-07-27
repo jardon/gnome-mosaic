@@ -79,18 +79,6 @@ export class Indicator {
             }
         );
 
-        this.border_radius = number_entry(
-            _('Active Border Radius'),
-            {
-                value: ext.settings.active_hint_border_radius(),
-                min: 0,
-                max: 30,
-            },
-            value => {
-                ext.settings.set_active_hint_border_radius(value);
-            }
-        );
-
         bm.addMenuItem(this.toggle_tiled);
         bm.addMenuItem(floating_window_exceptions(ext, bm));
 
@@ -105,7 +93,6 @@ export class Indicator {
         }
 
         bm.addMenuItem(this.toggle_active);
-        bm.addMenuItem(this.border_radius);
 
         bm.addMenuItem(this.entry_gaps);
     }

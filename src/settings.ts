@@ -62,7 +62,6 @@ function settings_new_schema(schema: string): Settings {
 }
 
 const ACTIVE_HINT = 'active-hint';
-const ACTIVE_HINT_BORDER_RADIUS = 'active-hint-border-radius';
 const ACTIVE_HINT_BORDER_WIDTH = 'active-hint-border-width';
 const GNOME_LEGACY_ACCENT_COLOR = 'gnome-legacy-accent-color';
 const COLUMN_SIZE = 'column-size';
@@ -95,10 +94,6 @@ export class ExtensionSettings {
 
     active_hint(): boolean {
         return this.ext.get_boolean(ACTIVE_HINT);
-    }
-
-    active_hint_border_radius(): number {
-        return this.ext.get_uint(ACTIVE_HINT_BORDER_RADIUS);
     }
 
     active_hint_border_width(): number {
@@ -198,10 +193,6 @@ export class ExtensionSettings {
 
     set_active_hint(set: boolean) {
         this.ext.set_boolean(ACTIVE_HINT, set);
-    }
-
-    set_active_hint_border_radius(set: number) {
-        this.ext.set_uint(ACTIVE_HINT_BORDER_RADIUS, set);
     }
 
     set_active_hint_border_width(set: number) {

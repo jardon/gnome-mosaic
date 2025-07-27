@@ -293,9 +293,8 @@ export class Ext extends Ecs.System<ExtEvent> {
         };
 
         const [major] = GNOME_VERSION.split('.').map((s: string) => Number(s));
-        const radius_value = this.settings.active_hint_border_radius();
         this.overlay.set_style(
-            `background-color: ${major > 46 ? '-st-accent-color' : this.settings.gnome_legacy_accent_color()}; border-radius: ${radius_value}px`
+            `background-color: ${major > 46 ? '-st-accent-color' : this.settings.gnome_legacy_accent_color()}; border-radius: 20px`
         );
     }
 
