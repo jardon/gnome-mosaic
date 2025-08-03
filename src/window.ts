@@ -723,12 +723,8 @@ async function getBorderRadii(
         return 0;
     };
 
-    const topRadius = scanAlpha(0);
+    const radiusTop = scanAlpha(0) + margin;
+    const radiusBottom = scanAlpha(height - 1) + margin;
 
-    const bottomRadius = height - scanAlpha(height - 1);
-
-    const radius = topRadius + margin;
-    const radiusBottom = bottomRadius + margin;
-
-    return [radius, radius, radiusBottom, radiusBottom];
+    return [radiusTop, radiusTop, radiusBottom, radiusBottom];
 }
