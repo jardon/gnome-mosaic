@@ -13,6 +13,7 @@ import * as focus from './focus.js';
 import Meta from 'gi://Meta';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
+// import Gdk from 'gi://Gdk';
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import Mtk from 'gi://Mtk';
@@ -678,10 +679,13 @@ function pointer_already_on_window(meta: Meta.Window): boolean {
 async function getBorderRadii(
     actor: Meta.WindowActor
 ): Promise<[number, number, number, number] | undefined> {
-    const width = 90;
-    const opaqueLimit = 254;
+    const opaqueLimit = 240;
     const margin = 6;
-    const {x, y, height} = actor.get_meta_window().get_frame_rect();
+    const {x, y, width, height} = actor.get_meta_window().get_frame_rect();
+    const monitorIndex = actor.get_meta_window().get_monitor();
+    // @ts-expect-error
+    const scale = global.display.get_monitor_scale(monitorIndex);
+
 
     if (height <= 0) return;
 
@@ -697,8 +701,8 @@ async function getBorderRadii(
         surface,
         0,
         0,
-        width,
-        height,
+        width * scale,
+        height * scale,
         1,
         null,
         0,
@@ -712,9 +716,26 @@ async function getBorderRadii(
 
     memoryBuffer.close(null);
 
+    // Save the screenshot to a file
+    const outputFile = Gio.File.new_for_path('/tmp/screenshot.png');
+    const fileOutputStream = outputFile.replace(
+        null,  // etag
+        false, // make_backup
+        Gio.FileCreateFlags.REPLACE_DESTINATION,
+        null   // cancellable
+    );
+
+    const data = memoryBuffer.steal_as_bytes();
+    Gio.OutputStream.prototype.write_bytes.call(fileOutputStream, data, null);
+    fileOutputStream.close(null);
+
+
+
+    log.info(`WH: ${width} ${height}`)
+
     const scanAlpha = (start: number): number => {
-        for (let x = 0; x < width; x++) {
-            const idx = (start * width + x) * 4;
+        for (let x = 0; x < ((width * scale) / 2); x++) {
+            const idx = (start * (width * scale) + x) * 4;
             const alpha = rawPixels[idx + 3];
             if (alpha > opaqueLimit) {
                 return x;
@@ -723,8 +744,11 @@ async function getBorderRadii(
         return 0;
     };
 
-    const radiusTop = scanAlpha(0) + margin;
-    const radiusBottom = scanAlpha(height - 1) + margin;
+    const radiusTop = (scanAlpha(0) / scale) + margin;
+    const radiusBottom = (scanAlpha(height * scale - 1) / scale) + margin;
+
+    log.info(`RADIUS: ${radiusTop} ${radiusBottom}`)
+    log.info(`SCALE: ${scale}`)
 
     return [radiusTop, radiusTop, radiusBottom, radiusBottom];
 }
