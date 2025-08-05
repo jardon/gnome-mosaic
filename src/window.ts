@@ -678,10 +678,12 @@ function pointer_already_on_window(meta: Meta.Window): boolean {
 async function getBorderRadii(
     actor: Meta.WindowActor
 ): Promise<[number, number, number, number] | undefined> {
-    const width = 90;
-    const opaqueLimit = 254;
+    const opaqueLimit = 200;
     const margin = 6;
-    const {x, y, height} = actor.get_meta_window().get_frame_rect();
+    const {x, y, width, height} = actor.get_meta_window().get_frame_rect();
+    const monitorIndex = actor.get_meta_window().get_monitor();
+    // @ts-expect-error
+    const scale = Math.ceil(global.display.get_monitor_scale(monitorIndex));
 
     if (height <= 0) return;
 
@@ -697,8 +699,8 @@ async function getBorderRadii(
         surface,
         0,
         0,
-        width,
-        height,
+        width * scale,
+        height * scale,
         1,
         null,
         0,
@@ -713,18 +715,32 @@ async function getBorderRadii(
     memoryBuffer.close(null);
 
     const scanAlpha = (start: number): number => {
-        for (let x = 0; x < width; x++) {
-            const idx = (start * width + x) * 4;
+        for (let x = 0; x < (width * scale) / 2; x++) {
+            const idx = (start * (width * scale) + x) * 4;
             const alpha = rawPixels[idx + 3];
             if (alpha > opaqueLimit) {
                 return x;
             }
         }
-        return 0;
+        return -1;
     };
 
-    const radiusTop = scanAlpha(0) + margin;
-    const radiusBottom = scanAlpha(height - 1) + margin;
+    let alphaTop = -1;
+    for (var row = 0; row < 3; row++) {
+        alphaTop = scanAlpha(row);
+        if (alphaTop > -1) break;
+    }
+    if (alphaTop === -1) alphaTop = 0;
+
+    let alphaBottom = -1;
+    for (var row = height * scale - 1; row > height * scale - 4; row--) {
+        alphaBottom = scanAlpha(row);
+        if (alphaBottom > -1) break;
+    }
+    if (alphaBottom === -1) alphaBottom = 0;
+
+    const radiusTop = alphaTop / scale + margin;
+    const radiusBottom = alphaBottom / scale + margin;
 
     return [radiusTop, radiusTop, radiusBottom, radiusBottom];
 }
