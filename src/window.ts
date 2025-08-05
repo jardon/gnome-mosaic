@@ -725,13 +725,19 @@ async function getBorderRadii(
         return -1;
     };
 
-    let alphaTop = scanAlpha(0);
-    if (alphaTop === -1) alphaTop = scanAlpha(1);
-    if (alphaTop === -1) alphaTop = scanAlpha(2);
+    let alphaTop = -1;
+    for (var row = 0; row < 3; row++) {
+        alphaTop = scanAlpha(row);
+        if (alphaTop > -1) break;
+    }
+    if (alphaTop === -1) alphaTop = 0;
 
-    let alphaBottom = scanAlpha(height * scale - 1);
-    if (alphaBottom === -1) alphaBottom = scanAlpha(height * scale - 2);
-    if (alphaBottom === -1) alphaBottom = scanAlpha(height * scale - 3);
+    let alphaBottom = -1;
+    for (var row = height * scale - 1; row > height * scale - 4; row--) {
+        alphaBottom = scanAlpha(row);
+        if (alphaBottom > -1) break;
+    }
+    if (alphaBottom === -1) alphaBottom = 0;
 
     const radiusTop = alphaTop / scale + margin;
     const radiusBottom = alphaBottom / scale + margin;
