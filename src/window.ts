@@ -715,9 +715,6 @@ async function getBorderRadii(
 
     memoryBuffer.close(null);
 
-
-    log.info(`WH: ${width} ${height}`)
-
     const scanAlpha = (start: number): number => {
         for (let x = 0; x < ((width * scale) / 2); x++) {
             const idx = (start * (width * scale) + x) * 4;
@@ -726,17 +723,19 @@ async function getBorderRadii(
                 return x;
             }
         }
-        return 0;
+        return -1;
     };
 
-    const alphaTop = scanAlpha(0) || scanAlpha(1) || scanAlpha(2)
-    const alphaBottom = scanAlpha(height * scale - 1) || scanAlpha(height * scale - 2) || scanAlpha(height * scale - 3)
+    let alphaTop = scanAlpha(0);
+    if (alphaTop === -1) alphaTop = scanAlpha(1);
+    if (alphaTop === -1) alphaTop = scanAlpha(2);
+
+    let alphaBottom = scanAlpha(height * scale - 1);
+    if (alphaBottom === -1) alphaBottom = scanAlpha(height * scale - 2);
+    if (alphaBottom === -1) alphaBottom = scanAlpha(height * scale - 3);
 
     const radiusTop = (alphaTop / scale) + margin;
     const radiusBottom = (alphaBottom / scale) + margin;
-
-    log.info(`RADIUS: ${radiusTop} ${radiusBottom}`)
-    log.info(`SCALE: ${scale}`)
 
     return [radiusTop, radiusTop, radiusBottom, radiusBottom];
 }
