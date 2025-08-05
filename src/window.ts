@@ -13,7 +13,6 @@ import * as focus from './focus.js';
 import Meta from 'gi://Meta';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
-// import Gdk from 'gi://Gdk';
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import Mtk from 'gi://Mtk';
@@ -679,12 +678,12 @@ function pointer_already_on_window(meta: Meta.Window): boolean {
 async function getBorderRadii(
     actor: Meta.WindowActor
 ): Promise<[number, number, number, number] | undefined> {
-    const opaqueLimit = 240;
+    const opaqueLimit = 200;
     const margin = 6;
     const {x, y, width, height} = actor.get_meta_window().get_frame_rect();
     const monitorIndex = actor.get_meta_window().get_monitor();
     // @ts-expect-error
-    const scale = global.display.get_monitor_scale(monitorIndex);
+    const scale = Math.ceil(global.display.get_monitor_scale(monitorIndex));
 
 
     if (height <= 0) return;
@@ -716,20 +715,6 @@ async function getBorderRadii(
 
     memoryBuffer.close(null);
 
-    // Save the screenshot to a file
-    const outputFile = Gio.File.new_for_path('/tmp/screenshot.png');
-    const fileOutputStream = outputFile.replace(
-        null,  // etag
-        false, // make_backup
-        Gio.FileCreateFlags.REPLACE_DESTINATION,
-        null   // cancellable
-    );
-
-    const data = memoryBuffer.steal_as_bytes();
-    Gio.OutputStream.prototype.write_bytes.call(fileOutputStream, data, null);
-    fileOutputStream.close(null);
-
-
 
     log.info(`WH: ${width} ${height}`)
 
@@ -744,8 +729,11 @@ async function getBorderRadii(
         return 0;
     };
 
-    const radiusTop = (scanAlpha(0) / scale) + margin;
-    const radiusBottom = (scanAlpha(height * scale - 1) / scale) + margin;
+    const alphaTop = scanAlpha(0) || scanAlpha(1) || scanAlpha(2)
+    const alphaBottom = scanAlpha(height * scale - 1) || scanAlpha(height * scale - 2) || scanAlpha(height * scale - 3)
+
+    const radiusTop = (alphaTop / scale) + margin;
+    const radiusBottom = (alphaBottom / scale) + margin;
 
     log.info(`RADIUS: ${radiusTop} ${radiusBottom}`)
     log.info(`SCALE: ${scale}`)
