@@ -685,7 +685,6 @@ async function getBorderRadii(
     // @ts-expect-error
     const scale = Math.ceil(global.display.get_monitor_scale(monitorIndex));
 
-
     if (height <= 0) return;
 
     const capture = (actor as any).paint_to_content(
@@ -716,7 +715,7 @@ async function getBorderRadii(
     memoryBuffer.close(null);
 
     const scanAlpha = (start: number): number => {
-        for (let x = 0; x < ((width * scale) / 2); x++) {
+        for (let x = 0; x < (width * scale) / 2; x++) {
             const idx = (start * (width * scale) + x) * 4;
             const alpha = rawPixels[idx + 3];
             if (alpha > opaqueLimit) {
@@ -734,8 +733,8 @@ async function getBorderRadii(
     if (alphaBottom === -1) alphaBottom = scanAlpha(height * scale - 2);
     if (alphaBottom === -1) alphaBottom = scanAlpha(height * scale - 3);
 
-    const radiusTop = (alphaTop / scale) + margin;
-    const radiusBottom = (alphaBottom / scale) + margin;
+    const radiusTop = alphaTop / scale + margin;
+    const radiusBottom = alphaBottom / scale + margin;
 
     return [radiusTop, radiusTop, radiusBottom, radiusBottom];
 }
