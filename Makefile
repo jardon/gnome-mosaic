@@ -22,6 +22,10 @@ ICON_SRC = icons/mosaic-logo.svg
 ICON_SIZE = scalable
 ICON_INSTALL_DIR = $(XDG_DATA_HOME)/icons/hicolor/$(ICON_SIZE)/apps
 
+SHORTCUT_NAME = $(ICON_NAME).desktop
+SHORTCUT_SRC = ./$(SHORTCUT_NAME)
+SHORTCUT_INSTALL_DIR = $(XDG_DATA_HOME)/applications
+
 $(info UUID is "$(UUID)")
 
 .PHONY: all clean install zip-file
@@ -62,12 +66,12 @@ listen:
 
 local-install: depcheck compile install configure restart-shell enable
 
-install: install-icon
+install: install-icon install-shortcut
 	rm -rf $(INSTALLBASE)/$(INSTALLNAME)
 	mkdir -p $(INSTALLBASE)/$(INSTALLNAME) $(SCRIPTS_BASE)
 	cp -r _build/* $(INSTALLBASE)/$(INSTALLNAME)/
 
-uninstall: uninstall-icon
+uninstall: uninstall-icon uninstall-shortcut
 	rm -rf $(INSTALLBASE)/$(INSTALLNAME)
 
 restart-shell:
@@ -99,3 +103,10 @@ install-icon:
 
 uninstall-icon:
 	rm -f $(ICON_INSTALL_DIR)/$(ICON_NAME).svg
+
+install-shortcut:
+	mkdir -p $(SHORTCUT_INSTALL_DIR)
+	cp $(SHORTCUT_SRC) $(SHORTCUT_INSTALL_DIR)
+
+uninstall-shortcut:
+	rm -f $(SHORTCUT_INSTALL_DIR)/$(SHORTCUT_NAME)

@@ -1,0 +1,11 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=GNOME Mosaic Exceptions
+Comment=Manage floating exceptions for GNOME Mosaic
+Exec=/usr/bin/gjs --module ~/.local/share/gnome-shell/extensions/gnome-mosaic\@jardon.github.com/floating_exceptions/main.js
+Icon=com.github.jardon.gnome-mosaic-exceptions
+Terminal=false
+Categories=Utility;
+StartupNotify=true
+NoDisplay=true
