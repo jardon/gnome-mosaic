@@ -699,7 +699,7 @@ async function getBorderRadii(
         surface,
         0,
         0,
-        width * scale,
+        width,
         height * scale,
         1,
         null,
@@ -715,8 +715,8 @@ async function getBorderRadii(
     memoryBuffer.close(null);
 
     const scanAlpha = (start: number): number => {
-        for (let x = 0; x < (width * scale) / 2; x++) {
-            const idx = (start * (width * scale) + x) * 4;
+        for (let x = 0; x < width / 2; x++) {
+            const idx = (start * width + x) * 4;
             const alpha = rawPixels[idx + 3];
             if (alpha > opaqueLimit) {
                 return x;
