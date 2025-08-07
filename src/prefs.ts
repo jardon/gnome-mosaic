@@ -9,16 +9,13 @@ import * as log from './log.js';
 import * as focus from './focus.js';
 
 interface AppWidgets {
-    inner_gap: any;
     mouse_cursor_follows_active_window: any;
-    outer_gap: any;
     show_skip_taskbar: any;
     smart_gaps: any;
     snap_to_grid: any;
     window_titles: any;
     mouse_cursor_focus_position: any;
     log_level: any;
-    max_window_width: any;
     show_indicator: any;
 }
 
@@ -57,24 +54,6 @@ function settings_dialog_new(): Gtk.Container {
     app.smart_gaps.connect('state-set', (_widget: any, state: boolean) => {
         ext.set_smart_gaps(state);
         Settings.sync();
-    });
-
-    app.outer_gap.set_text(String(ext.gap_outer()));
-    app.outer_gap.connect('activate', (widget: any) => {
-        let parsed = parseInt((widget.get_text() as string).trim());
-        if (!isNaN(parsed)) {
-            ext.set_gap_outer(parsed);
-            Settings.sync();
-        }
-    });
-
-    app.inner_gap.set_text(String(ext.gap_inner()));
-    app.inner_gap.connect('activate', (widget: any) => {
-        let parsed = parseInt((widget.get_text() as string).trim());
-        if (!isNaN(parsed)) {
-            ext.set_gap_inner(parsed);
-            Settings.sync();
-        }
     });
 
     app.log_level.set_active(ext.log_level());
@@ -117,15 +96,6 @@ function settings_dialog_new(): Gtk.Container {
         ext.set_mouse_cursor_focus_location(active_id);
     });
 
-    app.max_window_width.set_text(String(ext.max_window_width()));
-    app.max_window_width.connect('activate', (widget: any) => {
-        let parsed = parseInt((widget.get_text() as string).trim());
-        if (!isNaN(parsed)) {
-            ext.set_max_window_width(parsed);
-            Settings.sync();
-        }
-    });
-
     return grid;
 }
 
@@ -165,22 +135,13 @@ function settings_dialog_view(): [AppWidgets, Gtk.Container] {
         xalign: 0.0,
     });
 
-    const max_window_width_label = new Gtk.Label({
-        label: 'Max window width (in pixels); 0 to disable',
-        xalign: 0.0,
-    });
-
     const show_indicator_label = new Gtk.Label({
         label: 'Show Indicator Panel',
         xalign: 0.0,
         hexpand: true,
     });
 
-    const [inner_gap, outer_gap] = gaps_section(grid, 10);
-
     const settings = {
-        inner_gap,
-        outer_gap,
         smart_gaps: new Gtk.Switch({halign: Gtk.Align.END}),
         snap_to_grid: new Gtk.Switch({halign: Gtk.Align.END}),
         window_titles: new Gtk.Switch({halign: Gtk.Align.END}),
@@ -196,7 +157,6 @@ function settings_dialog_view(): [AppWidgets, Gtk.Container] {
             'Mouse Cursor Focus Position'
         ),
         log_level: build_combo(grid, 9, log.LOG_LEVELS, 'Log Level'),
-        max_window_width: number_entry(),
     };
 
     grid.attach(win_label, 0, 0, 1, 1);
@@ -217,45 +177,7 @@ function settings_dialog_view(): [AppWidgets, Gtk.Container] {
     grid.attach(mouse_cursor_follows_active_window_label, 0, 7, 1, 1);
     grid.attach(settings.mouse_cursor_follows_active_window, 1, 7, 1, 1);
 
-    grid.attach(max_window_width_label, 0, 13, 1, 1);
-    grid.attach(settings.max_window_width, 1, 13, 1, 1);
-
     return [settings, grid];
-}
-
-function gaps_section(grid: any, top: number): [any, any] {
-    let outer_label = new Gtk.Label({
-        label: 'Outer',
-        xalign: 0.0,
-        margin_start: 24,
-    });
-
-    let outer_entry = number_entry();
-
-    let inner_label = new Gtk.Label({
-        label: 'Inner',
-        xalign: 0.0,
-        margin_start: 24,
-    });
-
-    let inner_entry = number_entry();
-
-    let section_label = new Gtk.Label({
-        label: 'Gaps (in pixels)',
-        xalign: 0.0,
-    });
-
-    grid.attach(section_label, 0, top, 1, 1);
-    grid.attach(outer_label, 0, top + 1, 1, 1);
-    grid.attach(outer_entry, 1, top + 1, 1, 1);
-    grid.attach(inner_label, 0, top + 2, 1, 1);
-    grid.attach(inner_entry, 1, top + 2, 1, 1);
-
-    return [inner_entry, outer_entry];
-}
-
-function number_entry(): Gtk.Widget {
-    return new Gtk.Entry({input_purpose: Gtk.InputPurpose.NUMBER});
 }
 
 function build_combo(
