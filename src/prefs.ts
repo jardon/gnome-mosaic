@@ -17,6 +17,7 @@ interface AppWidgets {
     mouse_cursor_focus_position: any;
     log_level: any;
     show_indicator: any;
+    active_hint_width: any;
 }
 
 export default class PopShellPreferences extends ExtensionPreferences {
@@ -96,6 +97,15 @@ function settings_dialog_new(): Gtk.Container {
         ext.set_mouse_cursor_focus_location(active_id);
     });
 
+    app.active_hint_width.set_text(String(ext.active_hint_border_width()));
+    app.active_hint_width.connect('activate', (widget: any) => {
+        let parsed = parseInt((widget.get_text() as string).trim());
+        if (!isNaN(parsed)) {
+            ext.set_active_hint_border_width(parsed);
+            Settings.sync();
+        }
+    });
+
     return grid;
 }
 
@@ -141,6 +151,11 @@ function settings_dialog_view(): [AppWidgets, Gtk.Container] {
         hexpand: true,
     });
 
+    let active_hint_width_label = new Gtk.Label({
+        label: 'Active Hint Width',
+        xalign: 0.0,
+    });
+
     const settings = {
         smart_gaps: new Gtk.Switch({halign: Gtk.Align.END}),
         snap_to_grid: new Gtk.Switch({halign: Gtk.Align.END}),
@@ -157,6 +172,9 @@ function settings_dialog_view(): [AppWidgets, Gtk.Container] {
             'Mouse Cursor Focus Position'
         ),
         log_level: build_combo(grid, 9, log.LOG_LEVELS, 'Log Level'),
+        active_hint_width: new Gtk.Entry({
+            input_purpose: Gtk.InputPurpose.NUMBER,
+        }),
     };
 
     grid.attach(win_label, 0, 0, 1, 1);
@@ -176,6 +194,9 @@ function settings_dialog_view(): [AppWidgets, Gtk.Container] {
 
     grid.attach(mouse_cursor_follows_active_window_label, 0, 7, 1, 1);
     grid.attach(settings.mouse_cursor_follows_active_window, 1, 7, 1, 1);
+
+    grid.attach(active_hint_width_label, 0, 10, 1, 1);
+    grid.attach(settings.active_hint_width, 1, 10, 1, 1);
 
     return [settings, grid];
 }
