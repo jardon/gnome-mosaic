@@ -18,6 +18,7 @@ interface AppWidgets {
     log_level: any;
     show_indicator: any;
     active_hint_width: any;
+    gap_width: any;
 }
 
 export default class PopShellPreferences extends ExtensionPreferences {
@@ -106,6 +107,16 @@ function settings_dialog_new(): Gtk.Container {
         }
     });
 
+    app.gap_width.set_text(String(ext.gap_outer()));
+    app.gap_width.connect('activate', (widget: any) => {
+        let parsed = parseInt((widget.get_text() as string).trim());
+        if (!isNaN(parsed)) {
+            ext.set_gap_inner(parsed);
+            ext.set_gap_outer(parsed);
+            Settings.sync();
+        }
+    });
+
     return grid;
 }
 
@@ -156,6 +167,11 @@ function settings_dialog_view(): [AppWidgets, Gtk.Container] {
         xalign: 0.0,
     });
 
+    let gap_width_label = new Gtk.Label({
+        label: 'Gap Width',
+        xalign: 0.0,
+    });
+
     const settings = {
         smart_gaps: new Gtk.Switch({halign: Gtk.Align.END}),
         snap_to_grid: new Gtk.Switch({halign: Gtk.Align.END}),
@@ -173,6 +189,9 @@ function settings_dialog_view(): [AppWidgets, Gtk.Container] {
         ),
         log_level: build_combo(grid, 9, log.LOG_LEVELS, 'Log Level'),
         active_hint_width: new Gtk.Entry({
+            input_purpose: Gtk.InputPurpose.NUMBER,
+        }),
+        gap_width: new Gtk.Entry({
             input_purpose: Gtk.InputPurpose.NUMBER,
         }),
     };
@@ -197,6 +216,9 @@ function settings_dialog_view(): [AppWidgets, Gtk.Container] {
 
     grid.attach(active_hint_width_label, 0, 10, 1, 1);
     grid.attach(settings.active_hint_width, 1, 10, 1, 1);
+
+    grid.attach(gap_width_label, 0, 11, 1, 1);
+    grid.attach(settings.gap_width, 1, 11, 1, 1);
 
     return [settings, grid];
 }
