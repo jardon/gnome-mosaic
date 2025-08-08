@@ -29,7 +29,7 @@ jobs:
               uses: softprops/action-gh-release@v2
               with:
                   tag_name: ${{ steps.get_tag.outputs.tag }}
-                  name: Release ${{ steps.get_tag.outputs.tag }}
+                  name: ${{ steps.get_tag.outputs.tag }}
                   files: |
                       *.zip
               env:
