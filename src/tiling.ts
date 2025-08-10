@@ -159,6 +159,12 @@ export class Tiler {
     }
 
     resize_mode(ext: Ext) {
+        let workspace = global.workspace_manager.get_active_workspace();
+        let windows = workspace.list_windows();
+        // @ts-ignore
+        let visible = windows.filter(w => w.showing_on_its_workspace());
+
+        if (visible.length === 1) return;
         if (!this.window) {
             const win = ext.focus_window();
             if (!win) return;
