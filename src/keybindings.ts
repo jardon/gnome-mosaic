@@ -3,12 +3,14 @@ import type {Ext} from './extension.js';
 import {wm} from 'resource:///org/gnome/shell/ui/main.js';
 import Shell from 'gi://Shell';
 import Meta from 'gi://Meta';
+import {Direction} from './tiling.js';
 
 export class Keybindings {
     global: Object;
     window_focus: Object;
     tiler_bindings: Object;
     resize_bindings: Object;
+    resize_windows: Object;
 
     private ext: Ext;
 
@@ -88,6 +90,24 @@ export class Keybindings {
         this.resize_bindings = {
             'tile-accept': () => ext.tiler.exit(ext),
             'tile-reject': () => ext.tiler.exit(ext),
+        }
+
+        this.resize_windows = {
+            'resize-grow-left': () =>
+                ext.tiler.resize(ext, Direction.Left, false),
+            'resize-shrink-left': () =>
+                ext.tiler.resize(ext, Direction.Right, true),
+            'resize-grow-up': () => ext.tiler.resize(ext, Direction.Up, false),
+            'resize-shrink-up': () =>
+                ext.tiler.resize(ext, Direction.Down, true),
+            'resize-grow-right': () =>
+                ext.tiler.resize(ext, Direction.Right, false),
+            'resize-shrink-right': () =>
+                ext.tiler.resize(ext, Direction.Left, true),
+            'resize-grow-down': () =>
+                ext.tiler.resize(ext, Direction.Down, false),
+            'resize-shrink-down': () =>
+                ext.tiler.resize(ext, Direction.Up, true),
         };
     }
 
