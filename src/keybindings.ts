@@ -7,6 +7,8 @@ import Meta from 'gi://Meta';
 export class Keybindings {
     global: Object;
     window_focus: Object;
+    tiler_bindings: Object;
+    resize_bindings: Object;
 
     private ext: Ext;
 
@@ -67,6 +69,25 @@ export class Keybindings {
 
             'mosaic-workspace-down': () =>
                 ext.move_workspace(Meta.DisplayDirection.DOWN),
+        };
+
+        this.tiler_bindings = {
+            'management-orientation': () => this.ext.tiler.toggle_orientation(ext),
+            'tile-move-left': () => this.ext.tiler.move_left(ext),
+            'tile-move-down': () => this.ext.tiler.move_down(ext),
+            'tile-move-up': () => this.ext.tiler.move_up(ext),
+            'tile-move-right': () => this.ext.tiler.move_right(ext),
+            'tile-swap-left': () => this.ext.tiler.swap_left(ext),
+            'tile-swap-down': () => this.ext.tiler.swap_down(ext),
+            'tile-swap-up': () => this.ext.tiler.swap_up(ext),
+            'tile-swap-right': () => this.ext.tiler.swap_right(ext),
+            'tile-accept': () => this.ext.tiler.accept(ext),
+            'tile-reject': () => this.ext.tiler.exit(ext),
+        };
+
+        this.resize_bindings = {
+            'tile-accept': () => this.ext.tiler.exit(ext),
+            'tile-reject': () => this.ext.tiler.exit(ext),
         };
     }
 
