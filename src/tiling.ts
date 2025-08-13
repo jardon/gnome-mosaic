@@ -34,8 +34,6 @@ const ICON_UP_ARROW: string = 'go-up-symbolic';
 const ICON_DOWN_ARROW: string = 'go-down-symbolic';
 
 export class Tiler {
-    private keybindings: Object;
-    private resize_bindings: Object;
     private resize_grab: any = null;
     private resize_keymon: null | number = null;
     private resize_keymon_release: null | number = null;
@@ -87,7 +85,7 @@ export class Tiler {
 
     queue: exec.ChannelExecutor<() => void> = new exec.ChannelExecutor();
 
-    constructor(ext: Ext) {
+    constructor() {
         this.resize_hint.visible = false;
 
         const top_box: St.Widget = new St.BoxLayout({
@@ -137,25 +135,6 @@ export class Tiler {
         this.resize_hint.height = 128;
 
         layoutManager.addChrome(this.resize_hint);
-
-        this.keybindings = {
-            'management-orientation': () => this.toggle_orientation(ext),
-            'tile-move-left': () => this.move_left(ext),
-            'tile-move-down': () => this.move_down(ext),
-            'tile-move-up': () => this.move_up(ext),
-            'tile-move-right': () => this.move_right(ext),
-            'tile-swap-left': () => this.swap_left(ext),
-            'tile-swap-down': () => this.swap_down(ext),
-            'tile-swap-up': () => this.swap_up(ext),
-            'tile-swap-right': () => this.swap_right(ext),
-            'tile-accept': () => this.accept(ext),
-            'tile-reject': () => this.exit(ext),
-        };
-
-        this.resize_bindings = {
-            'tile-accept': () => this.exit(ext),
-            'tile-reject': () => this.exit(ext),
-        };
     }
 
     resize_mode(ext: Ext) {
@@ -252,8 +231,8 @@ export class Tiler {
 
             ext.keybindings
                 .disable(ext.keybindings.window_focus)
-                .disable(this.keybindings)
-                .enable(this.resize_bindings);
+                .disable(ext.keybindings.tiler_bindings)
+                .enable(ext.keybindings.resize_bindings);
 
             this.update_resize_position(ext);
 
@@ -805,7 +784,7 @@ export class Tiler {
 
             ext.keybindings
                 .disable(ext.keybindings.window_focus)
-                .enable(this.keybindings);
+                .enable(ext.keybindings.tiler_bindings);
         }
     }
 
@@ -875,8 +854,8 @@ export class Tiler {
 
             // Disable tiling keybindings
             ext.keybindings
-                .disable(this.keybindings)
-                .disable(this.resize_bindings)
+                .disable(ext.keybindings.tiler_bindings)
+                .disable(ext.keybindings.resize_bindings)
                 .enable(ext.keybindings.window_focus);
         }
     }

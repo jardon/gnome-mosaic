@@ -233,7 +233,7 @@ export class Ext extends Ecs.System<ExtEvent> {
     focus_selector: Focus.FocusSelector = new Focus.FocusSelector();
 
     /** Calculates window placements when tiling and focus-switching */
-    tiler: Tiling.Tiler = new Tiling.Tiler(this);
+    tiler: Tiling.Tiler = new Tiling.Tiler();
 
     constructor() {
         super(new Executor.GLibExecutor());
