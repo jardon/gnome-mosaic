@@ -90,7 +90,7 @@ export class Keybindings {
         this.resize_bindings = {
             'tile-accept': () => ext.tiler.exit(ext),
             'tile-reject': () => ext.tiler.exit(ext),
-        }
+        };
 
         this.resize_windows = {
             'resize-grow-left': () =>
