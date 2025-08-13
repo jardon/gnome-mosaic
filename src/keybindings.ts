@@ -72,8 +72,7 @@ export class Keybindings {
         };
 
         this.tiler_bindings = {
-            'management-orientation': () =>
-                ext.tiler.toggle_orientation(ext),
+            'management-orientation': () => ext.tiler.toggle_orientation(ext),
             'tile-move-left': () => ext.tiler.move_left(ext),
             'tile-move-down': () => ext.tiler.move_down(ext),
             'tile-move-up': () => ext.tiler.move_up(ext),
