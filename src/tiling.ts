@@ -135,7 +135,6 @@ export class Tiler {
         this.resize_hint.height = 128;
 
         layoutManager.addChrome(this.resize_hint);
-
     }
 
     resize_mode(ext: Ext) {
