@@ -10,7 +10,7 @@ export class Keybindings {
     window_focus: Object;
     tiler_bindings: Object;
     resize_bindings: Object;
-    resize_windows: Object;
+    // resize_windows: Object;
 
     private ext: Ext;
 
@@ -19,6 +19,21 @@ export class Keybindings {
         this.global = {
             'resize-mode': () => ext.tiler.resize_mode(ext),
             'tile-enter': () => ext.tiler.enter(ext),
+            'resize-grow-left': () =>
+                ext.tiler.resize(ext, Direction.Left, false),
+            'resize-shrink-left': () =>
+                ext.tiler.resize(ext, Direction.Right, true),
+            'resize-grow-up': () => ext.tiler.resize(ext, Direction.Up, false),
+            'resize-shrink-up': () =>
+                ext.tiler.resize(ext, Direction.Down, true),
+            'resize-grow-right': () =>
+                ext.tiler.resize(ext, Direction.Right, false),
+            'resize-shrink-right': () =>
+                ext.tiler.resize(ext, Direction.Left, true),
+            'resize-grow-down': () =>
+                ext.tiler.resize(ext, Direction.Down, false),
+            'resize-shrink-down': () =>
+                ext.tiler.resize(ext, Direction.Up, true),
         };
 
         this.window_focus = {
@@ -92,23 +107,6 @@ export class Keybindings {
             'tile-reject': () => ext.tiler.exit(ext),
         };
 
-        this.resize_windows = {
-            'resize-grow-left': () =>
-                ext.tiler.resize(ext, Direction.Left, false),
-            'resize-shrink-left': () =>
-                ext.tiler.resize(ext, Direction.Right, true),
-            'resize-grow-up': () => ext.tiler.resize(ext, Direction.Up, false),
-            'resize-shrink-up': () =>
-                ext.tiler.resize(ext, Direction.Down, true),
-            'resize-grow-right': () =>
-                ext.tiler.resize(ext, Direction.Right, false),
-            'resize-shrink-right': () =>
-                ext.tiler.resize(ext, Direction.Left, true),
-            'resize-grow-down': () =>
-                ext.tiler.resize(ext, Direction.Down, false),
-            'resize-shrink-down': () =>
-                ext.tiler.resize(ext, Direction.Up, true),
-        };
     }
 
     enable(keybindings: any) {
