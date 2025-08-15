@@ -188,6 +188,46 @@
             <summary>Toggle resize mode</summary>
         </key>
 
+        <key type="as" name="resize-grow-left">
+            <default><![CDATA[['<Super><Alt>KP_Left','<Super><Alt>Left','<Super><Alt>h']]]></default>
+            <summary>Resize window (grow left)</summary>
+        </key>
+
+        <key type="as" name="resize-shrink-left">
+            <default><![CDATA[['<Super><Alt><Shift>KP_Right', '<Super><Alt><Shift>Right','<Super><Alt><Shift>l']]]></default>
+            <summary>Resize window (shrink left)</summary>
+        </key>
+
+        <key type="as" name="resize-grow-up">
+            <default><![CDATA[['<Super><Alt>KP_Up','<Super><Alt>Up','<Super><Alt>k']]]></default>
+            <summary>Resize window (grow up)</summary>
+        </key>
+
+        <key type="as" name="resize-shrink-up">
+            <default><![CDATA[['<Super><Alt><Shift>KP_Down', '<Super><Alt><Shift>Down','<Super><Alt><Shift>j']]]></default>
+            <summary>Resize window (shrink up)</summary>
+        </key>
+
+        <key type="as" name="resize-grow-right">
+            <default><![CDATA[['<Super><Alt>KP_Right','<Super><Alt>Right','<Super><Alt>l']]]></default>
+            <summary>Resize window (grow right)</summary>
+        </key>
+
+        <key type="as" name="resize-shrink-right">
+            <default><![CDATA[['<Super><Alt><Shift>KP_Left', '<Super><Alt><Shift>Left','<Super><Alt><Shift>h']]]></default>
+            <summary>Resize window (shrink right)</summary>
+        </key>
+
+        <key type="as" name="resize-grow-down">
+            <default><![CDATA[['<Super><Alt>KP_Down','<Super><Alt>Down','<Super><Alt>j']]]></default>
+            <summary>Resize window (grow down)</summary>
+        </key>
+
+        <key type="as" name="resize-shrink-down">
+            <default><![CDATA[['<Super><Alt><Shift>KP_Up', '<Super><Alt><Shift>Up','<Super><Alt><Shift>k']]]></default>
+            <summary>Resize window (shrink down)</summary>
+        </key>
+
         <!-- Swap windows -->
         <key type="as" name="tile-swap-left">
             <default><![CDATA[['<Primary>Left','<Primary>KP_Left','<Primary>h']]]></default>
