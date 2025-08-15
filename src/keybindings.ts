@@ -15,8 +15,8 @@ export class Keybindings {
     constructor(ext: Ext) {
         this.ext = ext;
         this.global = {
-            'resize-mode': () => ext.tiler.resize_mode(ext),
-            'tile-enter': () => ext.tiler.enter(ext),
+            'resize-mode': () => ext.tiler.resize_mode(),
+            'tile-enter': () => ext.tiler.enter(),
         };
 
         this.window_focus = {
@@ -41,16 +41,16 @@ export class Keybindings {
             'toggle-tiling': () => ext.toggle_tiling(),
 
             'tile-move-left-global': () =>
-                ext.tiler.move_left(ext, ext.focus_window()?.entity),
+                ext.tiler.move_left(ext.focus_window()?.entity),
 
             'tile-move-down-global': () =>
-                ext.tiler.move_down(ext, ext.focus_window()?.entity),
+                ext.tiler.move_down(ext.focus_window()?.entity),
 
             'tile-move-up-global': () =>
-                ext.tiler.move_up(ext, ext.focus_window()?.entity),
+                ext.tiler.move_up(ext.focus_window()?.entity),
 
             'tile-move-right-global': () =>
-                ext.tiler.move_right(ext, ext.focus_window()?.entity),
+                ext.tiler.move_right(ext.focus_window()?.entity),
 
             'mosaic-monitor-left': () =>
                 ext.move_monitor(Meta.DisplayDirection.LEFT),
@@ -72,22 +72,22 @@ export class Keybindings {
         };
 
         this.tiler_bindings = {
-            'management-orientation': () => ext.tiler.toggle_orientation(ext),
-            'tile-move-left': () => ext.tiler.move_left(ext),
-            'tile-move-down': () => ext.tiler.move_down(ext),
-            'tile-move-up': () => ext.tiler.move_up(ext),
-            'tile-move-right': () => ext.tiler.move_right(ext),
-            'tile-swap-left': () => ext.tiler.swap_left(ext),
-            'tile-swap-down': () => ext.tiler.swap_down(ext),
-            'tile-swap-up': () => ext.tiler.swap_up(ext),
-            'tile-swap-right': () => ext.tiler.swap_right(ext),
-            'tile-accept': () => ext.tiler.accept(ext),
-            'tile-reject': () => ext.tiler.exit(ext),
+            'management-orientation': () => ext.tiler.toggle_orientation(),
+            'tile-move-left': () => ext.tiler.move_left(),
+            'tile-move-down': () => ext.tiler.move_down(),
+            'tile-move-up': () => ext.tiler.move_up(),
+            'tile-move-right': () => ext.tiler.move_right(),
+            'tile-swap-left': () => ext.tiler.swap_left(),
+            'tile-swap-down': () => ext.tiler.swap_down(),
+            'tile-swap-up': () => ext.tiler.swap_up(),
+            'tile-swap-right': () => ext.tiler.swap_right(),
+            'tile-accept': () => ext.tiler.accept(),
+            'tile-reject': () => ext.tiler.exit(),
         };
 
         this.resize_bindings = {
-            'tile-accept': () => ext.tiler.exit(ext),
-            'tile-reject': () => ext.tiler.exit(ext),
+            'tile-accept': () => ext.tiler.exit(),
+            'tile-reject': () => ext.tiler.exit(),
         };
     }
 
