@@ -233,7 +233,7 @@ export class Ext extends Ecs.System<ExtEvent> {
     focus_selector: Focus.FocusSelector = new Focus.FocusSelector();
 
     /** Calculates window placements when tiling and focus-switching */
-    tiler: Tiling.Tiler = new Tiling.Tiler();
+    tiler: Tiling.Tiler = new Tiling.Tiler(this);
 
     constructor() {
         super(new Executor.GLibExecutor());
@@ -625,7 +625,7 @@ export class Ext extends Ecs.System<ExtEvent> {
     }
 
     exit_modes() {
-        this.tiler.exit(this);
+        this.tiler.exit();
         this.overlay.visible = false;
     }
 
@@ -804,7 +804,7 @@ export class Ext extends Ecs.System<ExtEvent> {
     on_destroy(win: Entity) {
         // Exit tiling adjustment mode on window destroy.
         if (this.tiler.window !== null && win == this.tiler.window)
-            this.tiler.exit(this);
+            this.tiler.exit();
 
         const [prev_a, prev_b] = this.prev_focused;
 
@@ -1189,7 +1189,7 @@ export class Ext extends Ecs.System<ExtEvent> {
                 }
             }
         } else if (this.settings.snap_to_grid()) {
-            this.tiler.snap(this, win);
+            this.tiler.snap(win);
         }
     }
 
@@ -2272,7 +2272,7 @@ export class Ext extends Ecs.System<ExtEvent> {
     // Snaps all windows to the window grid
     snap_windows() {
         for (const window of this.windows.values()) {
-            if (window.is_tilable(this)) this.tiler.snap(this, window);
+            if (window.is_tilable(this)) this.tiler.snap(window);
         }
     }
 
@@ -2719,7 +2719,7 @@ export class Ext extends Ecs.System<ExtEvent> {
     update_snapped() {
         for (const entity of this.snapped.find(val => val)) {
             const window = this.windows.get(entity);
-            if (window) this.tiler.snap(this, window);
+            if (window) this.tiler.snap(window);
         }
     }
 
