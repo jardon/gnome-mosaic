@@ -676,7 +676,7 @@ function pointer_already_on_window(meta: Meta.Window): boolean {
     return cursor.intersects(meta.get_frame_rect());
 }
 
-async function getBorderRadii(
+export async function getBorderRadii(
     actor: Meta.WindowActor
 ): Promise<[number, number, number, number] | undefined> {
     const opaqueLimit = 200;
