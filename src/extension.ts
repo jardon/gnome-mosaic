@@ -865,6 +865,7 @@ export class Ext extends Ecs.System<ExtEvent> {
         this.unmaximize_workspace(win);
 
         this.show_border_on_focused();
+        this.set_overlay(win);
 
         if (
             this.auto_tiler &&
