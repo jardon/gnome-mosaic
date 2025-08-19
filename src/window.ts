@@ -549,11 +549,12 @@ export class ShellWindow {
 
     async update_border_style() {
         const {settings} = this.ext;
+        const margin = 6;
         const radii = await getBorderRadii(
             this.meta.get_compositor_private() as Meta.WindowActor
         );
         const radii_values =
-            radii?.map(v => `${v}px`).join(' ') || '0px 0px 0px 0px';
+            radii?.map(v => `${v + margin}px`).join(' ') || '0px 0px 0px 0px';
         if (this.border) {
             this.border.set_style(
                 `border-radius: ${radii_values};` +
@@ -679,7 +680,6 @@ async function getBorderRadii(
     actor: Meta.WindowActor
 ): Promise<[number, number, number, number] | undefined> {
     const opaqueLimit = 200;
-    const margin = 6;
     const {x, y, width, height} = actor.get_meta_window().get_frame_rect();
     const monitorIndex = actor.get_meta_window().get_monitor();
     // @ts-expect-error
@@ -739,8 +739,8 @@ async function getBorderRadii(
     }
     if (alphaBottom === -1) alphaBottom = 0;
 
-    const radiusTop = alphaTop / scale + margin;
-    const radiusBottom = alphaBottom / scale + margin;
+    const radiusTop = alphaTop / scale;
+    const radiusBottom = alphaBottom / scale;
 
     return [radiusTop, radiusTop, radiusBottom, radiusBottom];
 }
