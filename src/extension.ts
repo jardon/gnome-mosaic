@@ -26,6 +26,7 @@ import type {Entity} from './ecs.js';
 import type {ExtEvent} from './events.js';
 import {Rectangle} from './rectangle.js';
 import type {Indicator} from './panel_settings.js';
+import {getBorderRadii} from './window.js';
 
 import {Fork} from './fork.js';
 
@@ -291,11 +292,6 @@ export class Ext extends Ecs.System<ExtEvent> {
         this.dbus.WindowQuit = (win: [number, number]) => {
             this.windows.get(win)?.meta.delete(global.get_current_time());
         };
-
-        const [major] = GNOME_VERSION.split('.').map((s: string) => Number(s));
-        this.overlay.set_style(
-            `background-color: ${major > 46 ? '-st-accent-color' : this.settings.gnome_legacy_accent_color()}; border-radius: 20px`
-        );
     }
 
     // System interface
@@ -1942,11 +1938,24 @@ export class Ext extends Ecs.System<ExtEvent> {
         this.gap_outer = gap * 4 * this.dpi;
     }
 
-    set_overlay(rect: Rectangle) {
-        this.overlay.x = rect.x;
-        this.overlay.y = rect.y;
-        this.overlay.width = rect.width;
-        this.overlay.height = rect.height;
+    async set_overlay(win: Window.ShellWindow) {
+        this.overlay.x = win.rect().x;
+        this.overlay.y = win.rect().y;
+        this.overlay.width = win.rect().width;
+        this.overlay.height = win.rect().height;
+
+        const [major] = GNOME_VERSION.split('.').map((s: string) => Number(s));
+        const radii = await getBorderRadii(
+            win.meta.get_compositor_private() as Meta.WindowActor
+        );
+        const radii_values =
+            radii?.map(v => `${v}px`).join(' ') || '0px 0px 0px 0px';
+        if (this.overlay) {
+            this.overlay.set_style(
+                `border-radius: ${radii_values};` +
+                    `background-color: ${major > 46 ? '-st-accent-color' : this.settings.gnome_legacy_accent_color()};`
+            );
+        }
     }
 
     /** Begin listening for signals from windows, and add any pre-existing windows. */

@@ -453,7 +453,7 @@ export class Tiler {
     overlay_watch(window: window.ShellWindow) {
         this.ext.register_fn(() => {
             if (window) {
-                this.ext.set_overlay(window.rect());
+                this.ext.set_overlay(window);
                 window.activate(false);
             }
         });
@@ -530,7 +530,7 @@ export class Tiler {
         if (watching) {
             this.overlay_watch(watching);
         } else {
-            this.ext.set_overlay(focused.rect());
+            this.ext.set_overlay(focused);
         }
     }
 
@@ -705,7 +705,7 @@ export class Tiler {
 
     swap(selector: window.ShellWindow | null) {
         if (selector) {
-            this.ext.set_overlay(selector.rect());
+            this.ext.set_overlay(selector);
             this.swap_window = selector.entity;
         }
     }
@@ -762,7 +762,7 @@ export class Tiler {
             }
 
             // Set overlay to match window
-            this.ext.set_overlay(win.rect());
+            this.ext.set_overlay(win);
             this.ext.overlay.visible = true;
 
             if (
