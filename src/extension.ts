@@ -1616,100 +1616,61 @@ export class Ext extends Ecs.System<ExtEvent> {
                         let new_area: [number, number, number, number] =
                             default_area;
 
-                        const fork_entity = this.auto_tiler.attached.get(
-                            win.entity
-                        );
-                        if (fork_entity) {
-                            const forest = this.auto_tiler.forest;
-                            const fork = forest.forks.get(fork_entity);
-                            if (fork) {
-                                const left = fork.area_of_left(this);
-                                // const right = fork.area_of_right(this)
+                        const left = fork.area_of_left(this);
+                        const isHorizontal = fork.is_horizontal();
 
-                                if (
-                                    orientation ===
-                                        Lib.Orientation.HORIZONTAL &&
-                                    fork.is_horizontal()
-                                ) {
-                                    new_area = swap
-                                        ? [
-                                              left.x,
-                                              left.y,
-                                              left.width,
-                                              left.height,
-                                          ]
-                                        : [
-                                              area.x +
-                                                  left.width +
-                                                  this.gap_inner,
-                                              area.y,
-                                              area.width -
-                                                  left.width -
-                                                  this.gap_inner,
-                                              left.height,
-                                          ];
-                                } else if (
-                                    orientation === Lib.Orientation.VERTICAL &&
-                                    !fork.is_horizontal()
-                                ) {
-                                    new_area = swap
-                                        ? [
-                                              left.x,
-                                              left.y,
-                                              left.width,
-                                              left.height + this.gap_inner_half,
-                                          ]
-                                        : [
-                                              area.x,
-                                              area.y +
-                                                  left.height +
-                                                  this.gap_inner,
-                                              left.width,
-                                              area.height -
-                                                  left.height -
-                                                  this.gap_inner,
-                                          ];
-                                } else if (
-                                    orientation ===
-                                        Lib.Orientation.HORIZONTAL &&
-                                    !fork.is_horizontal()
-                                ) {
-                                    new_area = swap ? [
-                                        area.x,
-                                        area.y,
-                                        area.width * (left.height / area.height),
-                                        area.height,
-                                    ] : [
-                                        area.x + (area.width * (left.height / area.height)),
-                                        area.y,
-                                        area.width * ((area.height - left.height) / area.height),
-                                        area.height,
-                                    ]
-                                } else if (
-                                    orientation ===
-                                        Lib.Orientation.VERTICAL &&
-                                    fork.is_horizontal()
-                                ) {
-                                    new_area = swap ? [
-                                        area.x,
-                                        area.y,
-                                        area.width,
-                                        area.height * (left.width / area.width)
-                                    ] : [
-                                        area.x,
-                                        area.y + (area.height * (left.width / area.width)),
-                                        area.width,
-                                        area.height * ((area.width - left.width) / area.width),
-                                    ]
-                                }
-                            }
+                        if (
+                            orientation === Lib.Orientation.HORIZONTAL &&
+                            isHorizontal
+                        ) {
+                            const x = swap
+                                ? left.x
+                                : area.x + left.width + this.gap_inner;
+                            const y = area.y;
+                            const width = swap
+                                ? left.width
+                                : area.width - left.width - this.gap_inner;
+                            const height = left.height;
+                            new_area = [x, y, width, height];
+                        } else if (
+                            orientation === Lib.Orientation.VERTICAL &&
+                            !isHorizontal
+                        ) {
+                            const x = area.x;
+                            const y = swap
+                                ? left.y
+                                : area.y + left.height + this.gap_inner;
+                            const width = left.width;
+                            const height = swap
+                                ? left.height + this.gap_inner_half
+                                : area.height - left.height - this.gap_inner;
+                            new_area = [x, y, width, height];
+                        } else if (
+                            orientation === Lib.Orientation.HORIZONTAL &&
+                            !isHorizontal
+                        ) {
+                            const ratio = left.height / area.height;
+                            const width = area.width * ratio;
+                            const x = swap ? area.x : area.x + width;
+                            const newWidth = swap ? width : area.width - width;
+                            new_area = [x, area.y, newWidth, area.height];
+                        } else if (
+                            orientation === Lib.Orientation.VERTICAL &&
+                            isHorizontal
+                        ) {
+                            const ratio = left.width / area.width;
+                            const height = area.height * ratio;
+                            const y = swap ? area.y : area.y + height;
+                            const newHeight = swap
+                                ? height
+                                : area.height - height;
+                            new_area = [area.x, y, area.width, newHeight];
                         }
 
                         this.overlay.x = new_area[0];
                         this.overlay.y = new_area[1];
                         this.overlay.width = new_area[2];
                         this.overlay.height = new_area[3];
-
                         this.overlay.visible = true;
 
                         return true;
