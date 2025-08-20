@@ -1593,11 +1593,9 @@ export class Ext extends Ecs.System<ExtEvent> {
                         }
 
                         const {orientation, swap} = result;
-
                         const half_width = area.width / 2;
                         const half_height = area.height / 2;
-
-                        let new_area: [number, number, number, number] =
+                        let default_area: [number, number, number, number] =
                             orientation === Lib.Orientation.HORIZONTAL
                                 ? swap
                                     ? [area.x, area.y, half_width, area.height]
@@ -1615,6 +1613,65 @@ export class Ext extends Ecs.System<ExtEvent> {
                                         area.width,
                                         half_height,
                                     ];
+                        let new_area: [number, number, number, number] =
+                            default_area;
+
+                        const fork_entity = this.auto_tiler.attached.get(
+                            win.entity
+                        );
+                        if (fork_entity) {
+                            const forest = this.auto_tiler.forest;
+                            const fork = forest.forks.get(fork_entity);
+                            if (fork) {
+                                const left = fork.area_of_left(this);
+                                // const right = fork.area_of_right(this)
+
+                                if (
+                                    orientation ===
+                                        Lib.Orientation.HORIZONTAL &&
+                                    fork.is_horizontal()
+                                ) {
+                                    new_area = swap
+                                        ? [
+                                              left.x,
+                                              left.y,
+                                              left.width,
+                                              left.height,
+                                          ]
+                                        : [
+                                              area.x +
+                                                  left.width +
+                                                  this.gap_inner,
+                                              area.y,
+                                              area.width -
+                                                  left.width -
+                                                  this.gap_inner,
+                                              left.height,
+                                          ];
+                                } else if (
+                                    orientation === Lib.Orientation.VERTICAL &&
+                                    !fork.is_horizontal()
+                                ) {
+                                    new_area = swap
+                                        ? [
+                                              left.x,
+                                              left.y,
+                                              left.width,
+                                              left.height + this.gap_inner_half,
+                                          ]
+                                        : [
+                                              area.x,
+                                              area.y +
+                                                  left.height +
+                                                  this.gap_inner,
+                                              left.width,
+                                              area.height -
+                                                  left.height -
+                                                  this.gap_inner,
+                                          ];
+                                }
+                            }
+                        }
 
                         this.overlay.x = new_area[0];
                         this.overlay.y = new_area[1];
