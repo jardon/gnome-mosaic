@@ -1669,6 +1669,38 @@ export class Ext extends Ecs.System<ExtEvent> {
                                                   left.height -
                                                   this.gap_inner,
                                           ];
+                                } else if (
+                                    orientation ===
+                                        Lib.Orientation.HORIZONTAL &&
+                                    !fork.is_horizontal()
+                                ) {
+                                    new_area = swap ? [
+                                        area.x,
+                                        area.y,
+                                        area.width * (left.height / area.height),
+                                        area.height,
+                                    ] : [
+                                        area.x + (area.width * (left.height / area.height)),
+                                        area.y,
+                                        area.width * ((area.height - left.height) / area.height),
+                                        area.height,
+                                    ]
+                                } else if (
+                                    orientation ===
+                                        Lib.Orientation.VERTICAL &&
+                                    fork.is_horizontal()
+                                ) {
+                                    new_area = swap ? [
+                                        area.x,
+                                        area.y,
+                                        area.width,
+                                        area.height * (left.width / area.width)
+                                    ] : [
+                                        area.x,
+                                        area.y + (area.height * (left.width / area.width)),
+                                        area.width,
+                                        area.height * ((area.width - left.width) / area.width),
+                                    ]
                                 }
                             }
                         }
