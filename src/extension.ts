@@ -1495,6 +1495,7 @@ export class Ext extends Ecs.System<ExtEvent> {
                     return;
 
                 const workspace = this.active_workspace();
+                let is_sibling: Entity | null;
 
                 this.drag_signal = GLib.timeout_add(
                     GLib.PRIORITY_LOW,
@@ -1564,11 +1565,10 @@ export class Ext extends Ecs.System<ExtEvent> {
                             area.width -= this.gap_outer * 2;
                             area.height -= this.gap_outer * 2;
                         } else if (attach_to) {
-                            const is_sibling =
-                                this.auto_tiler.windows_are_siblings(
-                                    entity,
-                                    attach_to.entity
-                                );
+                            is_sibling = this.auto_tiler.windows_are_siblings(
+                                entity,
+                                attach_to.entity
+                            );
 
                             [area, monitor_attachment] = is_sibling
                                 ? [fork.area, false]
@@ -1593,11 +1593,9 @@ export class Ext extends Ecs.System<ExtEvent> {
                         }
 
                         const {orientation, swap} = result;
-
                         const half_width = area.width / 2;
                         const half_height = area.height / 2;
-
-                        let new_area: [number, number, number, number] =
+                        let default_area: [number, number, number, number] =
                             orientation === Lib.Orientation.HORIZONTAL
                                 ? swap
                                     ? [area.x, area.y, half_width, area.height]
@@ -1615,12 +1613,22 @@ export class Ext extends Ecs.System<ExtEvent> {
                                         area.width,
                                         half_height,
                                     ];
+                        let new_area: [number, number, number, number] =
+                            default_area;
+
+                        if (is_sibling) {
+                            new_area = this.ratiod_fork_area(
+                                area,
+                                swap,
+                                fork,
+                                orientation
+                            );
+                        }
 
                         this.overlay.x = new_area[0];
                         this.overlay.y = new_area[1];
                         this.overlay.width = new_area[2];
                         this.overlay.height = new_area[3];
-
                         this.overlay.visible = true;
 
                         return true;
@@ -1628,6 +1636,51 @@ export class Ext extends Ecs.System<ExtEvent> {
                 );
             }
         }
+    }
+
+    ratiod_fork_area(
+        area: Rectangular,
+        swap: boolean,
+        fork: Fork,
+        orientation: Lib.Orientation
+    ): [number, number, number, number] {
+        const left = fork.area_of_left(this);
+        const isHorizontal = fork.is_horizontal();
+
+        if (orientation === Lib.Orientation.HORIZONTAL && isHorizontal) {
+            const x = swap ? left.x : area.x + left.width + this.gap_inner;
+            const y = area.y;
+            const width = swap
+                ? left.width
+                : area.width - left.width - this.gap_inner;
+            const height = left.height;
+            return [x, y, width, height];
+        } else if (orientation === Lib.Orientation.VERTICAL && !isHorizontal) {
+            const x = area.x;
+            const y = swap ? left.y : area.y + left.height + this.gap_inner;
+            const width = left.width;
+            const height = swap
+                ? left.height + this.gap_inner_half
+                : area.height - left.height - this.gap_inner;
+            return [x, y, width, height];
+        } else if (
+            orientation === Lib.Orientation.HORIZONTAL &&
+            !isHorizontal
+        ) {
+            const ratio = left.height / area.height;
+            const width = area.width * ratio;
+            const x = swap ? area.x : area.x + width;
+            const newWidth = swap ? width : area.width - width;
+            return [x, area.y, newWidth, area.height];
+        } else if (orientation === Lib.Orientation.VERTICAL && isHorizontal) {
+            const ratio = left.width / area.width;
+            const height = area.height * ratio;
+            const y = swap ? area.y : area.y + height;
+            const newHeight = swap ? height : area.height - height;
+            return [area.x, y, area.width, newHeight];
+        }
+
+        return [area.x, area.y, area.width, area.height];
     }
 
     on_gtk_shell_changed() {
