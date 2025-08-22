@@ -107,7 +107,6 @@ function settings_dialog_new(): Gtk.Container {
         }
     });
 
-    app.gap_width.set_text(String(ext.gap_outer()));
     app.gap_width.connect('activate', (widget: any) => {
         let parsed = parseInt((widget.get_text() as string).trim());
         if (!isNaN(parsed)) {
