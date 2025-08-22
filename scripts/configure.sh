@@ -66,6 +66,10 @@ set_keybindings() {
     dconf write ${KEYS_GNOME_WM}/move-to-workspace-down "@as []"
     # Move window one workspace up
     dconf write ${KEYS_GNOME_WM}/move-to-workspace-up "@as []"
+    # Move window one workspace left
+    dconf write ${KEYS_GNOME_WM}/move-to-workspace-left "@as []"
+    # Move window one workspace right
+    dconf write ${KEYS_GNOME_WM}/move-to-workspace-right "@as []"
     # Move window one monitor to the right
     dconf write ${KEYS_GNOME_WM}/move-to-monitor-right "@as []"
 
