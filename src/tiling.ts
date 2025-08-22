@@ -595,9 +595,11 @@ export class Tiler {
     }
 
     resize(direction: Direction, inverse: boolean) {
-        if (!this.window) return;
+        if (!this.window && !this.ext.focus_window()?.entity) return;
 
-        const window = this.ext.windows.get(this.window);
+        const window = this.ext.windows.get(
+            this.window || this.ext.focus_window()!.entity
+        );
         if (!window) return;
 
         if (this.ext.auto_tiler) {

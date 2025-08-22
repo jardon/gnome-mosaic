@@ -11,18 +11,20 @@ Directional actions can use either the standard arrow keys or their Vim equivale
 
 ### Move, resize, and swap windows
 
-| Shortcut                         | Action                                   |
-| -------------------------------- | ---------------------------------------- |
-| `SUPER` + `Direction keys`       | Switch focus between windows             |
-| `SUPER` + `Enter`                | Enter window adjustment mode             |
-| `SUPER` + `r`                    | Enter window resize mode                 |
-| `Direction keys`                 | Move window (while in adjustment mode)   |
-| `Shift` + `Direction keys`       | Resize window (while in adjustment mode) |
-| `Ctrl` + `Direction keys`        | Swap windows (while in adjustment mode)  |
-| `Enter`                          | Apply changes (exit adjustment mode)     |
-| `ESC`                            | Cancel (exit adjustment mode)            |
-| `SUPER` + `Left click` + `Drag`  | Move window (without adjustment mode)    |
-| `SUPER` + `Right click` + `Drag` | Resize window (without adjustment mode)  |
+| Shortcut                                     | Action                                   |
+| -------------------------------------------- | ---------------------------------------- |
+| `SUPER` + `Direction keys`                   | Switch focus between windows             |
+| `SUPER` + `Enter`                            | Enter window adjustment mode             |
+| `SUPER` + `r`                                | Enter window resize mode                 |
+| `Direction keys`                             | Move window (while in adjustment mode)   |
+| `Shift` + `Direction keys`                   | Resize window (while in adjustment mode) |
+| `Ctrl` + `Direction keys`                    | Swap windows (while in adjustment mode)  |
+| `Enter`                                      | Apply changes (exit adjustment mode)     |
+| `ESC`                                        | Cancel (exit adjustment mode)            |
+| `SUPER` + `Left click` + `Drag`              | Move window (without adjustment mode)    |
+| `SUPER` + `Right click` + `Drag`             | Resize window (without adjustment mode)  |
+| `SUPER` + `Alt` + `Direction keys`           | Resize window (grow in direction)        |
+| `SUPER` + `Alt` + `Shift` + `Direction keys` | Resize window (shrink in direction)      |
 
 ### Manipulate windows
 

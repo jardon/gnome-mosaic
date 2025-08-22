@@ -188,6 +188,46 @@
             <summary>Toggle resize mode</summary>
         </key>
 
+        <key type="as" name="resize-grow-left">
+            <default><![CDATA[['<Super><Alt>KP_Left','<Super><Alt>Left','<Super><Alt>h']]]></default>
+            <summary>Resize window (grow left)</summary>
+        </key>
+
+        <key type="as" name="resize-shrink-left">
+            <default><![CDATA[['<Super><Alt><Shift>KP_Right', '<Super><Alt><Shift>Right','<Super><Alt><Shift>l']]]></default>
+            <summary>Resize window (shrink left)</summary>
+        </key>
+
+        <key type="as" name="resize-grow-up">
+            <default><![CDATA[['<Super><Alt>KP_Up','<Super><Alt>Up','<Super><Alt>k']]]></default>
+            <summary>Resize window (grow up)</summary>
+        </key>
+
+        <key type="as" name="resize-shrink-up">
+            <default><![CDATA[['<Super><Alt><Shift>KP_Down', '<Super><Alt><Shift>Down','<Super><Alt><Shift>j']]]></default>
+            <summary>Resize window (shrink up)</summary>
+        </key>
+
+        <key type="as" name="resize-grow-right">
+            <default><![CDATA[['<Super><Alt>KP_Right','<Super><Alt>Right','<Super><Alt>l']]]></default>
+            <summary>Resize window (grow right)</summary>
+        </key>
+
+        <key type="as" name="resize-shrink-right">
+            <default><![CDATA[['<Super><Alt><Shift>KP_Left', '<Super><Alt><Shift>Left','<Super><Alt><Shift>h']]]></default>
+            <summary>Resize window (shrink right)</summary>
+        </key>
+
+        <key type="as" name="resize-grow-down">
+            <default><![CDATA[['<Super><Alt>KP_Down','<Super><Alt>Down','<Super><Alt>j']]]></default>
+            <summary>Resize window (grow down)</summary>
+        </key>
+
+        <key type="as" name="resize-shrink-down">
+            <default><![CDATA[['<Super><Alt><Shift>KP_Up', '<Super><Alt><Shift>Up','<Super><Alt><Shift>k']]]></default>
+            <summary>Resize window (shrink down)</summary>
+        </key>
+
         <!-- Swap windows -->
         <key type="as" name="tile-swap-left">
             <default><![CDATA[['<Primary>Left','<Primary>KP_Left','<Primary>h']]]></default>
@@ -212,22 +252,22 @@
         <!-- Workspace Management -->
 
         <key type="as" name="mosaic-workspace-down">
-            <default><![CDATA[['<Super><Shift>Down','<Super><Shift>KP_Down','<Super><Shift>j']]]></default>
+            <default><![CDATA[['<Super><Ctrl>Down','<Super><Ctrl>KP_Down','<Super><Ctrl>j']]]></default>
             <summary>Move window to the lower workspace</summary>
         </key>
 
         <key type="as" name="mosaic-workspace-up">
-            <default><![CDATA[['<Super><Shift>Up','<Super><Shift>KP_Up','<Super><Shift>k']]]></default>
+            <default><![CDATA[['<Super><Ctrl>Up','<Super><Ctrl>KP_Up','<Super><Ctrl>k']]]></default>
             <summary>Move window to the upper workspace</summary>
         </key>
 
         <key type="as" name="mosaic-monitor-down">
-            <default><![CDATA[['<Super><Shift><Primary>Down','<Super><Shift><Primary>KP_Down','<Super><Shift><Primary>j']]]></default>
+            <default><![CDATA[['<Super><Shift>Down','<Super><Shift>KP_Down','<Super><Shift>j']]]></default>
             <summary>Move window to the lower monitor</summary>
         </key>
 
         <key type="as" name="mosaic-monitor-up">
-            <default><![CDATA[['<Super><Shift><Primary>Up','<Super><Shift><Primary>KP_Up','<Super><Shift><Primary>k']]]></default>
+            <default><![CDATA[['<Super><Shift>Up','<Super><Shift>KP_Up','<Super><Shift>k']]]></default>
             <summary>Move window to the upper monitor</summary>
         </key>
 
