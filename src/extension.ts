@@ -2809,7 +2809,8 @@ export class Ext extends Ecs.System<ExtEvent> {
             let window_app: any, name: string;
 
             try {
-                window_app = Window.window_tracker.get_window_app(meta);
+                window_app =
+                    Shell.WindowTracker.get_default().get_window_app(meta);
                 name = window_app.get_name().replace(/&/g, '&amp;');
             } catch (e) {
                 return null;
