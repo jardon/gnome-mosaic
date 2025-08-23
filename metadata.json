@@ -3,6 +3,7 @@
     "description": "Window tiler extension for GNOME desktops.",
     "version": 2,
     "uuid": "gnome-mosaic@jardon.github.com",
+    "url": "https://github.com/jardon/gnome-mosaic",
     "settings-schema": "org.gnome.shell.extensions.gnome-mosaic",
     "shell-version": ["45", "46", "47", "48"]
 }
