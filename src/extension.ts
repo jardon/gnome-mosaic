@@ -3012,6 +3012,7 @@ export default class MosaicExtension extends Extension {
             }
 
             _hide_skip_taskbar_windows();
+            ext = null;
         }
 
         if (indicator) {
