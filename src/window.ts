@@ -21,8 +21,6 @@ import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 
 const {OnceCell} = once_cell;
 
-export var window_tracker = Shell.WindowTracker.get_default();
-
 /** Contains SourceID of an active hint operation. */
 let ACTIVE_HINT_SHOW_ID: number | null = null;
 
