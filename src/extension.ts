@@ -2993,11 +2993,12 @@ export default class MosaicExtension extends Extension {
                 return;
             }
 
-            delete globalThis.MosaicExtension;
+            ext.hide_all_borders();
             ext.injections_remove();
             ext.signals_remove();
             ext.exit_modes();
-            ext.hide_all_borders();
+            ext.dbus.destroy();
+            delete globalThis.MosaicExtension;
 
             layoutManager.removeChrome(ext.overlay);
 
