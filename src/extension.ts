@@ -235,6 +235,8 @@ export class Ext extends Ecs.System<ExtEvent> {
     /** Calculates window placements when tiling and focus-switching */
     tiler: Tiling.Tiler = new Tiling.Tiler(this);
 
+    exceptions_ipc: utils.AsyncIPC | null = null;
+
     constructor() {
         super(new Executor.GLibExecutor());
 
@@ -584,9 +586,14 @@ export class Ext extends Ecs.System<ExtEvent> {
             return true;
         };
 
-        const ipc = utils.async_process_ipc(['gjs', '--module', path]);
+        if (!this.exceptions_ipc)
+            this.exceptions_ipc = utils.async_process_ipc([
+                'gjs',
+                '--module',
+                path,
+            ]);
 
-        if (ipc) {
+        if (this.exceptions_ipc) {
             const generator = (stdout: any, res: any) => {
                 try {
                     const [bytes] = stdout.read_line_finish(res);
@@ -596,11 +603,12 @@ export class Ext extends Ecs.System<ExtEvent> {
                                 (
                                     imports.byteArray.toString(bytes) as string
                                 ).trim()
-                            )
+                            ) &&
+                            this.exceptions_ipc
                         ) {
-                            ipc.stdout.read_line_async(
+                            this.exceptions_ipc.stdout.read_line_async(
                                 0,
-                                ipc.cancellable,
+                                this.exceptions_ipc.cancellable,
                                 generator
                             );
                         }
@@ -612,7 +620,11 @@ export class Ext extends Ecs.System<ExtEvent> {
                 }
             };
 
-            ipc.stdout.read_line_async(0, ipc.cancellable, generator);
+            this.exceptions_ipc.stdout.read_line_async(
+                0,
+                this.exceptions_ipc.cancellable,
+                generator
+            );
         }
     }
 
@@ -2945,6 +2957,11 @@ export default class MosaicExtension extends Extension {
             if (ext.auto_tiler) {
                 ext.auto_tiler.destroy(ext);
                 ext.auto_tiler = null;
+            }
+
+            if (ext.exceptions_ipc) {
+                ext.exceptions_ipc.cancellable.cancel();
+                ext.exceptions_ipc.child.force_exit();
             }
 
             _hide_skip_taskbar_windows();
