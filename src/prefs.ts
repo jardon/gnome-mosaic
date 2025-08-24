@@ -25,11 +25,7 @@ export default class PopShellPreferences extends ExtensionPreferences {
     getPreferencesWidget() {
         globalThis.MosaicExtension = this;
         let dialog = settings_dialog_new();
-        if (dialog.show_all) {
-            dialog.show_all();
-        } else {
-            dialog.show();
-        }
+        dialog.show();
         log.debug(JSON.stringify(dialog));
         return dialog;
     }
