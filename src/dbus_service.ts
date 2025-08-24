@@ -57,5 +57,6 @@ export class Service {
 
     destroy() {
         Gio.bus_unown_name(this.id);
+        this.dbus.unexport();
     }
 }
