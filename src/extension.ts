@@ -46,10 +46,8 @@ const {cursor_rect, is_keyboard_op, is_resize_op, is_move_op} = Lib;
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 const {
     layoutManager,
-    loadTheme,
     overview,
     panel,
-    setThemeStylesheet,
     screenShield,
     sessionMode,
     windowAttentionHandler,
@@ -68,14 +66,11 @@ import {PACKAGE_VERSION} from 'resource:///org/gnome/shell/misc/config.js';
 import * as Tags from './tags.js';
 import {get_current_path} from './paths.js';
 
-const STYLESHEET_PATHS = ['light', 'dark', 'highcontrast'].map(stylesheet_path);
-const STYLESHEETS = STYLESHEET_PATHS.map(path => Gio.File.new_for_path(path));
 const GNOME_VERSION = PACKAGE_VERSION;
 
 enum Style {
     Light,
     Dark,
-    HighContrast,
 }
 
 interface Display {
@@ -241,9 +236,6 @@ export class Ext extends Ecs.System<ExtEvent> {
         super(new Executor.GLibExecutor());
 
         this.load_settings();
-        this.reload_theme();
-
-        this.register_fn(() => load_theme(this.current_style));
 
         this.conf.reload();
 
@@ -414,14 +406,6 @@ export class Ext extends Ecs.System<ExtEvent> {
             /** Stateless global events */
             case 4:
                 switch (event.event) {
-                    case GlobalEvent.GtkShellChanged:
-                        this.on_gtk_shell_changed();
-                        break;
-
-                    case GlobalEvent.GtkThemeChanged:
-                        this.on_gtk_theme_change();
-                        break;
-
                     case GlobalEvent.MonitorsChanged:
                         this.update_display_configuration(false);
                         break;
@@ -1643,24 +1627,6 @@ export class Ext extends Ecs.System<ExtEvent> {
                 );
             }
         }
-    }
-
-    on_gtk_shell_changed() {
-        this.reload_theme();
-        load_theme(this.current_style);
-    }
-
-    on_gtk_theme_change() {
-        this.reload_theme();
-        load_theme(this.current_style);
-    }
-
-    reload_theme() {
-        this.current_style = this.settings.is_dark()
-            ? Style.Dark
-            : this.settings.is_high_contrast()
-              ? Style.HighContrast
-              : Style.Light;
     }
 
     /** Handle window maximization notifications */
@@ -2994,47 +2960,6 @@ function disable_window_attention_handler() {
     if (handler && handler._windowDemandsAttentionId) {
         global.display.disconnect(handler._windowDemandsAttentionId);
         handler._windowDemandsAttentionId = null;
-    }
-}
-
-function stylesheet_path(name: string) {
-    return get_current_path() + '/' + name + '.css';
-}
-
-// Supplements the loaded theme with the extension's theme.
-function load_theme(style: Style): string | any {
-    let pop_stylesheet = Number(style);
-    try {
-        const theme_context = St.ThemeContext.get_for_stage(global.stage);
-
-        const existing_theme: null | any = theme_context.get_theme();
-
-        const pop_stylesheet_path = STYLESHEET_PATHS[pop_stylesheet];
-
-        if (existing_theme) {
-            /* Must unload stylesheets, or else the previously loaded
-             * stylesheets will persist when loadTheme() is called
-             * (found in source code of imports.ui.main).
-             */
-            for (const s of STYLESHEETS) {
-                existing_theme.unload_stylesheet(s);
-            }
-
-            // Merge theme update with GNOME Mosaic styling
-            existing_theme.load_stylesheet(STYLESHEETS[pop_stylesheet]);
-
-            // Perform theme update
-            theme_context.set_theme(existing_theme);
-        } else {
-            // User does not have a theme loaded, so use pop styling + default
-            setThemeStylesheet(pop_stylesheet_path);
-            loadTheme();
-        }
-
-        return pop_stylesheet_path;
-    } catch (e) {
-        log.error('failed to load stylesheet: ' + e);
-        return null;
     }
 }
 
