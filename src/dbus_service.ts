@@ -1,7 +1,7 @@
 import Gio from 'gi://Gio';
 
 const IFACE: string = `<node>
-  <interface name="com.github.jardon.Mosaic">
+  <interface name="org.gnome.Shell.Extensions.Mosaic">
     <method name="FocusLeft"/>
     <method name="FocusRight"/>
     <method name="FocusUp"/>
@@ -38,7 +38,7 @@ export class Service {
         this.dbus = Gio.DBusExportedObject.wrapJSObject(IFACE, this);
 
         const onBusAcquired = (conn: any) => {
-            this.dbus.export(conn, '/com/github/jardon/Mosaic');
+            this.dbus.export(conn, '/org/gnome/Shell/Extensions/Mosaic');
         };
 
         function onNameAcquired() {}
@@ -47,7 +47,7 @@ export class Service {
 
         this.id = Gio.bus_own_name(
             Gio.BusType.SESSION,
-            'com.github.jardon.Mosaic',
+            'org.gnome.Shell.Extensions.Mosaic',
             Gio.BusNameOwnerFlags.NONE,
             onBusAcquired,
             onNameAcquired,
