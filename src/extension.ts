@@ -2905,8 +2905,6 @@ export default class MosaicExtension extends Extension {
         ext.injections_add();
         ext.signals_attach();
 
-        disable_window_attention_handler();
-
         layoutManager.addChrome(ext.overlay);
 
         if (!indicator) {
@@ -2936,6 +2934,7 @@ export default class MosaicExtension extends Extension {
             ext.signals_remove();
             ext.exit_modes();
             ext.hide_all_borders();
+            disable_window_attention_handler();
 
             layoutManager.removeChrome(ext.overlay);
 
