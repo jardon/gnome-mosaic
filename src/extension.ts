@@ -145,6 +145,8 @@ export class Ext extends Ecs.System<ExtEvent> {
     /** If set, the user is currently selecting a window to add to floating exceptions */
     exception_selecting: boolean = false;
 
+    exception_select_timeout: null | SignalID = null;
+
     /** The number of pixels between windows */
     gap_inner: number = 0;
 
@@ -180,7 +182,7 @@ export class Ext extends Ecs.System<ExtEvent> {
     /** Set when a window is being moved by the mouse */
     moved_by_mouse: boolean = false;
 
-    private workareas_update: null | SignalID = null;
+    workareas_update: null | SignalID = null;
 
     /** Record of misc. global objects and their attached signals */
     private signals: Map<GObject.Object, Array<SignalID>> = new Map();
@@ -203,6 +205,10 @@ export class Ext extends Ecs.System<ExtEvent> {
 
     /** Store for names associated with windows */
     names: Ecs.Storage<string> = this.register_storage();
+
+    new_s: null | SignalID = null;
+
+    schedule_idle_timeout: null | SignalID = null;
 
     /** Signal ID which handles size-changed signals */
     size_changed_signal: SignalID = 0;
@@ -496,13 +502,13 @@ export class Ext extends Ecs.System<ExtEvent> {
                 } catch (_) {}
             }
 
-            const new_s = GLib.timeout_add(GLib.PRIORITY_LOW, 500, () => {
+            this.new_s = GLib.timeout_add(GLib.PRIORITY_LOW, 500, () => {
                 this.register(Events.window_event(win, WindowEvent.Size));
                 this.size_requests.delete(win.meta);
                 return false;
             });
 
-            this.size_requests.set(win.meta, new_s);
+            this.size_requests.set(win.meta, this.new_s);
         };
 
         this.connect_meta(win, 'workspace-changed', () => {
@@ -613,11 +619,15 @@ export class Ext extends Ecs.System<ExtEvent> {
     }
 
     exception_select() {
-        GLib.timeout_add(GLib.PRIORITY_LOW, 500, () => {
-            this.exception_selecting = true;
-            overview.show();
-            return false;
-        });
+        this.exception_select_timeout = GLib.timeout_add(
+            GLib.PRIORITY_LOW,
+            500,
+            () => {
+                this.exception_selecting = true;
+                overview.show();
+                return false;
+            }
+        );
     }
 
     exit_modes() {
@@ -2231,6 +2241,37 @@ export class Ext extends Ecs.System<ExtEvent> {
         this.signals.clear();
     }
 
+    timeouts_remove() {
+        const timeoutProps: (keyof this)[] = [
+            'schedule_idle_timeout',
+            'drag_signal',
+            'workareas_update',
+            'displays_updating',
+            'new_s',
+            'exception_select_timeout',
+        ];
+
+        for (const prop of timeoutProps) {
+            const timeout = this[prop] as number | null;
+            if (timeout) {
+                GLib.source_remove(timeout);
+                this[prop] = null as any;
+            }
+        }
+
+        for (const window of this.windows.values()) {
+            if (window.active_hint_show_id) {
+                GLib.source_remove(window.active_hint_show_id);
+                window.active_hint_show_id = null;
+            }
+        }
+
+        if (indicator && indicator.menu_timeout) {
+            GLib.source_remove(indicator.menu_timeout);
+            indicator.menu_timeout = null;
+        }
+    }
+
     size_changed_block() {
         utils.block_signal(wim, this.size_changed_signal);
     }
@@ -2365,10 +2406,14 @@ export class Ext extends Ecs.System<ExtEvent> {
     /** Calls a function once windows are no longer queued for movement. */
     schedule_idle(func: () => boolean): boolean {
         if (!this.movements.is_empty()) {
-            GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
-                if (!this.movements.is_empty()) return true;
-                return func();
-            });
+            this.schedule_idle_timeout = GLib.timeout_add(
+                GLib.PRIORITY_DEFAULT,
+                100,
+                () => {
+                    if (!this.movements.is_empty()) return true;
+                    return func();
+                }
+            );
         } else {
             func();
         }
@@ -2909,6 +2954,7 @@ export default class MosaicExtension extends Extension {
 
             delete globalThis.MosaicExtension;
             ext.injections_remove();
+            ext.timeouts_remove();
             ext.signals_remove();
             ext.exit_modes();
             ext.hide_all_borders();
