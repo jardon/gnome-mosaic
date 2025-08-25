@@ -28,7 +28,7 @@ export function read_to_string(
     try {
         const [ok, contents] = file.load_contents(null);
         if (ok) {
-            return Ok(imports.byteArray.toString(contents));
+            return Ok(new TextDecoder().decode(contents));
         } else {
             return Err(new Error(`failed to load contents of ${path}`));
         }
@@ -214,7 +214,7 @@ export function os_release(): null | string {
     const [ok, bytes] = GLib.file_get_contents('/etc/os-release');
     if (!ok) return null;
 
-    const contents: string = imports.byteArray.toString(bytes);
+    const contents: string = new TextDecoder().decode(bytes);
     for (const line of contents.split('\n')) {
         if (line.startsWith('VERSION_ID')) {
             return line.split('"')[1];

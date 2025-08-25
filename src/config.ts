@@ -300,7 +300,7 @@ export class Config {
 
             const [, buffer] = file.value.load_contents(null);
 
-            return {tag: 0, value: imports.byteArray.toString(buffer)};
+            return {tag: 0, value: new TextDecoder().decode(buffer)};
         } catch (why) {
             return {tag: 1, why: `failed to read gnome-mosaic config: ${why}`};
         }
