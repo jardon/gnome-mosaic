@@ -211,10 +211,9 @@ export function map_eq<K, V>(map1: Map<K, V>, map2: Map<K, V>) {
 }
 
 export function os_release(): null | string {
-    const [ok, bytes] = GLib.file_get_contents('/etc/os-release');
+    const [ok, contents] = GLib.file_get_contents('/etc/os-release');
     if (!ok) return null;
 
-    const contents: string = new TextDecoder().decode(bytes);
     for (const line of contents.split('\n')) {
         if (line.startsWith('VERSION_ID')) {
             return line.split('"')[1];
