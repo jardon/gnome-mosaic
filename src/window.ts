@@ -21,9 +21,6 @@ import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 
 const {OnceCell} = once_cell;
 
-/** Contains SourceID of an active hint operation. */
-let ACTIVE_HINT_SHOW_ID: number | null = null;
-
 const WM_TITLE_BLACKLIST: Array<string> = [
     'Firefox',
     'Nightly', // Firefox Nightly
@@ -48,6 +45,9 @@ export class ShellWindow {
     ignore_detach: boolean = false;
     was_attached_to?: [Entity, boolean | number];
     destroying: boolean = false;
+
+    /** Contains SourceID of an active hint operation. */
+    active_hint_show_id: number | null = null;
 
     // Awaiting reassignment after a display update
     reassignment: boolean = false;
@@ -442,9 +442,9 @@ export class ShellWindow {
                     let applications = 0;
 
                     // Ensure that the border is shown
-                    if (ACTIVE_HINT_SHOW_ID !== null)
-                        GLib.source_remove(ACTIVE_HINT_SHOW_ID);
-                    ACTIVE_HINT_SHOW_ID = GLib.timeout_add(
+                    if (this.active_hint_show_id !== null)
+                        GLib.source_remove(this.active_hint_show_id);
+                    this.active_hint_show_id = GLib.timeout_add(
                         GLib.PRIORITY_DEFAULT,
                         600,
                         () => {
@@ -452,7 +452,7 @@ export class ShellWindow {
                                 (applications > 4 && !this.same_workspace()) ||
                                 !permitted()
                             ) {
-                                ACTIVE_HINT_SHOW_ID = null;
+                                this.active_hint_show_id = null;
                                 return GLib.SOURCE_REMOVE;
                             }
 

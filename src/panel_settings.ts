@@ -21,6 +21,7 @@ import {get_current_path} from './paths.js';
 export class Indicator {
     button: any;
     appearances: any;
+    menu_timeout: null | SignalID = null;
 
     toggle_tiled: any;
     toggle_titles: null | any;
@@ -69,7 +70,7 @@ export class Indicator {
         );
 
         bm.addMenuItem(this.toggle_tiled);
-        bm.addMenuItem(floating_window_exceptions(ext, bm));
+        bm.addMenuItem(this.system_exceptions_menu(ext, bm));
 
         bm.addMenuItem(menu_separator(''));
         bm.addMenuItem(shortcuts(bm));
@@ -82,6 +83,31 @@ export class Indicator {
         }
 
         bm.addMenuItem(this.toggle_active);
+    }
+
+    system_exceptions_menu(ext: Ext, menu: any): any {
+        let label = new St.Label({text: 'Floating Window Exceptions'});
+        label.set_x_expand(true);
+
+        let icon = new St.Icon({icon_name: 'go-next-symbolic', icon_size: 16});
+
+        let widget = new St.BoxLayout({vertical: false});
+        widget.add_child(label);
+        widget.add_child(icon);
+        widget.set_x_expand(true);
+
+        let base = new PopupBaseMenuItem();
+        base.add_child(widget);
+        base.connect('activate', () => {
+            ext.exception_dialog();
+
+            this.menu_timeout = GLib.timeout_add(GLib.PRIORITY_LOW, 300, () => {
+                menu.close();
+                return false;
+            });
+        });
+
+        return base;
     }
 
     destroy() {
@@ -114,31 +140,6 @@ function settings_button(menu: any): any {
     item.label.get_clutter_text().set_margin_left(12);
 
     return item;
-}
-
-function floating_window_exceptions(ext: Ext, menu: any): any {
-    let label = new St.Label({text: 'Floating Window Exceptions'});
-    label.set_x_expand(true);
-
-    let icon = new St.Icon({icon_name: 'go-next-symbolic', icon_size: 16});
-
-    let widget = new St.BoxLayout({vertical: false});
-    widget.add_child(label);
-    widget.add_child(icon);
-    widget.set_x_expand(true);
-
-    let base = new PopupBaseMenuItem();
-    base.add_child(widget);
-    base.connect('activate', () => {
-        ext.exception_dialog();
-
-        GLib.timeout_add(GLib.PRIORITY_LOW, 300, () => {
-            menu.close();
-            return false;
-        });
-    });
-
-    return base;
 }
 
 function shortcuts(menu: any): any {
