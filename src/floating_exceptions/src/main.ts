@@ -6,15 +6,6 @@ import GioUnix from 'gi://GioUnix';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 import Pango from 'gi://Pango';
-
-/** The directory that this script is executed from. */
-const SCRIPT_DIR = GLib.path_get_dirname(
-    new Error().stack.split(':')[0].slice(1)
-);
-
-/** Add our directory so we can import modules from it. */
-imports.searchPath.push(SCRIPT_DIR);
-
 import * as config from './config.js';
 
 let app;

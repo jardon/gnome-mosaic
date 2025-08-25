@@ -136,5 +136,5 @@ function xprop_cmd(xid: string, args: string): string | null {
     let xprops = GLib.spawn_command_line_sync(`xprop -id ${xid} ${args}`);
     if (!xprops[0]) return null;
 
-    return imports.byteArray.toString(xprops[1]);
+    return new TextDecoder().decode(xprops[1]);
 }

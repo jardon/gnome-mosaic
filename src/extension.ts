@@ -591,7 +591,7 @@ export class Ext extends Ecs.System<ExtEvent> {
                         if (
                             event_handler(
                                 (
-                                    imports.byteArray.toString(bytes) as string
+                                    new TextDecoder().decode(bytes) as string
                                 ).trim()
                             ) &&
                             this.exceptions_ipc
