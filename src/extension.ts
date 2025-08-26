@@ -178,8 +178,6 @@ export class Ext extends Ecs.System<ExtEvent> {
     /** Initially set to true when the extension is initializing */
     init: boolean = true;
 
-    was_locked: boolean = false;
-
     /** Set when a window is being moved by the mouse */
     moved_by_mouse: boolean = false;
 
@@ -2984,11 +2982,6 @@ export default class MosaicExtension extends Extension {
             _hide_skip_taskbar_windows();
         }
 
-        if (ext.was_locked) {
-            ext.was_locked = false;
-            return;
-        }
-
         ext.injections_add();
         ext.signals_attach();
 
@@ -3011,11 +3004,6 @@ export default class MosaicExtension extends Extension {
         log.info('disable');
 
         if (ext) {
-            if (sessionMode.isLocked) {
-                ext.was_locked = true;
-                return;
-            }
-
             delete globalThis.MosaicExtension;
             ext.injections_remove();
             ext.timeouts_remove();
