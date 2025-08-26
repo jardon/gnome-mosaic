@@ -48,6 +48,10 @@ export class OnceExecutor<X, T extends Iterable<X>> {
 
         const iterator = this.#iterable[Symbol.iterator]();
 
+        if (this.#signal) {
+            GLib.source_remove(this.#signal);
+            this.#signal = null;
+        }
         this.#signal = GLib.timeout_add(GLib.PRIORITY_DEFAULT, delay, () => {
             const next: X = iterator.next().value;
 
@@ -66,7 +70,10 @@ export class OnceExecutor<X, T extends Iterable<X>> {
     }
 
     stop() {
-        if (this.#signal !== null) GLib.source_remove(this.#signal);
+        if (this.#signal !== null) {
+            GLib.source_remove(this.#signal);
+            this.#signal = null;
+        }
     }
 }
 
