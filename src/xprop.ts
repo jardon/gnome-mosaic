@@ -1,6 +1,6 @@
 import * as lib from './lib.js';
 
-import GLib from 'gi://GLib';
+import Gio from 'gi://Gio';
 import {spawn} from 'resource:///org/gnome/shell/misc/util.js';
 
 export var MOTIF_HINTS: string = '_MOTIF_WM_HINTS';
@@ -9,24 +9,27 @@ export var SHOW_FLAGS: string[] = ['0x2', '0x0', '0x1', '0x0', '0x0'];
 
 //export var FRAME_EXTENTS: string = "_GTK_FRAME_EXTENTS"
 
-export function get_window_role(xid: string): string | null {
-    let out = xprop_cmd(xid, 'WM_WINDOW_ROLE');
+export async function get_window_role(xid: string): Promise<string | null> {
+    let out = await xprop_cmd(xid, ['WM_WINDOW_ROLE']);
 
     if (!out) return null;
 
     return parse_string(out);
 }
 
-export function get_frame_extents(xid: string): string | null {
-    let out = xprop_cmd(xid, '_GTK_FRAME_EXTENTS');
+export async function get_frame_extents(xid: string): Promise<string | null> {
+    let out = await xprop_cmd(xid, ['_GTK_FRAME_EXTENTS']);
 
     if (!out) return null;
 
     return parse_string(out);
 }
 
-export function get_hint(xid: string, hint: string): Array<string> | null {
-    let out = xprop_cmd(xid, hint);
+export async function get_hint(
+    xid: string,
+    hint: string
+): Promise<Array<string> | null> {
+    let out = await xprop_cmd(xid, [hint]);
 
     if (!out) return null;
 
@@ -50,8 +53,10 @@ function size_params(line: string): [number, number] | null {
     return isNaN(xn) || isNaN(yn) ? null : [xn, yn];
 }
 
-export function get_size_hints(xid: string): lib.SizeHint | null {
-    let out = xprop_cmd(xid, 'WM_NORMAL_HINTS');
+export async function get_size_hints(
+    xid: string
+): Promise<lib.SizeHint | null> {
+    let out = await xprop_cmd(xid, ['WM_NORMAL_HINTS']);
     if (out) {
         let lines = out.split('\n')[Symbol.iterator]();
         lines.next();
@@ -84,13 +89,13 @@ export function get_xid(meta: Meta.Window): string | null {
     return match && match[0];
 }
 
-export function may_decorate(xid: string): boolean {
-    const hints = motif_hints(xid);
+export async function may_decorate(xid: string): Promise<boolean> {
+    const hints = await motif_hints(xid);
     return hints ? hints[2] == '0x0' || hints[2] == '0x1' : true;
 }
 
-export function motif_hints(xid: string): Array<string> | null {
-    return get_hint(xid, MOTIF_HINTS);
+export async function motif_hints(xid: string): Promise<Array<string> | null> {
+    return await get_hint(xid, MOTIF_HINTS);
 }
 
 export function set_hint(xid: string, hint: string, value: string[]) {
@@ -132,9 +137,38 @@ function parse_string(string: string): string | null {
         : null;
 }
 
-function xprop_cmd(xid: string, args: string): string | null {
-    let xprops = GLib.spawn_command_line_sync(`xprop -id ${xid} ${args}`);
-    if (!xprops[0]) return null;
+async function xprop_cmd(
+    xid: string,
+    args: string[],
+    cancellable: any = null
+): Promise<string | null> {
+    let cancelId = 0;
+    let flags =
+        Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE;
 
-    return new TextDecoder().decode(xprops[1]);
+    const xprops = `xprop -id ${xid} ${args}`.split(' ');
+    const proc = new Gio.Subprocess({xprops, flags});
+    proc.init(cancellable);
+
+    if (cancellable instanceof Gio.Cancellable)
+        cancelId = cancellable.connect(() => proc.force_exit());
+
+    try {
+        const [stdout, stderr] = await proc.communicate_utf8_async(null, null);
+
+        const status = proc.get_exit_status();
+
+        if (status !== 0) {
+            throw new Gio.IOErrorEnum({
+                code: Gio.IOErrorEnum.FAILED,
+                message: stderr
+                    ? stderr.trim()
+                    : `Command '${xprops}' failed with exit code ${status}`,
+            });
+        }
+
+        return stdout.trim();
+    } finally {
+        if (cancelId > 0) cancellable.disconnect(cancelId);
+    }
 }
