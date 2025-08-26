@@ -92,15 +92,7 @@ export class ShellWindow {
             ext.add_tag(entity, Tags.Floating);
         }
 
-        if (this.may_decorate()) {
-            if (!this.is_client_decorated()) {
-                if (ext.settings.show_title()) {
-                    this.decoration_show(ext);
-                } else {
-                    this.decoration_hide(ext);
-                }
-            }
-        }
+        this.decorate(ext);
 
         this.bind_window_events();
         this.bind_hint_events();
@@ -178,8 +170,23 @@ export class ShellWindow {
         return out;
     }
 
-    private decoration(_ext: Ext, callback: (xid: string) => void): void {
-        if (this.may_decorate()) {
+    private async decorate(ext: Ext) {
+        if (await this.may_decorate()) {
+            if (!this.is_client_decorated()) {
+                if (ext.settings.show_title()) {
+                    this.decoration_show(ext);
+                } else {
+                    this.decoration_hide(ext);
+                }
+            }
+        }
+    }
+
+    private async decoration(
+        _ext: Ext,
+        callback: (xid: string) => void
+    ): Promise<void> {
+        if (await this.may_decorate()) {
             const xid = this.xid();
             if (xid) callback(xid);
         }
@@ -317,9 +324,9 @@ export class ShellWindow {
         return this.meta.get_transient_for() !== null;
     }
 
-    may_decorate(): boolean {
+    async may_decorate(): Promise<boolean> {
         const xid = this.xid();
-        return xid ? xprop.may_decorate(xid) : false;
+        return xid ? await xprop.may_decorate(xid) : false;
     }
 
     move(ext: Ext, rect: Rectangular, on_complete?: () => void) {
@@ -373,11 +380,10 @@ export class ShellWindow {
         return Rect.Rectangle.from_meta(this.meta.get_frame_rect());
     }
 
-    size_hint(): lib.SizeHint | null {
-        return this.extra.normal_hints.get_or_init(() => {
-            const xid = this.xid();
-            return xid ? xprop.get_size_hints(xid) : null;
-        });
+    async size_hint(): Promise<lib.SizeHint | null> {
+        const xid = this.xid();
+        const hint = xid ? await xprop.get_size_hints(xid) : null;
+        return this.extra.normal_hints.get_or_init(() => hint);
     }
 
     swap(ext: Ext, other: ShellWindow): void {
@@ -393,11 +399,10 @@ export class ShellWindow {
         return title ? title : this.name(this.ext);
     }
 
-    wm_role(): string | null {
-        return this.extra.wm_role_.get_or_init(() => {
-            const xid = this.xid();
-            return xid ? xprop.get_window_role(xid) : null;
-        });
+    async wm_role(): Promise<string | null> {
+        const xid = this.xid();
+        const role = xid ? await xprop.get_window_role(xid) : null;
+        return this.extra.wm_role_.get_or_init(() => role);
     }
 
     workspace_id(): number {
