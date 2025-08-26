@@ -447,8 +447,10 @@ export class ShellWindow {
                     let applications = 0;
 
                     // Ensure that the border is shown
-                    if (this.active_hint_show_id !== null)
+                    if (this.active_hint_show_id !== null) {
                         GLib.source_remove(this.active_hint_show_id);
+                        this.active_hint_show_id = null;
+                    }
                     this.active_hint_show_id = GLib.timeout_add(
                         GLib.PRIORITY_DEFAULT,
                         600,

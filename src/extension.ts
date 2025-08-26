@@ -496,6 +496,11 @@ export class Ext extends Ecs.System<ExtEvent> {
                 } catch (_) {}
             }
 
+            if (this.new_s) {
+                GLib.source_remove(this.new_s);
+                this.new_s = null;
+            }
+
             this.new_s = GLib.timeout_add(GLib.PRIORITY_LOW, 500, () => {
                 this.register(Events.window_event(win, WindowEvent.Size));
                 this.size_requests.delete(win.meta);
@@ -614,6 +619,10 @@ export class Ext extends Ecs.System<ExtEvent> {
     }
 
     exception_select() {
+        if (this.exception_select_timeout) {
+            GLib.source_remove(this.exception_select_timeout);
+            this.exception_select_timeout = null;
+        }
         this.exception_select_timeout = GLib.timeout_add(
             GLib.PRIORITY_LOW,
             500,
@@ -1502,6 +1511,10 @@ export class Ext extends Ecs.System<ExtEvent> {
                 const workspace = this.active_workspace();
                 let is_sibling: Entity | null;
 
+                if (this.drag_signal) {
+                    GLib.source_remove(this.drag_signal);
+                    this.drag_signal = null;
+                }
                 this.drag_signal = GLib.timeout_add(
                     GLib.PRIORITY_LOW,
                     200,
@@ -2468,6 +2481,10 @@ export class Ext extends Ecs.System<ExtEvent> {
     /** Calls a function once windows are no longer queued for movement. */
     schedule_idle(func: () => boolean): boolean {
         if (!this.movements.is_empty()) {
+            if (this.schedule_idle_timeout) {
+                GLib.source_remove(this.schedule_idle_timeout);
+                this.schedule_idle_timeout = null;
+            }
             this.schedule_idle_timeout = GLib.timeout_add(
                 GLib.PRIORITY_DEFAULT,
                 100,
@@ -2550,8 +2567,10 @@ export class Ext extends Ecs.System<ExtEvent> {
 
         if (!displays_ready() || !primary_display_ready(this)) {
             if (this.displays_updating !== null) return;
-            if (this.workareas_update !== null)
+            if (this.workareas_update !== null) {
                 GLib.source_remove(this.workareas_update);
+                this.workareas_update = null;
+            }
 
             this.workareas_update = GLib.timeout_add(
                 GLib.PRIORITY_DEFAULT,
@@ -2698,8 +2717,10 @@ export class Ext extends Ecs.System<ExtEvent> {
             return;
         }
 
-        if (this.displays_updating !== null)
+        if (this.displays_updating !== null) {
             GLib.source_remove(this.displays_updating);
+            this.displays_updating = null;
+        }
 
         if (this.workareas_update !== null) {
             GLib.source_remove(this.workareas_update);

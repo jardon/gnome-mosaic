@@ -101,6 +101,10 @@ export class Indicator {
         base.connect('activate', () => {
             ext.exception_dialog();
 
+            if (this.menu_timeout) {
+                GLib.source_remove(this.menu_timeout);
+                this.menu_timeout = null;
+            }
             this.menu_timeout = GLib.timeout_add(GLib.PRIORITY_LOW, 300, () => {
                 menu.close();
                 return false;
