@@ -577,11 +577,12 @@ export class Ext extends Ecs.System<ExtEvent> {
         };
 
         if (!this.exceptions_ipc)
-            this.exceptions_ipc = utils.async_process_ipc([
-                'gjs',
-                '--module',
-                path,
-            ]);
+            this.exceptions_ipc = utils.async_process_ipc(
+                ['gjs', '--module', path],
+                () => {
+                    this.exceptions_ipc = null;
+                }
+            );
 
         if (this.exceptions_ipc) {
             const generator = (stdout: any, res: any) => {
@@ -2974,6 +2975,7 @@ export default class MosaicExtension extends Extension {
             if (ext.exceptions_ipc) {
                 ext.exceptions_ipc.cancellable.cancel();
                 ext.exceptions_ipc.child.force_exit();
+                ext.exceptions_ipc = null;
             }
 
             _hide_skip_taskbar_windows();

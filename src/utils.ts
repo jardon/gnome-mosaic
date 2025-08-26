@@ -157,7 +157,10 @@ export type AsyncIPC = {
     cancellable: any;
 };
 
-export function async_process_ipc(argv: Array<string>): AsyncIPC | null {
+export function async_process_ipc(
+    argv: Array<string>,
+    callback?: () => void
+): AsyncIPC | null {
     const {SubprocessLauncher, SubprocessFlags} = Gio;
 
     const launcher = new SubprocessLauncher({
@@ -188,6 +191,7 @@ export function async_process_ipc(argv: Array<string>): AsyncIPC | null {
     child.wait_async(null, (source: any, res: any) => {
         source.wait_finish(res);
         cancellable.cancel();
+        if (callback) callback();
     });
 
     return {child, stdin, stdout, cancellable};
