@@ -38,6 +38,7 @@ export class GLibExecutor<T> implements Executor<T> {
 export class OnceExecutor<X, T extends Iterable<X>> {
     #iterable: T;
     #signal: SignalID | null = null;
+    private then_timeout: SignalID | null = null;
 
     constructor(iterable: T) {
         this.#iterable = iterable;
@@ -48,19 +49,20 @@ export class OnceExecutor<X, T extends Iterable<X>> {
 
         const iterator = this.#iterable[Symbol.iterator]();
 
-        if (this.#signal) {
-            GLib.source_remove(this.#signal);
-            this.#signal = null;
-        }
         this.#signal = GLib.timeout_add(GLib.PRIORITY_DEFAULT, delay, () => {
             const next: X = iterator.next().value;
 
             if (typeof next === 'undefined') {
-                if (then)
-                    GLib.timeout_add(GLib.PRIORITY_DEFAULT, delay, () => {
-                        then();
-                        return false;
-                    });
+                if (then) {
+                    this.then_timeout = GLib.timeout_add(
+                        GLib.PRIORITY_DEFAULT,
+                        delay,
+                        () => {
+                            then();
+                            return false;
+                        }
+                    );
+                }
 
                 return false;
             }
@@ -73,6 +75,10 @@ export class OnceExecutor<X, T extends Iterable<X>> {
         if (this.#signal !== null) {
             GLib.source_remove(this.#signal);
             this.#signal = null;
+        }
+        if (this.then_timeout) {
+            GLib.source_remove(this.then_timeout);
+            this.then_timeout = null;
         }
     }
 }
@@ -106,5 +112,6 @@ export class ChannelExecutor<X> {
 
     stop() {
         if (this.#signal !== null) GLib.source_remove(this.#signal);
+        this.#signal = null;
     }
 }
