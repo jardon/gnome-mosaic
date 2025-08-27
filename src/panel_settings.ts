@@ -114,6 +114,13 @@ export class Indicator {
         return base;
     }
 
+    timeouts_remove() {
+        if (this.menu_timeout) {
+            GLib.source_remove(this.menu_timeout);
+            this.menu_timeout = null;
+        }
+    }
+
     destroy() {
         this.button.destroy();
     }
