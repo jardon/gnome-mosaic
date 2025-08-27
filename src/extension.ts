@@ -88,6 +88,8 @@ interface Injection {
     func: any;
 }
 
+type Migration = [Fork, number, Rectangle, boolean];
+
 export class Ext extends Ecs.System<ExtEvent> {
     /** Mechanism for managing keybindings */
     keybindings: Keybindings.Keybindings = new Keybindings.Keybindings(this);
@@ -176,6 +178,10 @@ export class Ext extends Ecs.System<ExtEvent> {
 
     /** Initially set to true when the extension is initializing */
     init: boolean = true;
+
+    migration_exec: exec.OnceExecutor<Migration, Migration[]> | null = null;
+
+    migrations: Array<Migration> = new Array();
 
     /** Set when a window is being moved by the mouse */
     moved_by_mouse: boolean = false;
@@ -2282,6 +2288,11 @@ export class Ext extends Ecs.System<ExtEvent> {
             GLib.source_remove(indicator.menu_timeout);
             indicator.menu_timeout = null;
         }
+
+        if (this.migration_exec) {
+            this.migration_exec.stop();
+            this.migration_exec = null;
+        }
     }
 
     size_changed_block() {
@@ -2555,14 +2566,17 @@ export class Ext extends Ecs.System<ExtEvent> {
             }
         };
 
-        type Migration = [Fork, number, Rectangle, boolean];
-
-        let migrations: Array<Migration> = new Array();
-
         const apply_migrations = (assigned_monitors: Set<number>) => {
-            if (!migrations) return;
+            if (!this.migrations) return;
 
-            new exec.OnceExecutor<Migration, Migration[]>(migrations).start(
+            if (this.migration_exec) {
+                this.migration_exec.stop();
+                this.migration_exec = null;
+            }
+            this.migration_exec = new exec.OnceExecutor<Migration, Migration[]>(
+                this.migrations
+            );
+            this.migration_exec.start(
                 500,
                 ([fork, new_monitor, workspace, find_workspace]) => {
                     let new_workspace;
@@ -2723,7 +2737,7 @@ export class Ext extends Ecs.System<ExtEvent> {
                                     this,
                                     migration[0].entity
                                 );
-                                migrations.push(migration);
+                                this.migrations.push(migration);
                             }
                         }
                     }
