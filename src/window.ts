@@ -588,6 +588,13 @@ export class ShellWindow {
     }
 
     private workspace_changed() {}
+
+    timeouts_remove() {
+        if (this.active_hint_show_id) {
+            GLib.source_remove(this.active_hint_show_id);
+            this.active_hint_show_id = null;
+        }
+    }
 }
 
 /// Activates a window, and moves the mouse point.

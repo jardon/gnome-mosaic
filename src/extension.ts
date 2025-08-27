@@ -2341,15 +2341,11 @@ export class Ext extends Ecs.System<ExtEvent> {
         }
 
         for (const window of this.windows.values()) {
-            if (window.active_hint_show_id) {
-                GLib.source_remove(window.active_hint_show_id);
-                window.active_hint_show_id = null;
-            }
+            window.timeouts_remove();
         }
 
-        if (indicator && indicator.menu_timeout) {
-            GLib.source_remove(indicator.menu_timeout);
-            indicator.menu_timeout = null;
+        if (indicator) {
+            indicator.timeouts_remove();
         }
 
         if (this.migration_exec) {
