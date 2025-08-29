@@ -14,7 +14,6 @@ import {
 } from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import {Button} from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import GLib from 'gi://GLib';
-import {spawn} from 'resource:///org/gnome/shell/misc/util.js';
 import {get_current_path} from './paths.js';
 // import * as Settings from './settings.js';
 
@@ -134,17 +133,10 @@ function menu_separator(text: any): any {
 function settings_button(menu: any): any {
     let item = new PopupMenuItem(_('View All'));
     item.connect('activate', () => {
-        let path: string | null = GLib.find_program_in_path(
-            'gnome-mosaic-shortcuts'
+        Gio.AppInfo.launch_default_for_uri(
+            'https://github.com/jardon/gnome-mosaic/blob/main/SHORTCUTS.md',
+            null
         );
-        if (path) {
-            spawn([path]);
-        } else {
-            spawn([
-                'xdg-open',
-                'https://github.com/jardon/gnome-mosaic/blob/main/SHORTCUTS.md',
-            ]);
-        }
 
         menu.close();
     });
@@ -163,17 +155,10 @@ function shortcuts(menu: any): any {
     let item = new PopupBaseMenuItem();
     item.add_child(widget);
     item.connect('activate', () => {
-        let path: string | null = GLib.find_program_in_path(
-            'gnome-mosaic-shortcuts'
+        Gio.AppInfo.launch_default_for_uri(
+            'https://github.com/jardon/gnome-mosaic/blob/main/SHORTCUTS.md',
+            null
         );
-        if (path) {
-            spawn([path]);
-        } else {
-            spawn([
-                'xdg-open',
-                'https://github.com/jardon/gnome-mosaic/blob/main/SHORTCUTS.md',
-            ]);
-        }
 
         menu.close();
     });
