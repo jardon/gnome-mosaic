@@ -122,6 +122,7 @@ export class Indicator {
     }
 
     destroy() {
+        this.timeouts_remove();
         this.button.destroy();
     }
 }
