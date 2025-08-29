@@ -982,6 +982,13 @@ export class Ext extends Ecs.System<ExtEvent> {
         }
     }
 
+    destroy_all_borders() {
+        this.hide_all_borders();
+        for (const win of this.windows.values()) {
+            win.border = null;
+        }
+    }
+
     maximized_on_active_display(): boolean {
         const aws = this.workspace_id();
         for (const window of this.windows.values()) {
@@ -2973,11 +2980,11 @@ export default class MosaicExtension extends Extension {
 
         if (ext) {
             delete globalThis.MosaicExtension;
+            ext.destroy_all_borders();
             ext.injections_remove();
             ext.timeouts_remove();
             ext.signals_remove();
             ext.exit_modes();
-            ext.hide_all_borders();
             disable_window_attention_handler();
 
             layoutManager.removeChrome(ext.overlay);
