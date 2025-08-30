@@ -934,27 +934,8 @@ export class Ext extends Ecs.System<ExtEvent> {
 
     on_tile_attach(entity: Entity, window: Entity) {
         if (this.auto_tiler) {
-            if (!this.auto_tiler.attached.contains(window)) {
-                this.windows.with(window, w => {
-                    if (w.prev_rect === null) {
-                        w.prev_rect = w.meta.get_frame_rect();
-                    }
-                });
-            }
-
             this.auto_tiler.attached.insert(window, entity);
         }
-    }
-
-    on_tile_detach(win: Entity) {
-        this.windows.with(win, window => {
-            if (window.prev_rect && !window.ignore_detach) {
-                this.register(
-                    Events.window_move(this, window, window.prev_rect)
-                );
-                window.prev_rect = null;
-            }
-        });
     }
 
     show_border_on_focused() {
@@ -2294,9 +2275,9 @@ export class Ext extends Ecs.System<ExtEvent> {
 
         if (this.settings.tile_by_default() && !this.auto_tiler) {
             this.auto_tiler = new auto_tiler.AutoTiler(
-                new Forest.Forest()
-                    .connect_on_attach(this.on_tile_attach.bind(this))
-                    .connect_on_detach(this.on_tile_detach.bind(this)),
+                new Forest.Forest().connect_on_attach(
+                    this.on_tile_attach.bind(this)
+                ),
                 this.register_storage<Entity>()
             );
         }
@@ -2467,9 +2448,9 @@ export class Ext extends Ecs.System<ExtEvent> {
         const original = this.active_workspace();
 
         let tiler = new auto_tiler.AutoTiler(
-            new Forest.Forest()
-                .connect_on_attach(this.on_tile_attach.bind(this))
-                .connect_on_detach(this.on_tile_detach.bind(this)),
+            new Forest.Forest().connect_on_attach(
+                this.on_tile_attach.bind(this)
+            ),
             this.register_storage()
         );
 
