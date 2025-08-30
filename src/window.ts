@@ -59,8 +59,6 @@ export class ShellWindow {
         style_class: 'gnome-mosaic-active-hint gnome-mosaic-border-normal',
     });
 
-    prev_rect: null | Rectangular = null;
-
     window_app: any;
 
     private was_hidden: boolean = false;
