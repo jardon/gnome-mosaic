@@ -243,8 +243,6 @@ export class ShellWindow {
      * Window is maximized, 0 gapped or smart gapped
      */
     is_max_screen(ext: Ext): boolean {
-        // log.debug(`title: ${this.meta.get_title()}`);
-        // log.debug(`max: ${this.is_maximized()}, 0-gap: ${this.ext.settings.gap_inner() === 0}, smart: ${this.smart_gapped}`);
         return (
             this.is_maximized() ||
             ext.settings.gap_inner() === 0 ||
