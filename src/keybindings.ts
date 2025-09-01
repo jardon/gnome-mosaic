@@ -11,10 +11,7 @@ export class Keybindings {
     tiler_bindings: Object;
     resize_bindings: Object;
 
-    private ext: Ext;
-
     constructor(ext: Ext) {
-        this.ext = ext;
         this.global = {
             'resize-mode': () => ext.tiler.resize_mode(),
             'tile-enter': () => ext.tiler.enter(),
@@ -41,7 +38,7 @@ export class Keybindings {
                 const win = ext.focus_window();
                 if (win && ext.auto_tiler) {
                     ext.auto_tiler.toggle_orientation(ext, win);
-                    ext.register_fn(() => win.activate(true));
+                    ext.register_fn(() => win.activate(ext, true));
                 }
             },
 
@@ -100,11 +97,11 @@ export class Keybindings {
         };
     }
 
-    enable(keybindings: any) {
+    enable(ext: Ext, keybindings: any) {
         for (const name in keybindings) {
             wm.addKeybinding(
                 name,
-                this.ext.settings.ext,
+                ext.settings.ext,
                 Meta.KeyBindingFlags.NONE,
                 Shell.ActionMode.NORMAL,
                 keybindings[name]

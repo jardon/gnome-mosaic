@@ -512,7 +512,7 @@ export class AutoTiler {
             }
         }
 
-        ext.register_fn(() => focused.activate(true));
+        ext.register_fn(() => focused.activate(ext, true));
     }
 
     toggle_orientation(ext: Ext, window: ShellWindow) {

@@ -270,7 +270,7 @@ export class Ext extends Ecs.System<ExtEvent> {
         this.dbus.WindowFocus = (window: [number, number]) => {
             const target_window = this.windows.get(window);
             if (target_window) {
-                target_window.activate();
+                target_window.activate(this);
                 this.on_focused(target_window);
             }
         };
@@ -284,7 +284,7 @@ export class Ext extends Ecs.System<ExtEvent> {
                 const string = window.window_app.get_id();
                 wins.push([
                     window.entity,
-                    window.title(),
+                    window.title(this),
                     window.name(this),
                     string ? string : '',
                 ]);
@@ -345,7 +345,7 @@ export class Ext extends Ecs.System<ExtEvent> {
 
                     if (win.activate_after_move) {
                         win.activate_after_move = false;
-                        win.activate();
+                        win.activate(this);
                     }
 
                     return;
@@ -429,7 +429,7 @@ export class Ext extends Ecs.System<ExtEvent> {
 
     activate_window(window: Window.ShellWindow | null) {
         if (window) {
-            window.activate();
+            window.activate(this);
         }
     }
 
@@ -550,7 +550,7 @@ export class Ext extends Ecs.System<ExtEvent> {
             () => {
                 let wmclass = win.meta.get_wm_class();
                 if (wmclass)
-                    this.conf.add_window_exception(wmclass, win.title());
+                    this.conf.add_window_exception(wmclass, win.title(this));
                 this.exception_dialog();
             },
             // Reload the tiling config on dialog close
@@ -778,7 +778,7 @@ export class Ext extends Ecs.System<ExtEvent> {
 
             const activate_window = (window: Window.ShellWindow) => {
                 this.on_focused(window);
-                window.activate(true);
+                window.activate(this, true);
                 this.prev_focused = [null, window.entity];
             };
 
@@ -850,7 +850,9 @@ export class Ext extends Ecs.System<ExtEvent> {
                 if (fork?.right?.is_window(win)) {
                     const entity = fork.right.inner.entity;
 
-                    this.windows.with(entity, sibling => sibling.activate());
+                    this.windows.with(entity, sibling =>
+                        sibling.activate(this)
+                    );
                 }
             }
         }
@@ -941,7 +943,7 @@ export class Ext extends Ecs.System<ExtEvent> {
     show_border_on_focused() {
         this.hide_all_borders();
         const focus = this.focus_window();
-        if (focus) focus.show_border();
+        if (focus) focus.show_border(this);
     }
 
     toggle_indicator() {
@@ -2158,7 +2160,7 @@ export class Ext extends Ecs.System<ExtEvent> {
                         window.same_workspace() &&
                         !window.meta.minimized
                     ) {
-                        window.activate(false);
+                        window.activate(this, false);
                     } else {
                         this.hide_all_borders();
                     }
@@ -2881,7 +2883,7 @@ export class Ext extends Ecs.System<ExtEvent> {
                     this.windows.with(entity, window => {
                         window.meta.raise();
                         window.meta.unminimize();
-                        window.activate(false);
+                        window.activate(this, false);
                     });
 
                     return false;
@@ -3012,8 +3014,8 @@ export default class MosaicExtension extends Extension {
         }
 
         ext.keybindings
-            .enable(ext.keybindings.global)
-            .enable(ext.keybindings.window_focus);
+            .enable(ext, ext.keybindings.global)
+            .enable(ext, ext.keybindings.window_focus);
 
         if (ext.settings.tile_by_default()) {
             ext.auto_tile_on();
