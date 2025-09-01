@@ -21,7 +21,7 @@ interface AppWidgets {
     gap_width: any;
 }
 
-export default class PopShellPreferences extends ExtensionPreferences {
+export default class MosaicPreferences extends ExtensionPreferences {
     getPreferencesWidget() {
         globalThis.MosaicExtension = this;
         let dialog = settings_dialog_new();
