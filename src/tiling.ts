@@ -230,7 +230,7 @@ export class Tiler {
             this.ext.keybindings
                 .disable(this.ext.keybindings.window_focus)
                 .disable(this.ext.keybindings.tiler_bindings)
-                .enable(this.ext.keybindings.resize_bindings);
+                .enable(this.ext, this.ext.keybindings.resize_bindings);
 
             this.update_resize_position();
 
@@ -277,7 +277,7 @@ export class Tiler {
         const window = this.ext.focus_window();
         if (window && this.ext.auto_tiler) {
             this.ext.auto_tiler.toggle_orientation(this.ext, window);
-            this.ext.register_fn(() => window.activate(true));
+            this.ext.register_fn(() => window.activate(this.ext, true));
         }
     }
 
@@ -417,7 +417,7 @@ export class Tiler {
         if (!win) return;
 
         const place_pointer = () => {
-            this.ext.register_fn(() => win.activate(true));
+            this.ext.register_fn(() => win.activate(this.ext, true));
         };
 
         if (this.ext.auto_tiler && win.is_tilable(this.ext)) {
@@ -454,7 +454,7 @@ export class Tiler {
         this.ext.register_fn(() => {
             if (window) {
                 this.ext.set_overlay(window);
-                window.activate(false);
+                window.activate(this.ext, false);
             }
         });
     }
@@ -779,7 +779,7 @@ export class Tiler {
 
             this.ext.keybindings
                 .disable(this.ext.keybindings.window_focus)
-                .enable(this.ext.keybindings.tiler_bindings);
+                .enable(this.ext, this.ext.keybindings.tiler_bindings);
         }
     }
 
@@ -807,7 +807,9 @@ export class Tiler {
                             });
                         }
 
-                        this.ext.register_fn(() => meta.activate(true));
+                        this.ext.register_fn(() =>
+                            meta.activate(this.ext, true)
+                        );
                     }
                 }
 
@@ -851,7 +853,7 @@ export class Tiler {
             this.ext.keybindings
                 .disable(this.ext.keybindings.tiler_bindings)
                 .disable(this.ext.keybindings.resize_bindings)
-                .enable(this.ext.keybindings.window_focus);
+                .enable(this.ext, this.ext.keybindings.window_focus);
         }
     }
 

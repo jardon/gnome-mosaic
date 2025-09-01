@@ -38,7 +38,6 @@ interface X11Info {
 export class ShellWindow {
     entity: Entity;
     meta: Meta.Window;
-    ext: Ext;
     known_workspace: number;
     grab: boolean = false;
     activate_after_move: boolean = false;
@@ -81,7 +80,6 @@ export class ShellWindow {
 
         this.entity = entity;
         this.meta = window;
-        this.ext = ext;
 
         this.known_workspace = this.workspace_id();
 
@@ -92,58 +90,57 @@ export class ShellWindow {
 
         this.decorate(ext);
 
-        this.bind_window_events();
-        this.bind_hint_events();
+        this.bind_window_events(ext);
+        this.bind_hint_events(ext);
 
         if (this.border) global.window_group.add_child(this.border);
 
         this.hide_border();
-        this.update_border_layout();
+        this.update_border_layout(ext);
 
         if (this.meta.get_compositor_private()?.get_stage())
             this.on_style_changed();
     }
 
-    activate(move_mouse: boolean = true): void {
-        activate(this.ext, move_mouse, this.meta);
+    activate(ext: Ext, move_mouse: boolean = true): void {
+        activate(ext, move_mouse, this.meta);
     }
 
     actor_exists(): boolean {
         return !this.destroying && this.meta.get_compositor_private() !== null;
     }
 
-    private bind_window_events() {
-        this.ext.window_signals
+    private bind_window_events(ext: Ext) {
+        ext.window_signals
             .get_or(this.entity, () => new Array())
             .push(
                 this.meta.connect('size-changed', () => {
-                    this.window_changed();
+                    this.window_changed(ext);
                 }),
                 this.meta.connect('position-changed', () => {
-                    this.window_changed();
+                    this.window_changed(ext);
                 }),
                 this.meta.connect('workspace-changed', () => {
                     this.workspace_changed();
                 }),
                 this.meta.connect('notify::wm-class', () => {
-                    this.wm_class_changed();
+                    this.wm_class_changed(ext);
                 }),
                 this.meta.connect('raised', () => {
-                    this.window_raised();
+                    this.window_raised(ext);
                 })
             );
     }
 
-    private bind_hint_events() {
+    private bind_hint_events(ext: Ext) {
         if (!this.border) return;
 
-        let settings = this.ext.settings;
-        let change_id = settings.ext.connect('changed', () => {
+        let change_id = ext.settings.ext.connect('changed', () => {
             return false;
         });
 
         this.border.connect('destroy', () => {
-            settings.ext.disconnect(change_id);
+            ext.settings.ext.disconnect(change_id);
         });
         this.border.connect('style-changed', () => {
             this.on_style_changed();
@@ -245,12 +242,12 @@ export class ShellWindow {
     /**
      * Window is maximized, 0 gapped or smart gapped
      */
-    is_max_screen(): boolean {
+    is_max_screen(ext: Ext): boolean {
         // log.debug(`title: ${this.meta.get_title()}`);
         // log.debug(`max: ${this.is_maximized()}, 0-gap: ${this.ext.settings.gap_inner() === 0}, smart: ${this.smart_gapped}`);
         return (
             this.is_maximized() ||
-            this.ext.settings.gap_inner() === 0 ||
+            ext.settings.gap_inner() === 0 ||
             this.smart_gapped
         );
     }
@@ -300,7 +297,7 @@ export class ShellWindow {
             // Windows that are tagged ForceTile are considered tilable despite exemption
             if (
                 wm_class !== null &&
-                ext.conf.window_shall_float(wm_class, this.title())
+                ext.conf.window_shall_float(wm_class, this.title(ext))
             ) {
                 return ext.contains_tag(this.entity, Tags.ForceTile);
             }
@@ -357,7 +354,7 @@ export class ShellWindow {
             ext.register({tag: 2, window: this, kind: {tag: 1}});
             if (on_complete) ext.register_fn(on_complete);
             if (meta.appears_focused) {
-                this.update_border_layout();
+                this.update_border_layout(ext);
                 ext.show_border_on_focused();
             }
         }
@@ -389,12 +386,12 @@ export class ShellWindow {
         let br = other.rect().clone();
 
         other.move(ext, ar);
-        this.move(ext, br, () => place_pointer_on(this.ext, this.meta));
+        this.move(ext, br, () => place_pointer_on(ext, this.meta));
     }
 
-    title(): string {
+    title(ext: Ext): string {
         const title = this.meta.get_title();
-        return title ? title : this.name(this.ext);
+        return title ? title : this.name(ext);
     }
 
     async wm_role(): Promise<string | null> {
@@ -420,17 +417,17 @@ export class ShellWindow {
         });
     }
 
-    show_border() {
+    show_border(ext: Ext) {
         if (!this.border) return;
 
-        this.update_border_style();
-        if (this.ext.settings.active_hint()) {
+        this.update_border_style(ext);
+        if (ext.settings.active_hint()) {
             const border = this.border;
 
             const permitted = () => {
                 return (
                     this.actor_exists() &&
-                    this.ext.focus_window() == this &&
+                    ext.focus_window() == this &&
                     !this.meta.is_fullscreen() &&
                     (!this.is_single_max_screen() || this.is_snap_edge()) &&
                     !this.meta.minimized
@@ -507,14 +504,14 @@ export class ShellWindow {
         if (b) b.hide();
     }
 
-    update_border_layout() {
+    update_border_layout(ext: Ext) {
         let {x, y, width, height} = this.meta.get_frame_rect();
 
         const border = this.border;
         let borderSize = this.border_size;
 
         if (border) {
-            if (!(this.is_max_screen() || this.is_snap_edge())) {
+            if (!(this.is_max_screen(ext) || this.is_snap_edge())) {
                 border.remove_style_class_name('gnome-mosaic-border-maximize');
             } else {
                 borderSize = 0;
@@ -550,8 +547,7 @@ export class ShellWindow {
         }
     }
 
-    async update_border_style() {
-        const {settings} = this.ext;
+    async update_border_style(ext: Ext) {
         const margin = 6;
         const radii = await getBorderRadii(
             this.meta.get_compositor_private() as Meta.WindowActor
@@ -561,28 +557,28 @@ export class ShellWindow {
         if (this.border) {
             this.border.set_style(
                 `border-radius: ${radii_values};` +
-                    `border-width: ${settings.active_hint_border_width()}px;` +
-                    `border-color: ${major > 46 ? '-st-accent-color' : settings.gnome_legacy_accent_color()}`
+                    `border-width: ${ext.settings.active_hint_border_width()}px;` +
+                    `border-color: ${major > 46 ? '-st-accent-color' : ext.settings.gnome_legacy_accent_color()}`
             );
         }
     }
 
-    private wm_class_changed() {
-        if (this.is_tilable(this.ext)) {
-            this.ext.connect_window(this);
+    private wm_class_changed(ext: Ext) {
+        if (this.is_tilable(ext)) {
+            ext.connect_window(this);
             if (!this.meta.minimized) {
-                this.ext.auto_tiler?.auto_tile(this.ext, this, this.ext.init);
+                ext.auto_tiler?.auto_tile(ext, this, ext.init);
             }
         }
     }
 
-    private window_changed() {
-        this.update_border_layout();
-        this.ext.show_border_on_focused();
+    private window_changed(ext: Ext) {
+        this.update_border_layout(ext);
+        ext.show_border_on_focused();
     }
 
-    private window_raised() {
-        this.ext.show_border_on_focused();
+    private window_raised(ext: Ext) {
+        ext.show_border_on_focused();
     }
 
     private workspace_changed() {}
