@@ -5,6 +5,16 @@ export class Rectangle {
         this.array = array;
     }
 
+    toJSON() {
+        return {
+            array: this.array,
+        };
+    }
+
+    static fromJSON(data: any) {
+        return new Rectangle(data.array);
+    }
+
     static from_meta(meta: Rectangular): Rectangle {
         return new Rectangle([meta.x, meta.y, meta.width, meta.height]);
     }
