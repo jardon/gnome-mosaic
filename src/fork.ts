@@ -1,8 +1,8 @@
 import type {Forest} from './forest.js';
 import type {Entity} from './ecs.js';
 import type {Ext} from './extension.js';
-import type {Rectangle} from './rectangle.js';
-import type {Node} from './node.js';
+import {Rectangle} from './rectangle.js';
+import {Node} from './node.js';
 
 import * as Ecs from './ecs.js';
 import * as Lib from './lib.js';
@@ -63,6 +63,47 @@ export class Fork {
         this.entity = entity;
         this.orientation = orient;
         this.monitor = monitor;
+    }
+
+    toJSON() {
+        return {
+            left: this.left,
+            right: this.right,
+            area: this.area,
+            entity: this.entity,
+            on_primary_display: this.on_primary_display,
+            workspace: this.workspace,
+            length_left: this.length_left,
+            prev_length_left: this.prev_length_left,
+            prev_ratio: this.prev_ratio,
+            monitor: this.monitor,
+            minimum_ratio: this.minimum_ratio,
+            orientation: this.orientation,
+            orientation_changed: this.orientation_changed,
+            is_toplevel: this.is_toplevel,
+            smart_gapped: this.smart_gapped,
+        };
+    }
+
+    static fromJSON(data: any) {
+        let fork = new Fork(
+            data.entity,
+            Node.fromJSON(data.left),
+            data.right ? Node.fromJSON(data.right) : null,
+            Rectangle.fromJSON(data.area),
+            data.workspace,
+            data.monitor,
+            data.orientation
+                ? Lib.Orientation.VERTICAL
+                : Lib.Orientation.HORIZONTAL
+        );
+        fork.on_primary_display = data.on_primary_display;
+        fork.prev_length_left = data.prev_length_left;
+        fork.prev_ratio = data.prev_ratio;
+        fork.orientation_changed = data.orientation_changed;
+        fork.is_toplevel = data.is_toplevel;
+        fork.smart_gapped = data.smart_gapped;
+        return fork;
     }
 
     /** The calculated left area of this fork */

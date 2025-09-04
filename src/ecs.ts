@@ -36,6 +36,30 @@ export class Storage<T> {
         this.store = new Array();
     }
 
+    toJSON() {
+        return {
+            store: this.store,
+        };
+    }
+
+    static fromJSON<T>(
+        store: Array<[number, any]>,
+        revive: (obj: any) => T
+    ): Storage<T> {
+        const storage = new Storage<T>();
+        for (let i = 0; i < store.length; i++) {
+            if (store[i]) {
+                const [gen, component] = store[i];
+                storage.insert([i, gen], revive(component));
+            }
+        }
+        return storage;
+    }
+
+    toString(): string {
+        return this.store.toString();
+    }
+
     /// Private method for iterating across allocated slots
     *_iter(): IterableIterator<[number, [number, T]]> {
         let idx = 0;
@@ -150,16 +174,21 @@ export class Storage<T> {
 /// - An array for containing a list of free slots to allocate
 /// - An array for storing tags associated with an entity
 export class World {
-    private entities_: Array<Entity>;
-    private storages: Array<Storage<any>>;
-    private tags_: Array<any>;
-    private free_slots: Array<number>;
+    entities_: Array<Entity>;
+    storages: Array<Storage<any>>;
+    tags_: Array<any>;
+    free_slots: Array<number>;
 
-    constructor() {
-        this.entities_ = new Array();
-        this.storages = new Array();
-        this.tags_ = new Array();
-        this.free_slots = new Array();
+    constructor(
+        entities?: Array<Entity>,
+        storages?: Array<Storage<any>>,
+        tags?: Array<any>,
+        free_slots?: Array<number>
+    ) {
+        this.entities_ = entities ?? new Array();
+        this.storages = storages ?? new Array();
+        this.tags_ = tags ?? new Array();
+        this.free_slots = free_slots ?? new Array();
     }
 
     /// The total capacity of the entity array

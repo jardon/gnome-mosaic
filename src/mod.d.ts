@@ -305,6 +305,7 @@ declare namespace Meta {
         get_display(): Meta.Display | null;
         get_description(): string;
         get_frame_rect(): Rectangular;
+        get_id(): number;
         get_maximized(): number;
         get_monitor(): number;
         get_pid(): number;

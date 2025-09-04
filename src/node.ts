@@ -39,6 +39,16 @@ export class Node {
         this.inner = inner;
     }
 
+    toJSON() {
+        return {
+            inner: this.inner,
+        };
+    }
+
+    static fromJSON(data: any) {
+        return new Node(data.inner);
+    }
+
     /** Create a fork variant of a `Node` */
     static fork(entity: Entity): Node {
         return new Node({kind: NodeKind.FORK, entity});

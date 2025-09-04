@@ -8,7 +8,7 @@ import * as tiling from './tiling.js';
 
 import type {Entity} from './ecs.js';
 import type {Ext} from './extension.js';
-import type {Forest, MoveBy, MoveByCursor} from './forest.js';
+import {Forest, MoveBy, MoveByCursor} from './forest.js';
 import type {Fork} from './fork.js';
 import type {Rectangle} from './rectangle.js';
 import type {Result} from './result.js';
@@ -25,6 +25,13 @@ export class AutoTiler {
     constructor(forest: Forest, attached: ecs.Storage<Entity>) {
         this.forest = forest;
         this.attached = attached;
+    }
+
+    toJSON() {
+        return {
+            forest: this.forest,
+            attached: this.attached,
+        };
     }
 
     /** Swap window associations in the auto-tiler

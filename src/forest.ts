@@ -8,7 +8,7 @@ import * as Fork from './fork.js';
 import * as geom from './geom.js';
 
 import type {Entity} from './ecs.js';
-import type {Rectangle} from './rectangle.js';
+import {Rectangle} from './rectangle.js';
 import type {ShellWindow} from './window.js';
 import type {Ext} from './extension.js';
 
@@ -71,8 +71,53 @@ export class Forest extends Ecs.World {
     /** Likewise for detachments */
     on_detach: (child: Entity) => void = () => {};
 
-    constructor() {
-        super();
+    constructor(
+        entities?: Array<Entity>,
+        storages?: Array<Ecs.Storage<any>>,
+        tags?: Array<any>,
+        free_slots?: Array<number>
+    ) {
+        super(entities, storages, tags, free_slots);
+    }
+
+    toJSON() {
+        return {
+            toplevel: Array.from(this.toplevel),
+            requested: Array.from(this.requested),
+            forks: this.forks,
+            parents: this.parents,
+            string_reps: this.string_reps,
+            entities: this.entities_,
+            storages: this.storages,
+            tags: this.tags_,
+            free_slots: this.free_slots,
+        };
+    }
+
+    static fromJSON(data: any) {
+        let forest = new Forest();
+        forest.toplevel = new Map(data.toplevel);
+        forest.requested = new Map(data.requested);
+        forest.forks = Ecs.Storage.fromJSON<Fork.Fork>(data.forks.store, obj =>
+            Fork.Fork.fromJSON(obj)
+        );
+        forest.parents = Ecs.Storage.fromJSON<Entity>(
+            data.parents.store,
+            obj => obj
+        );
+        forest.string_reps = Ecs.Storage.fromJSON<string>(
+            data.string_reps.store,
+            obj => obj
+        );
+        forest.entities_ = data.entities;
+        forest.storages = data.storages.map((obj: any) =>
+            Ecs.Storage.fromJSON(obj.store, val => val)
+        );
+        forest.tags_ = data.tags.map(
+            (obj: any) => new Set(Object.entries(obj))
+        );
+        forest.free_slots = data.free_slots;
+        return forest;
     }
 
     measure(ext: Ext, fork: Fork.Fork, area: Rectangle) {

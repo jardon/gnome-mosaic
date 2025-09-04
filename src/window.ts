@@ -102,6 +102,38 @@ export class ShellWindow {
             this.on_style_changed();
     }
 
+    toJSON() {
+        return {
+            entity: this.entity,
+            workspace: this.known_workspace,
+            grab: this.grab,
+            activate_after_move: this.activate_after_move,
+            ignore_detatch: this.ignore_detach,
+            was_attached_to: this.was_attached_to,
+            destroying: this.destroying,
+            reassignment: this.reassignment,
+            smart_gapped: this.smart_gapped,
+            meta_id: this.meta.get_id(),
+        };
+    }
+
+    static fromJSON(data: any, ext: Ext): ShellWindow {
+        const win = new ShellWindow(
+            data.entity,
+            data.meta,
+            Shell.WindowTracker.get_default().get_window_app(data.meta),
+            ext
+        );
+        win.known_workspace = data.workspace;
+        win.grab = data.grab;
+        win.activate_after_move = data.activate_after_move;
+        win.ignore_detach = data.ignore_detach;
+        win.destroying = data.destroying;
+        win.reassignment = data.reassignment;
+        win.smart_gapped = data.smart_gapped;
+        return win;
+    }
+
     activate(ext: Ext, move_mouse: boolean = true): void {
         activate(ext, move_mouse, this.meta);
     }

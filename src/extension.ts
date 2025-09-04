@@ -68,6 +68,7 @@ import * as Tags from './tags.js';
 import {get_current_path} from './paths.js';
 
 const GNOME_VERSION = PACKAGE_VERSION;
+const MOSAIC_CACHED_STATE = 'mosaic-cached-state';
 
 enum Style {
     Light,
@@ -296,6 +297,101 @@ export class Ext extends Ecs.System<ExtEvent> {
         this.dbus.WindowQuit = (win: [number, number]) => {
             this.windows.get(win)?.meta.delete(global.get_current_time());
         };
+    }
+
+    toJSON() {
+        let data = {
+            ids: this.ids,
+            monitors: this.monitors,
+            movements: this.movements,
+            names: this.names,
+            snapped: this.snapped,
+            windows: this.windows,
+            auto_tiler: this.auto_tiler,
+            entities: this.entities_,
+            storages: this.storages,
+            tags: this.tags_,
+            free_slots: this.free_slots,
+        };
+        return data;
+    }
+
+    static fromJSON(data: any): Ext | null {
+        function getWindowMeta(id: number) {
+            const workspaceManager = global.workspace_manager;
+
+            let windows: Array<Meta.Window> = [];
+
+            for (let i = 0; i < workspaceManager.get_n_workspaces(); i++) {
+                let workspace = workspaceManager.get_workspace_by_index(i);
+                if (workspace) {
+                    let win = workspace.list_windows();
+                    windows.push(...win);
+                }
+            }
+            return windows.find(window => window.get_id() === id);
+        }
+
+        try {
+            let ext = new Ext();
+            ext.ids = Ecs.Storage.fromJSON<number>(data.ids.store, obj => obj);
+            ext.monitors = Ecs.Storage.fromJSON<[number, number]>(
+                data.monitors.store,
+                obj => obj
+            );
+            ext.movements = Ecs.Storage.fromJSON<Rectangular>(
+                data.movements.store,
+                obj => obj
+            );
+            ext.names = Ecs.Storage.fromJSON<string>(
+                data.names.store,
+                obj => obj
+            );
+            ext.snapped = Ecs.Storage.fromJSON<boolean>(
+                data.snapped.store,
+                obj => obj
+            );
+
+            let window_store = data.windows.store;
+            for (const win of window_store) {
+                const meta = getWindowMeta(win[1].meta_id);
+                if (meta) win[1].meta = meta;
+            }
+            ext.windows = Ecs.Storage.fromJSON<Window.ShellWindow>(
+                window_store.filter((item: any) => item[1].meta !== undefined),
+                obj => Window.ShellWindow.fromJSON(obj, ext!)
+            );
+            const forest = Forest.Forest.fromJSON(data.auto_tiler.forest);
+            const attached = Ecs.Storage.fromJSON<Entity>(
+                data.auto_tiler.attached.store,
+                (obj: any) => obj
+            );
+            ext.auto_tiler = new auto_tiler.AutoTiler(forest, attached);
+            ext.entities_ = data.entities;
+            data.storages.forEach((storage: any) => {
+                for (const item of storage.store) {
+                    if (item && item[1].meta_id)
+                        item[1].meta = getWindowMeta(item[1].meta_id);
+                }
+            });
+            ext.storages = data.storages.map((obj: any) =>
+                Ecs.Storage.fromJSON(obj.store, val =>
+                    val.meta_id ? Window.ShellWindow.fromJSON(val, ext) : val
+                )
+            );
+            ext.tags_ = data.tags.map(
+                (obj: any) => new Set(Object.entries(obj))
+            );
+            ext.free_slots = data.free_slots;
+            log.debug('CACHE SUCCESSFULLY RESTORED');
+            return ext;
+        } catch (error) {
+            if (error instanceof Error) {
+                log.debug(error.message);
+            }
+            log.debug('CACHE UNSUCCESSFULLY RESTORED');
+        }
+        return null;
     }
 
     // System interface
@@ -2441,7 +2537,7 @@ export class Ext extends Ecs.System<ExtEvent> {
         }
     }
 
-    auto_tile_on() {
+    auto_tile_on(restored = false) {
         this.settings.set_edge_tiling(false);
         this.hide_all_borders();
 
@@ -2449,30 +2545,36 @@ export class Ext extends Ecs.System<ExtEvent> {
 
         const original = this.active_workspace();
 
-        let tiler = new auto_tiler.AutoTiler(
-            new Forest.Forest().connect_on_attach(
-                this.on_tile_attach.bind(this)
-            ),
-            this.register_storage()
-        );
+        if (!restored) {
+            let tiler = new auto_tiler.AutoTiler(
+                new Forest.Forest().connect_on_attach(
+                    this.on_tile_attach.bind(this)
+                ),
+                this.register_storage()
+            );
 
-        this.auto_tiler = tiler;
+            this.auto_tiler = tiler;
 
-        this.settings.set_tile_by_default(true);
-        this.button.icon.gicon = this.button_gio_icon_auto_on; // type: Gio.Icon
+            this.settings.set_tile_by_default(true);
+            this.button.icon.gicon = this.button_gio_icon_auto_on; // type: Gio.Icon
 
-        for (const window of this.windows.values()) {
-            if (window.is_tilable(this)) {
-                let actor = window.meta.get_compositor_private();
-                if (actor) {
-                    if (!window.meta.minimized) {
-                        tiler.auto_tile(this, window, true);
+            for (const window of this.windows.values()) {
+                if (window.is_tilable(this)) {
+                    let actor = window.meta.get_compositor_private();
+                    if (actor) {
+                        if (!window.meta.minimized) {
+                            tiler.auto_tile(this, window, true);
+                        }
                     }
                 }
             }
-        }
 
-        this.register_fn(() => this.switch_to_workspace(original));
+            this.register_fn(() => this.switch_to_workspace(original));
+        } else if (this.auto_tiler) {
+            this.auto_tiler.forest.connect_on_attach(
+                this.on_tile_attach.bind(this)
+            );
+        }
     }
 
     /** Calls a function once windows are no longer queued for movement. */
@@ -2986,17 +3088,39 @@ declare global {
 
 export default class MosaicExtension extends Extension {
     enable() {
+        let restored = false;
         globalThis.MosaicExtension = this;
         log.info('enable');
 
         if (!ext) {
-            ext = new Ext();
+            const settings = globalThis.MosaicExtension.getSettings();
+            try {
+                const data = JSON.parse(
+                    settings.get_string(MOSAIC_CACHED_STATE)
+                );
+                ext = Ext.fromJSON(data);
+                restored = true;
+            } catch {
+                ext = null;
+                log.debug('COULD NOT READ CACHED STATE');
+            }
+            settings.set_string(MOSAIC_CACHED_STATE, '');
 
-            ext.register_fn(() => {
-                if (ext?.auto_tiler) ext.snap_windows();
-            });
+            if (!restored) {
+                log.debug('CREATING NEW EXTENSION INSTANCE');
+                ext = new Ext();
+                ext.register_fn(() => {
+                    if (ext?.auto_tiler) ext.snap_windows();
+                });
+            }
         }
 
+        if (!ext) {
+            log.error('EXT IS NULL - CONFIGURATION SKIPPED');
+            return;
+        }
+
+        log.debug('CONFIGURING EXTENSION');
         if (ext.settings.show_skiptaskbar()) {
             _show_skip_taskbar_windows(ext);
         } else {
@@ -3018,13 +3142,27 @@ export default class MosaicExtension extends Extension {
             .enable(ext, ext.keybindings.window_focus);
 
         if (ext.settings.tile_by_default()) {
-            ext.auto_tile_on();
+            ext.auto_tile_on(restored);
         }
     }
     disable() {
         log.info('disable');
 
         if (ext) {
+            if (sessionMode.isLocked) {
+                try {
+                    ext.settings.ext.set_string(
+                        MOSAIC_CACHED_STATE,
+                        JSON.stringify(ext)
+                    );
+                    log.debug('CACHE SUCCESFULLY STORED');
+                } catch {
+                    log.debug('CACHE UNSUCCESSFULLY STORED');
+                    ext.settings.ext.set_string(MOSAIC_CACHED_STATE, '');
+                }
+            } else {
+                ext.settings.ext.set_string(MOSAIC_CACHED_STATE, '');
+            }
             delete globalThis.MosaicExtension;
             ext.destroy_all_borders();
             ext.injections_remove();
@@ -3061,6 +3199,8 @@ export default class MosaicExtension extends Extension {
 
         enable_window_attention_handler();
     }
+
+    // delete_cache = () => ext!.settings.ext.set_string(MOSAIC_CACHED_STATE, '');
 }
 
 const handler = windowAttentionHandler;
