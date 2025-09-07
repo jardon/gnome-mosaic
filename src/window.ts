@@ -99,7 +99,7 @@ export class ShellWindow {
         this.update_border_layout(ext);
 
         if (this.meta.get_compositor_private()?.get_stage())
-            this.on_style_changed();
+            this.on_style_changed(ext);
     }
 
     toJSON() {
@@ -175,7 +175,7 @@ export class ShellWindow {
             ext.settings.ext.disconnect(change_id);
         });
         this.border.connect('style-changed', () => {
-            this.on_style_changed();
+            this.on_style_changed(ext);
         });
     }
 
@@ -394,11 +394,12 @@ export class ShellWindow {
         return ext.names.get_or(this.entity, () => 'unknown');
     }
 
-    private on_style_changed() {
+    private on_style_changed(ext: Ext) {
         if (!this.border) return;
         this.border_size = this.border
             .get_theme_node()
             .get_border_width(St.Side.TOP);
+        this.update_border_style(ext);
     }
 
     rect(): Rectangle {
