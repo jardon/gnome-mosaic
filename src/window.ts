@@ -268,7 +268,7 @@ export class ShellWindow {
     }
 
     is_maximized(): boolean {
-        return this.meta.get_maximized() !== 0;
+        return this.meta.is_maximized() !== 0;
     }
 
     /**
@@ -296,7 +296,7 @@ export class ShellWindow {
     }
 
     is_snap_edge(): boolean {
-        return this.meta.get_maximized() == Meta.MaximizeFlags.VERTICAL;
+        return this.meta.is_maximized() == Meta.MaximizeFlags.VERTICAL;
     }
 
     is_tilable(ext: Ext): boolean {
@@ -372,11 +372,14 @@ export class ShellWindow {
         const actor = meta.get_compositor_private();
 
         if (actor) {
-            meta.unmaximize(Meta.MaximizeFlags.HORIZONTAL);
-            meta.unmaximize(Meta.MaximizeFlags.VERTICAL);
-            meta.unmaximize(
+            meta.set_unmaximize_flags(Meta.MaximizeFlags.HORIZONTAL);
+            meta.unmaximize();
+            meta.set_unmaximize_flags(Meta.MaximizeFlags.VERTICAL);
+            meta.unmaximize();
+            meta.set_unmaximize_flags(
                 Meta.MaximizeFlags.HORIZONTAL | Meta.MaximizeFlags.VERTICAL
             );
+            meta.unmaximize();
             actor.remove_all_transitions();
 
             ext.movements.insert(this.entity, clone);

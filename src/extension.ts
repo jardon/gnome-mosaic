@@ -1006,7 +1006,8 @@ export class Ext extends Ecs.System<ExtEvent> {
             ) {
                 if (prev.rect().contains(win.rect())) {
                     if (prev.is_maximized()) {
-                        prev.meta.unmaximize(Meta.MaximizeFlags.BOTH);
+                        prev.meta.set_unmaximize_flags(Meta.MaximizeFlags.BOTH);
+                        prev.meta.unmaximize();
                     }
                 }
             }
@@ -1128,7 +1129,8 @@ export class Ext extends Ecs.System<ExtEvent> {
                     compare.is_maximized() &&
                     win.entity[0] !== compare.entity[0]
                 ) {
-                    compare.meta.unmaximize(Meta.MaximizeFlags.BOTH);
+                    compare.meta.set_unmaximize_flags(Meta.MaximizeFlags.BOTH);
+                    compare.meta.unmaximize();
                 }
             }
         }
@@ -1383,9 +1385,14 @@ export class Ext extends Ecs.System<ExtEvent> {
 
             if (this.auto_tiler) {
                 if (this.is_floating(win)) {
-                    win.meta.unmaximize(Meta.MaximizeFlags.HORIZONTAL);
-                    win.meta.unmaximize(Meta.MaximizeFlags.VERTICAL);
-                    win.meta.unmaximize(Meta.MaximizeFlags.BOTH);
+                    win.meta.set_unmaximize_flags(
+                        Meta.MaximizeFlags.HORIZONTAL
+                    );
+                    win.meta.unmaximize();
+                    win.meta.set_unmaximize_flags(Meta.MaximizeFlags.VERTICAL);
+                    win.meta.unmaximize();
+                    win.meta.set_unmaximize_flags(Meta.MaximizeFlags.BOTH);
+                    win.meta.unmaximize();
                 }
 
                 this.register(Events.window_move(this, win, rect));
@@ -1396,7 +1403,8 @@ export class Ext extends Ecs.System<ExtEvent> {
                     rect.width == next_area.width &&
                     rect.height == next_area.height
                 ) {
-                    win.meta.maximize(Meta.MaximizeFlags.BOTH);
+                    win.meta.set_maximize_flags(Meta.MaximizeFlags.BOTH);
+                    win.meta.maximize();
                 }
             }
         }
