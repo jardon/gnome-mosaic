@@ -268,7 +268,11 @@ export class ShellWindow {
     }
 
     is_maximized(): boolean {
-        return this.meta.is_maximized() !== 0;
+        return (
+            (this.meta.is_maximized
+                ? this.meta.is_maximized()
+                : this.meta.get_maximized()) !== 0
+        );
     }
 
     /**
@@ -296,7 +300,11 @@ export class ShellWindow {
     }
 
     is_snap_edge(): boolean {
-        return this.meta.is_maximized() == Meta.MaximizeFlags.VERTICAL;
+        return (
+            (this.meta.is_maximized
+                ? this.meta.is_maximized()
+                : this.meta.get_maximized()) == Meta.MaximizeFlags.VERTICAL
+        );
     }
 
     is_tilable(ext: Ext): boolean {
@@ -372,14 +380,9 @@ export class ShellWindow {
         const actor = meta.get_compositor_private();
 
         if (actor) {
-            meta.set_unmaximize_flags(Meta.MaximizeFlags.HORIZONTAL);
-            meta.unmaximize();
-            meta.set_unmaximize_flags(Meta.MaximizeFlags.VERTICAL);
-            meta.unmaximize();
-            meta.set_unmaximize_flags(
-                Meta.MaximizeFlags.HORIZONTAL | Meta.MaximizeFlags.VERTICAL
-            );
-            meta.unmaximize();
+            if (meta.set_unmaximize_flags)
+                meta.set_unmaximize_flags(Meta.MaximizeFlags.BOTH);
+            else meta.unmaximize(Meta.MaximizeFlags.BOTH);
             actor.remove_all_transitions();
 
             ext.movements.insert(this.entity, clone);

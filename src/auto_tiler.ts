@@ -591,7 +591,11 @@ export class AutoTiler {
         ext: Ext,
         focused: ShellWindow
     ): Result<void, string> {
-        if (focused.meta.is_maximized()) {
+        if (
+            focused.meta.is_maximized
+                ? focused.meta.is_maximized()
+                : focused.meta.get_maximized()
+        ) {
             return Err('cannot toggle maximized window');
         }
 
