@@ -3088,62 +3088,65 @@ declare global {
 
 export default class MosaicExtension extends Extension {
     enable() {
-        let restored = false;
-        globalThis.MosaicExtension = this;
-        log.info('enable');
+        GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+            let restored = false;
+            globalThis.MosaicExtension = this;
+            log.info('enable');
 
-        if (!ext) {
-            const settings = globalThis.MosaicExtension.getSettings();
-            try {
-                const data = JSON.parse(
-                    settings.get_string(MOSAIC_CACHED_STATE)
-                );
-                ext = Ext.fromJSON(data);
-                restored = true;
-            } catch {
-                ext = null;
-                log.debug('COULD NOT READ CACHED STATE');
+            if (!ext) {
+                const settings = globalThis.MosaicExtension.getSettings();
+                try {
+                    const data = JSON.parse(
+                        settings.get_string(MOSAIC_CACHED_STATE)
+                    );
+                    ext = Ext.fromJSON(data);
+                    restored = true;
+                } catch {
+                    ext = null;
+                    log.debug('COULD NOT READ CACHED STATE');
+                }
+                settings.set_string(MOSAIC_CACHED_STATE, '');
+
+                if (!restored) {
+                    log.debug('CREATING NEW EXTENSION INSTANCE');
+                    ext = new Ext();
+                    ext.register_fn(() => {
+                        if (ext?.auto_tiler) ext.snap_windows();
+                    });
+                }
             }
-            settings.set_string(MOSAIC_CACHED_STATE, '');
 
-            if (!restored) {
-                log.debug('CREATING NEW EXTENSION INSTANCE');
-                ext = new Ext();
-                ext.register_fn(() => {
-                    if (ext?.auto_tiler) ext.snap_windows();
-                });
+            if (!ext) {
+                log.error('EXT IS NULL - CONFIGURATION SKIPPED');
+                return false;
             }
-        }
 
-        if (!ext) {
-            log.error('EXT IS NULL - CONFIGURATION SKIPPED');
-            return;
-        }
+            log.debug('CONFIGURING EXTENSION');
+            if (ext.settings.show_skiptaskbar()) {
+                _show_skip_taskbar_windows(ext);
+            } else {
+                _hide_skip_taskbar_windows();
+            }
 
-        log.debug('CONFIGURING EXTENSION');
-        if (ext.settings.show_skiptaskbar()) {
-            _show_skip_taskbar_windows(ext);
-        } else {
-            _hide_skip_taskbar_windows();
-        }
+            ext.injections_add();
+            ext.signals_attach();
 
-        ext.injections_add();
-        ext.signals_attach();
+            layoutManager.addChrome(ext.overlay);
 
-        layoutManager.addChrome(ext.overlay);
+            if (!indicator) {
+                indicator = new PanelSettings.Indicator(ext);
+                panel.addToStatusArea('gnome-mosaic', indicator.button);
+            }
 
-        if (!indicator) {
-            indicator = new PanelSettings.Indicator(ext);
-            panel.addToStatusArea('gnome-mosaic', indicator.button);
-        }
+            ext.keybindings
+                .enable(ext, ext.keybindings.global)
+                .enable(ext, ext.keybindings.window_focus);
 
-        ext.keybindings
-            .enable(ext, ext.keybindings.global)
-            .enable(ext, ext.keybindings.window_focus);
-
-        if (ext.settings.tile_by_default()) {
-            ext.auto_tile_on(restored);
-        }
+            if (ext.settings.tile_by_default()) {
+                ext.auto_tile_on(restored);
+            }
+            return true;
+        });
     }
     disable() {
         log.info('disable');
