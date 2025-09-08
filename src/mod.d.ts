@@ -94,6 +94,7 @@ declare module 'gi://Pango' {
 
 declare module 'gi://GLib' {
     class GLib {
+        PRIORITY_DEFAULT_IDLE: number;
         PRIORITY_DEFAULT: number;
         PRIORITY_LOW: number;
         SOURCE_REMOVE: boolean;
