@@ -48,9 +48,12 @@ export class Storage<T> {
     ): Storage<T> {
         const storage = new Storage<T>();
         for (let i = 0; i < store.length; i++) {
-            if (store[i]) {
-                const [gen, component] = store[i];
+            let entry = store[i];
+            if (entry !== null) {
+                const [gen, component] = entry;
                 storage.insert([i, gen], revive(component));
+            } else {
+                storage.store[i] = null;
             }
         }
         return storage;

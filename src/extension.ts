@@ -354,11 +354,12 @@ export class Ext extends Ecs.System<ExtEvent> {
 
             let window_store = data.windows.store;
             for (const win of window_store) {
-                const meta = getWindowMeta(win[1].meta_id);
+                let meta;
+                if (win) meta = getWindowMeta(win[1].meta_id);
                 if (meta) win[1].meta = meta;
             }
             ext.windows = Ecs.Storage.fromJSON<Window.ShellWindow>(
-                window_store.filter((item: any) => item[1].meta !== undefined),
+                window_store,
                 obj => Window.ShellWindow.fromJSON(obj, ext!)
             );
             const forest = Forest.Forest.fromJSON(data.auto_tiler.forest);
