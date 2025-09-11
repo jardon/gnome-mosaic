@@ -98,6 +98,7 @@ export class Fork {
                 : Lib.Orientation.HORIZONTAL
         );
         fork.on_primary_display = data.on_primary_display;
+        fork.length_left = data.length_left;
         fork.prev_length_left = data.prev_length_left;
         fork.prev_ratio = data.prev_ratio;
         fork.orientation_changed = data.orientation_changed;
