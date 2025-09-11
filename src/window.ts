@@ -108,7 +108,7 @@ export class ShellWindow {
             workspace: this.known_workspace,
             grab: this.grab,
             activate_after_move: this.activate_after_move,
-            ignore_detatch: this.ignore_detach,
+            ignore_detach: this.ignore_detach,
             was_attached_to: this.was_attached_to,
             destroying: this.destroying,
             reassignment: this.reassignment,
