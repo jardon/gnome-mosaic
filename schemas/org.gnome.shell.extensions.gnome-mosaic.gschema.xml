@@ -281,6 +281,11 @@
             <summary>Move window to the rightward monitor</summary>
         </key>
 
+        <key type="s" name="mosaic-cached-state">
+            <default>''</default>
+            <summary>Cached state used to reload data during lock and unlock</summary>
+        </key>
+
 
         <key type="u" name="log-level">
             <default>0</default>
