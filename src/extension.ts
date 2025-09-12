@@ -2439,6 +2439,17 @@ export class Ext extends Ecs.System<ExtEvent> {
             this.migration_exec.stop();
             this.migration_exec = null;
         }
+
+        for (const [entity, _] of this.window_signals.iter()) {
+            const window = this.windows.get(entity);
+            if (!window) return;
+
+            this.window_signals.take_with(entity, signals => {
+                for (const signal of signals) {
+                    window.meta.disconnect(signal);
+                }
+            });
+        }
     }
 
     size_changed_block() {
