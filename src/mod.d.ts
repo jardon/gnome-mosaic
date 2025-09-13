@@ -323,12 +323,14 @@ declare namespace Meta {
         is_above(): boolean;
         is_attached_dialog(): boolean;
         is_fullscreen(): boolean;
+        is_maximized(): number;
         is_on_all_workspaces(): boolean;
         is_override_redirect(): boolean;
         is_skip_taskbar(): boolean;
         make_above(): void;
         make_fullscreen(): void;
-        maximize(flags: MaximizeFlags): void;
+        set_maximize_flags(flags: MaximizeFlags): boolean;
+        maximize(flags?: MaximizeFlags): void;
         move_frame(user_op: boolean, x: number, y: number): void;
         move_resize_frame(
             user_op: boolean,
@@ -339,7 +341,8 @@ declare namespace Meta {
         ): boolean;
         raise(): void;
         skip_taskbar: boolean;
-        unmaximize(flags: any): void;
+        set_unmaximize_flags(flags: MaximizeFlags): boolean;
+        unmaximize(flags?: MaximizeFlags): void;
         unminimize(): void;
     }
 

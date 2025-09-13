@@ -6,5 +6,5 @@
     "url": "https://github.com/jardon/gnome-mosaic",
     "settings-schema": "org.gnome.shell.extensions.gnome-mosaic",
     "session-modes": ["user"],
-    "shell-version": ["45", "46", "47", "48"]
+    "shell-version": ["45", "46", "47", "48", "49"]
 }
