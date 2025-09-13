@@ -1,5 +1,5 @@
 {
-    "version": "main",
+    "version": "1.4.2",
     "compileOnSave": true,
     "compilerOptions": {
         "target": "es2022",
