@@ -271,7 +271,7 @@ export class ShellWindow {
         return (
             (this.meta.is_maximized
                 ? this.meta.is_maximized()
-                : this.meta.get_maximized()) !== 0
+                : (this.meta.get_maximized() !== 0))
         );
     }
 
@@ -301,8 +301,8 @@ export class ShellWindow {
 
     is_snap_edge(): boolean {
         return (
-            (this.meta.is_maximized
-                ? this.meta.is_maximized()
+            (this.meta.get_maximize_flags
+                ? this.meta.get_maximize_flags()
                 : this.meta.get_maximized()) == Meta.MaximizeFlags.VERTICAL
         );
     }
