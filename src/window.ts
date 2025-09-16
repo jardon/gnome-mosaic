@@ -268,11 +268,9 @@ export class ShellWindow {
     }
 
     is_maximized(): boolean {
-        return (
-            (this.meta.is_maximized
-                ? this.meta.is_maximized()
-                : (this.meta.get_maximized() !== 0))
-        );
+        return this.meta.is_maximized
+            ? this.meta.is_maximized()
+            : this.meta.get_maximized() !== 0;
     }
 
     /**
