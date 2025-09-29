@@ -1,3 +1,13 @@
+<div align="right">
+  <a href="https://extensions.gnome.org/extension/8502/mosaic/">
+      <img src="https://img.shields.io/badge/Install%20from-extensions.gnome.org-1c71d8?style=for-the-badge&logo=Gnome&logoColor=white"/>
+  </a>
+</div>
+<div align="right">
+  <img src="https://img.shields.io/badge/GNOME-44--49-e66100?style=for-the-badge&logo=gnome&logoColor=white"/>
+  <img src="https://img.shields.io/github/license/jardon/gnome-mosaic?style=for-the-badge&color=2ec27e"/>
+</div>
+
 <h1 align="center">
   <img src="icons/mosaic-logo.svg" alt="Mosaic" width="192" height="192"/>
   <br>
