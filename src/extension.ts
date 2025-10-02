@@ -2322,24 +2322,13 @@ export class Ext extends Ecs.System<ExtEvent> {
             this.register({tag: 3, window});
         });
 
-        if (GNOME_VERSION?.startsWith('3.')) {
-            this.connect(display, 'grab-op-begin', (_, _display, win, op) => {
-                this.on_grab_start(win, op);
-            });
+        this.connect(display, 'grab-op-begin', (_display, win, op) => {
+            this.on_grab_start(win, op);
+        });
 
-            this.connect(display, 'grab-op-end', (_, _display, win, op) => {
-                this.register_fn(() => this.on_grab_end(win, op));
-            });
-        } else {
-            // GNOME 40 removed the first argument of the callback
-            this.connect(display, 'grab-op-begin', (_display, win, op) => {
-                this.on_grab_start(win, op);
-            });
-
-            this.connect(display, 'grab-op-end', (_display, win, op) => {
-                this.register_fn(() => this.on_grab_end(win, op));
-            });
-        }
+        this.connect(display, 'grab-op-end', (_display, win, op) => {
+            this.register_fn(() => this.on_grab_end(win, op));
+        });
 
         this.connect(overview, 'window-drag-begin', (_, win) => {
             this.on_grab_start(win, 1);
