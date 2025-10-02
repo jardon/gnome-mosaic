@@ -3263,7 +3263,6 @@ let default_isoverviewwindow_ws_thumbnail: any;
 let default_init_appswitcher: any;
 let default_getwindowlist_windowswitcher: any;
 let default_getcaption_windowpreview: any;
-let default_getcaption_workspace: any;
 
 /**
  * Decorates the default gnome-shell workspace/overview handling
@@ -3289,8 +3288,6 @@ function _show_skip_taskbar_windows(ext: Ext) {
         default_isoverviewwindow_ws = Workspace.prototype._isOverviewWindow;
         Workspace.prototype._isOverviewWindow = function (win: any) {
             let meta_win = win;
-            if (GNOME_VERSION?.startsWith('3.36'))
-                meta_win = win.get_meta_window();
             return (
                 is_valid_minimize_to_tray(meta_win, ext) ||
                 default_isoverviewwindow_ws(win)
@@ -3299,35 +3296,17 @@ function _show_skip_taskbar_windows(ext: Ext) {
     }
 
     // Handle _getCaption errors
-    if (GNOME_VERSION?.startsWith('3.36')) {
-        // imports.ui.windowPreview is not in 3.36,
-        // _getCaption() is still in workspace.js
-        if (!default_getcaption_workspace) {
-            default_getcaption_workspace = Workspace.prototype._getCaption;
-            // 3.36 _getCaption
-            Workspace.prototype._getCaption = function () {
-                let metaWindow = this._windowClone.metaWindow;
-                if (metaWindow.title) return metaWindow.title;
+    if (!default_getcaption_windowpreview) {
+        default_getcaption_windowpreview = WindowPreview.prototype._getCaption;
+        log.debug(`override workspace._getCaption`);
+        // 3.38 _getCaption
+        WindowPreview.prototype._getCaption = function () {
+            if (this.metaWindow.title) return this.metaWindow.title;
 
-                let tracker = Shell.WindowTracker.get_default();
-                let app = tracker.get_window_app(metaWindow);
-                return app ? app.get_name() : '';
-            };
-        }
-    } else {
-        if (!default_getcaption_windowpreview) {
-            default_getcaption_windowpreview =
-                WindowPreview.prototype._getCaption;
-            log.debug(`override workspace._getCaption`);
-            // 3.38 _getCaption
-            WindowPreview.prototype._getCaption = function () {
-                if (this.metaWindow.title) return this.metaWindow.title;
-
-                let tracker = Shell.WindowTracker.get_default();
-                let app = tracker.get_window_app(this.metaWindow);
-                return app ? app.get_name() : '';
-            };
-        }
+            let tracker = Shell.WindowTracker.get_default();
+            let app = tracker.get_window_app(this.metaWindow);
+            return app ? app.get_name() : '';
+        };
     }
 
     // Handle the workspace thumbnail
@@ -3394,17 +3373,9 @@ function _hide_skip_taskbar_windows() {
         default_isoverviewwindow_ws = null;
     }
 
-    if (GNOME_VERSION?.startsWith('3.36')) {
-        if (default_getcaption_workspace) {
-            Workspace.prototype._getCaption = default_getcaption_workspace;
-            default_getcaption_workspace = null;
-        }
-    } else {
-        if (default_getcaption_windowpreview) {
-            WindowPreview.prototype._getCaption =
-                default_getcaption_windowpreview;
-            default_getcaption_windowpreview = null;
-        }
+    if (default_getcaption_windowpreview) {
+        WindowPreview.prototype._getCaption = default_getcaption_windowpreview;
+        default_getcaption_windowpreview = null;
     }
 
     if (default_isoverviewwindow_ws_thumbnail) {
