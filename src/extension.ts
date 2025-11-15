@@ -3163,6 +3163,10 @@ export default class MosaicExtension extends Extension {
         log.info('disable');
 
         if (ext) {
+            if (ext.exceptions_ipc) {
+                ext.exceptions_ipc.cancellable.cancel();
+            }
+
             if (sessionMode.isLocked) {
                 try {
                     ext.settings.ext.set_string(
@@ -3197,7 +3201,6 @@ export default class MosaicExtension extends Extension {
             }
 
             if (ext.exceptions_ipc) {
-                ext.exceptions_ipc.cancellable.cancel();
                 ext.exceptions_ipc.child.force_exit();
                 ext.exceptions_ipc = null;
             }
