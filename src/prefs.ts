@@ -1,246 +1,187 @@
+import Adw from 'gi://Adw';
 import Gtk from 'gi://Gtk';
-
 import Gio from 'gi://Gio';
-const Settings = Gio.Settings;
 import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 import * as settings from './settings.js';
-import * as log from './log.js';
-import * as focus from './focus.js';
-
-interface AppWidgets {
-    mouse_cursor_follows_active_window: any;
-    show_skip_taskbar: any;
-    smart_gaps: any;
-    snap_to_grid: any;
-    window_titles: any;
-    mouse_cursor_focus_position: any;
-    log_level: any;
-    show_indicator: any;
-    active_hint_width: any;
-    gap_width: any;
-}
+import {FocusPosition} from './focus.js';
 
 export default class MosaicPreferences extends ExtensionPreferences {
-    getPreferencesWidget() {
-        globalThis.MosaicExtension = this;
-        let dialog = settings_dialog_new();
-        dialog.show();
-        log.debug(JSON.stringify(dialog));
-        return dialog;
+    fillPreferencesWindow(window: any) {
+        const extSettings = new settings.ExtensionSettings();
+        const gioSettings = extSettings.ext;
+
+        const page = new Adw.PreferencesPage();
+        window.add(page);
+
+        // Group: Appearance
+        const appearanceGroup = new Adw.PreferencesGroup({
+            title: 'Appearance',
+        });
+        page.add(appearanceGroup);
+
+        // Show Window Titles
+        const windowTitlesRow = new Adw.SwitchRow({
+            title: 'Show Window Titles',
+        });
+        appearanceGroup.add(windowTitlesRow);
+        gioSettings.bind(
+            'show-title',
+            windowTitlesRow,
+            'active',
+            Gio.SettingsBindFlags.DEFAULT
+        );
+
+        // Show Indicator Panel
+        const showIndicatorRow = new Adw.SwitchRow({
+            title: 'Show Indicator Panel',
+        });
+        appearanceGroup.add(showIndicatorRow);
+        gioSettings.bind(
+            'show-indicator',
+            showIndicatorRow,
+            'active',
+            Gio.SettingsBindFlags.DEFAULT
+        );
+
+        // Show Minimize to Tray Windows
+        const showSkipTaskbarRow = new Adw.SwitchRow({
+            title: 'Show Minimize to Tray Windows',
+        });
+        appearanceGroup.add(showSkipTaskbarRow);
+        gioSettings.bind(
+            'show-skip-taskbar',
+            showSkipTaskbarRow,
+            'active',
+            Gio.SettingsBindFlags.DEFAULT
+        );
+
+        // Group: Behavior
+        const behaviorGroup = new Adw.PreferencesGroup({
+            title: 'Behavior',
+        });
+        page.add(behaviorGroup);
+
+        // Snap to Grid
+        const snapToGridRow = new Adw.SwitchRow({
+            title: 'Snap to Grid (Floating Mode)',
+        });
+        behaviorGroup.add(snapToGridRow);
+        gioSettings.bind(
+            'snap-to-grid',
+            snapToGridRow,
+            'active',
+            Gio.SettingsBindFlags.DEFAULT
+        );
+
+        // Smart Gaps
+        const smartGapsRow = new Adw.SwitchRow({
+            title: 'Smart Gaps',
+        });
+        behaviorGroup.add(smartGapsRow);
+        gioSettings.bind(
+            'smart-gaps',
+            smartGapsRow,
+            'active',
+            Gio.SettingsBindFlags.DEFAULT
+        );
+
+        // Mouse Cursor Follows Active Window
+        const mouseFollowsRow = new Adw.SwitchRow({
+            title: 'Mouse Cursor Follows Active Window',
+        });
+        behaviorGroup.add(mouseFollowsRow);
+        gioSettings.bind(
+            'mouse-cursor-follows-active-window',
+            mouseFollowsRow,
+            'active',
+            Gio.SettingsBindFlags.DEFAULT
+        );
+
+        // Mouse Cursor Focus Position
+        const focusPositionRow = new Adw.ComboRow({
+            title: 'Mouse Cursor Focus Position',
+            model: new Gtk.StringList({
+                strings: Object.values(FocusPosition),
+            }),
+        });
+        behaviorGroup.add(focusPositionRow);
+        gioSettings.bind(
+            'mouse-cursor-focus-location',
+            focusPositionRow,
+            'selected',
+            Gio.SettingsBindFlags.DEFAULT
+        );
+
+        // Group: Layout
+        const layoutGroup = new Adw.PreferencesGroup({
+            title: 'Layout',
+        });
+        page.add(layoutGroup);
+
+        // Active Hint Width
+        const activeHintWidthRow = new Adw.SpinRow({
+            title: 'Active Hint Width',
+            adjustment: new Gtk.Adjustment({
+                lower: 0,
+                upper: 100,
+                step_increment: 1,
+            }),
+        });
+        layoutGroup.add(activeHintWidthRow);
+        gioSettings.bind(
+            'active-hint-border-width',
+            activeHintWidthRow,
+            'value',
+            Gio.SettingsBindFlags.DEFAULT
+        );
+
+        // Gap Width
+        const gapWidthRow = new Adw.SpinRow({
+            title: 'Gap Width',
+            adjustment: new Gtk.Adjustment({
+                lower: 0,
+                upper: 100,
+                step_increment: 1,
+            }),
+        });
+        layoutGroup.add(gapWidthRow);
+        // Bind both inner and outer gaps to this single control as per original logic
+        // Original logic: if (inner == outer) show inner; on set, set both.
+        // Here we bind to inner, and listen to change to set outer.
+        gioSettings.bind(
+            'gap-inner',
+            gapWidthRow,
+            'value',
+            Gio.SettingsBindFlags.DEFAULT
+        );
+        gapWidthRow.connect('notify::value', () => {
+             gioSettings.set_uint('gap-outer', gapWidthRow.get_value());
+        });
+
+
+        // Group: Advanced
+        const advancedGroup = new Adw.PreferencesGroup({
+            title: 'Advanced',
+        });
+        page.add(advancedGroup);
+
+        // Log Level
+        // LOG_LEVELS is numeric enum 0..4
+        // We need to map names.
+        const logLevels = ['OFF', 'ERROR', 'WARN', 'INFO', 'DEBUG'];
+        const logLevelRow = new Adw.ComboRow({
+            title: 'Log Level',
+            model: new Gtk.StringList({
+                strings: logLevels,
+            }),
+        });
+        advancedGroup.add(logLevelRow);
+        gioSettings.bind(
+            'log-level',
+            logLevelRow,
+            'selected',
+            Gio.SettingsBindFlags.DEFAULT
+        );
     }
-}
-
-function settings_dialog_new(): Gtk.Container {
-    let [app, grid] = settings_dialog_view();
-
-    let ext = new settings.ExtensionSettings();
-
-    app.window_titles.set_active(ext.show_title());
-    app.window_titles.connect('state-set', (_widget: any, state: boolean) => {
-        ext.set_show_title(state);
-        Settings.sync();
-    });
-
-    app.snap_to_grid.set_active(ext.snap_to_grid());
-    app.snap_to_grid.connect('state-set', (_widget: any, state: boolean) => {
-        ext.set_snap_to_grid(state);
-        Settings.sync();
-    });
-
-    app.smart_gaps.set_active(ext.smart_gaps());
-    app.smart_gaps.connect('state-set', (_widget: any, state: boolean) => {
-        ext.set_smart_gaps(state);
-        Settings.sync();
-    });
-
-    app.log_level.set_active(ext.log_level());
-    app.log_level.connect('changed', () => {
-        let active_id = app.log_level.get_active_id();
-        ext.set_log_level(active_id);
-    });
-
-    app.show_indicator.set_active(ext.show_indicator());
-    app.show_indicator.connect('state-set', (_widget: any, state: boolean) => {
-        ext.set_show_indicator(state);
-        Settings.sync();
-    });
-
-    app.show_skip_taskbar.set_active(ext.show_skiptaskbar());
-    app.show_skip_taskbar.connect(
-        'state-set',
-        (_widget: any, state: boolean) => {
-            ext.set_show_skiptaskbar(state);
-            Settings.sync();
-        }
-    );
-
-    app.mouse_cursor_follows_active_window.set_active(
-        ext.mouse_cursor_follows_active_window()
-    );
-    app.mouse_cursor_follows_active_window.connect(
-        'state-set',
-        (_widget: any, state: boolean) => {
-            ext.set_mouse_cursor_follows_active_window(state);
-            Settings.sync();
-        }
-    );
-
-    app.mouse_cursor_focus_position.set_active(
-        ext.mouse_cursor_focus_location()
-    );
-    app.mouse_cursor_focus_position.connect('changed', () => {
-        let active_id = app.mouse_cursor_focus_position.get_active_id();
-        ext.set_mouse_cursor_focus_location(active_id);
-    });
-
-    app.active_hint_width.set_text(String(ext.active_hint_border_width()));
-    app.active_hint_width.connect('activate', (widget: any) => {
-        let parsed = parseInt((widget.get_text() as string).trim());
-        if (!isNaN(parsed)) {
-            ext.set_active_hint_border_width(parsed);
-            Settings.sync();
-        }
-    });
-
-    if (ext.gap_inner() === ext.gap_outer())
-        app.gap_width.set_text(String(ext.gap_inner()));
-    app.gap_width.connect('activate', (widget: any) => {
-        let parsed = parseInt((widget.get_text() as string).trim());
-        if (!isNaN(parsed)) {
-            ext.set_gap_inner(parsed);
-            ext.set_gap_outer(parsed);
-            Settings.sync();
-        }
-    });
-
-    return grid;
-}
-
-function settings_dialog_view(): [AppWidgets, Gtk.Container] {
-    const grid = new Gtk.Grid({
-        column_spacing: 12,
-        row_spacing: 12,
-        margin_start: 10,
-        margin_end: 10,
-        margin_bottom: 10,
-        margin_top: 10,
-    });
-
-    const win_label = new Gtk.Label({
-        label: 'Show Window Titles',
-        xalign: 0.0,
-        hexpand: true,
-    });
-
-    const snap_label = new Gtk.Label({
-        label: 'Snap to Grid (Floating Mode)',
-        xalign: 0.0,
-    });
-
-    const smart_label = new Gtk.Label({
-        label: 'Smart Gaps',
-        xalign: 0.0,
-    });
-
-    const show_skip_taskbar_label = new Gtk.Label({
-        label: 'Show Minimize to Tray Windows',
-        xalign: 0.0,
-    });
-
-    const mouse_cursor_follows_active_window_label = new Gtk.Label({
-        label: 'Mouse Cursor Follows Active Window',
-        xalign: 0.0,
-    });
-
-    const show_indicator_label = new Gtk.Label({
-        label: 'Show Indicator Panel',
-        xalign: 0.0,
-        hexpand: true,
-    });
-
-    let active_hint_width_label = new Gtk.Label({
-        label: 'Active Hint Width',
-        xalign: 0.0,
-    });
-
-    let gap_width_label = new Gtk.Label({
-        label: 'Gap Width',
-        xalign: 0.0,
-    });
-
-    const settings = {
-        smart_gaps: new Gtk.Switch({halign: Gtk.Align.END}),
-        snap_to_grid: new Gtk.Switch({halign: Gtk.Align.END}),
-        window_titles: new Gtk.Switch({halign: Gtk.Align.END}),
-        show_skip_taskbar: new Gtk.Switch({halign: Gtk.Align.END}),
-        show_indicator: new Gtk.Switch({halign: Gtk.Align.END}),
-        mouse_cursor_follows_active_window: new Gtk.Switch({
-            halign: Gtk.Align.END,
-        }),
-        mouse_cursor_focus_position: build_combo(
-            grid,
-            8,
-            focus.FocusPosition,
-            'Mouse Cursor Focus Position'
-        ),
-        log_level: build_combo(grid, 9, log.LOG_LEVELS, 'Log Level'),
-        active_hint_width: new Gtk.Entry({
-            input_purpose: Gtk.InputPurpose.NUMBER,
-        }),
-        gap_width: new Gtk.Entry({
-            input_purpose: Gtk.InputPurpose.NUMBER,
-        }),
-    };
-
-    grid.attach(win_label, 0, 0, 1, 1);
-    grid.attach(settings.window_titles, 1, 0, 1, 1);
-
-    grid.attach(snap_label, 0, 1, 1, 1);
-    grid.attach(settings.snap_to_grid, 1, 1, 1, 1);
-
-    grid.attach(smart_label, 0, 2, 1, 1);
-    grid.attach(settings.smart_gaps, 1, 2, 1, 1);
-
-    grid.attach(show_skip_taskbar_label, 0, 5, 1, 1);
-    grid.attach(settings.show_skip_taskbar, 1, 5, 1, 1);
-
-    grid.attach(show_indicator_label, 0, 6, 1, 1);
-    grid.attach(settings.show_indicator, 1, 6, 1, 1);
-
-    grid.attach(mouse_cursor_follows_active_window_label, 0, 7, 1, 1);
-    grid.attach(settings.mouse_cursor_follows_active_window, 1, 7, 1, 1);
-
-    grid.attach(active_hint_width_label, 0, 10, 1, 1);
-    grid.attach(settings.active_hint_width, 1, 10, 1, 1);
-
-    grid.attach(gap_width_label, 0, 11, 1, 1);
-    grid.attach(settings.gap_width, 1, 11, 1, 1);
-
-    return [settings, grid];
-}
-
-function build_combo(
-    grid: any,
-    top_index: number,
-    iter_enum: any,
-    label: string
-) {
-    let label_ = new Gtk.Label({
-        label: label,
-        halign: Gtk.Align.START,
-    });
-
-    grid.attach(label_, 0, top_index, 1, 1);
-
-    let combo = new Gtk.ComboBoxText();
-
-    for (const [index, key] of Object.keys(iter_enum).entries()) {
-        if (typeof iter_enum[key] == 'string') {
-            combo.append(`${index}`, iter_enum[key]);
-        }
-    }
-
-    grid.attach(combo, 1, top_index, 1, 1);
-    return combo;
 }
