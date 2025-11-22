@@ -661,6 +661,7 @@ export class ShellWindow {
             this.active_hint_show_id = null;
         }
     }
+
 }
 
 /// Activates a window, and moves the mouse point.
