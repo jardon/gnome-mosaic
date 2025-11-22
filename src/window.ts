@@ -76,6 +76,9 @@ export class ShellWindow {
         h: number;
     } | null = null;
 
+    // Track current border width for dynamic adjustment
+    private border_width: number = 0;
+
     constructor(
         entity: Entity,
         window: Meta.Window,
@@ -596,12 +599,24 @@ export class ShellWindow {
         );
         const radii_values =
             radii?.map(v => `${v + margin}px`).join(' ') || '0px 0px 0px 0px';
+        const borderWidth = ext.settings.active_hint_border_width();
+        const borderColor =
+            major > 46
+                ? '-st-accent-color'
+                : ext.settings.gnome_legacy_accent_color();
+
         if (this.border) {
             this.border.set_style(
                 `border-radius: ${radii_values};` +
-                    `border-width: ${ext.settings.active_hint_border_width()}px;` +
-                    `border-color: ${major > 46 ? '-st-accent-color' : ext.settings.gnome_legacy_accent_color()}`
+                    `border-width: ${borderWidth}px;` +
+                    `border-color: ${borderColor}`
             );
+
+            // When border width changes, trigger layout update to recalculate size
+            if (this.border_width !== borderWidth) {
+                this.border_width = borderWidth;
+                this.update_border_layout(ext);
+            }
         }
     }
 
