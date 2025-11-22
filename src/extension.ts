@@ -61,6 +61,7 @@ import {
 import {Workspace} from 'resource:///org/gnome/shell/ui/workspace.js';
 import {WorkspaceThumbnail} from 'resource:///org/gnome/shell/ui/workspaceThumbnail.js';
 import {WindowPreview} from 'resource:///org/gnome/shell/ui/windowPreview.js';
+
 import {PACKAGE_VERSION} from 'resource:///org/gnome/shell/misc/config.js';
 import * as Tags from './tags.js';
 import {get_current_path} from './paths.js';
@@ -1027,8 +1028,7 @@ export class Ext extends Ecs.System<ExtEvent> {
                 `  monitor: ${win.meta.get_monitor()},\n` +
                 `  name: ${win.name(this)},\n` +
                 `  rect: ${win.rect().fmt()},\n` +
-                `  workspace: ${win.workspace_id()},\n` +
-                `  xid: ${win.xid()},\n`;
+                `  workspace: ${win.workspace_id()},\n`;
 
             if (this.auto_tiler) {
                 msg += `  fork: (${this.auto_tiler.attached.get(win.entity)}),\n`;
@@ -1937,24 +1937,6 @@ export class Ext extends Ecs.System<ExtEvent> {
         this.unset_grab_op();
     }
 
-    on_show_window_titles() {
-        const show_title = this.settings.show_title();
-
-        if (indicator) {
-            indicator.toggle_titles.setToggleState(show_title);
-        }
-
-        for (const window of this.windows.values()) {
-            if (window.is_client_decorated()) continue;
-
-            if (show_title) {
-                window.decoration_show(this);
-            } else {
-                window.decoration_hide(this);
-            }
-        }
-    }
-
     on_smart_gap() {
         if (this.auto_tiler) {
             const smart_gaps = this.settings.smart_gaps();
@@ -2200,9 +2182,6 @@ export class Ext extends Ecs.System<ExtEvent> {
                     break;
                 case 'gap-outer':
                     this.on_gap_outer();
-                    break;
-                case 'show-title':
-                    this.on_show_window_titles();
                     break;
                 case 'smart-gaps':
                     this.on_smart_gap();
@@ -3279,6 +3258,9 @@ let default_init_appswitcher: any;
 let default_getwindowlist_windowswitcher: any;
 let default_getcaption_windowpreview: any;
 
+
+
+
 /**
  * Decorates the default gnome-shell workspace/overview handling
  * of skip_task_bar. And have those window types included in gnome-mosaic.
@@ -3310,6 +3292,8 @@ function _show_skip_taskbar_windows(ext: Ext) {
         };
     }
 
+
+
     // Handle _getCaption errors
     if (!default_getcaption_windowpreview) {
         default_getcaption_windowpreview = WindowPreview.prototype._getCaption;
@@ -3323,6 +3307,8 @@ function _show_skip_taskbar_windows(ext: Ext) {
             return app ? app.get_name() : '';
         };
     }
+
+    // Handle the workspace thumbnail
 
     // Handle the workspace thumbnail
     if (!default_isoverviewwindow_ws_thumbnail) {
@@ -3392,6 +3378,10 @@ function _hide_skip_taskbar_windows() {
         WindowPreview.prototype._getCaption = default_getcaption_windowpreview;
         default_getcaption_windowpreview = null;
     }
+
+
+
+
 
     if (default_isoverviewwindow_ws_thumbnail) {
         WorkspaceThumbnail.prototype._isOverviewWindow =
