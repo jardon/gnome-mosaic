@@ -122,12 +122,18 @@ There is file `$XDG_CONFIG_HOME/gnome-mosaic/config.json` where you can add the 
 
 ```json
 {
-    "class": "<WM_CLASS String from xprop>",
+    "class": "<WM_CLASS String>",
     "title": "<Optional Window Title>"
 }
 ```
 
-For example, doing `xprop` on GNOME Settings (or GNOME Control Center), the WM_CLASS values are `gnome-control-center` and `Gnome-control-center`. Use the second value (Gnome-control-center), which gnome-mosaic will read. The `title` field is optional.
+To find the WM_CLASS of a window, you can:
+
+1. Use the extension's built-in exception dialog (accessible from the panel menu)
+2. Check the output of `journalctl -f -o cat /usr/bin/gnome-shell` when focusing the window
+3. Use `gdbus call --session --dest org.gnome.Shell --object-path /org/gnome/Shell --method org.gnome.Shell.Eval 'global.get_window_actors().map(a => a.meta_window.get_wm_class()).join(", ")'`
+
+For example, for GNOME Settings (or GNOME Control Center), the WM_CLASS values are `gnome-control-center` and `Gnome-control-center`. Use the second value (Gnome-control-center), which gnome-mosaic will read. The `title` field is optional.
 
 After applying changes in `config.json`, you can reload the tiling if it doesn't work the first time.
 
@@ -141,7 +147,7 @@ Please install the following as dependencies when developing:
 - Latest `npm` (comes with NodeJS)
 - `npm install typescript@latest`
 
-While working on the shell, you can recompile, reconfigure, reinstall, and restart GNOME Shell with logging with `make debug`. Note that this only works reliably in X11 sessions, since Wayland will exit to the login screen on restarting the shell.
+While working on the shell, you can recompile, reconfigure, reinstall, and restart GNOME Shell with logging with `make debug`. Note that this only works reliably on Wayland sessions when using nested mode, since restarting the shell on Wayland will exit to the login screen.
 
 ## License
 

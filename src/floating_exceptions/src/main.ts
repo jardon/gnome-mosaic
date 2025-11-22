@@ -62,7 +62,14 @@ export class MainView implements View {
         this.list = Gtk.ListBox.new();
         this.list.set_selection_mode(Gtk.SelectionMode.NONE);
         this.list.set_header_func(list_header_func);
+        this.list.set_activate_on_single_click(true);
         this.list.append(exceptions);
+
+        this.list.connect('row-activated', (_: any, row: any) => {
+            if (row.get_child() === exceptions) {
+                this.callback({tag: 1, view: ViewNum.Exceptions});
+            }
+        });
 
         let scroller = new Gtk.ScrolledWindow();
         scroller.hscrollbar_policy = Gtk.PolicyType.NEVER;

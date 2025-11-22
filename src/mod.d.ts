@@ -87,6 +87,31 @@ declare module 'gi://GObject' {
     export default GObject;
 }
 
+declare module 'gi://Adw' {
+    let Adw: any;
+    export default Adw;
+}
+
+declare module 'resource:///org/gnome/shell/ui/quickSettings.js' {
+    export class QuickMenuToggle {
+        constructor(params: any);
+        menu: any;
+        set(params: any): void;
+        connect(signal: string, callback: () => void): number;
+        checked: boolean;
+        gicon: any;
+        destroy(): void;
+    }
+
+    export class SystemIndicator {
+        constructor();
+        quickSettingsItems: any[];
+        gicon: any;
+        visible: boolean;
+        destroy(): void;
+    }
+}
+
 declare module 'gi://Pango' {
     let Pango: any;
     export default Pango;
@@ -149,7 +174,7 @@ declare interface GLib {
 }
 
 declare namespace GObject {
-    interface Object {
+    class Object {
         connect(
             signal: string,
             callback: (...args: any) => boolean | void
@@ -157,6 +182,8 @@ declare namespace GObject {
         disconnect(id: SignalID): void;
 
         ref(): this;
+        static registerClass(meta: any, klass: any): any;
+        static registerClass(klass: any): any;
     }
 }
 

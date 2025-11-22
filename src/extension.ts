@@ -25,7 +25,6 @@ import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 import type {Entity} from './ecs.js';
 import type {ExtEvent} from './events.js';
 import {Rectangle} from './rectangle.js';
-import type {Indicator} from './panel_settings.js';
 import {getBorderRadii} from './window.js';
 
 import {Fork} from './fork.js';
@@ -48,7 +47,6 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 const {
     layoutManager,
     overview,
-    panel,
     screenShield,
     sessionMode,
     windowAttentionHandler,
@@ -62,7 +60,8 @@ import {
 // import { SwitcherList } from 'resource:///org/gnome/shell/ui/switcherPopup.js';
 import {Workspace} from 'resource:///org/gnome/shell/ui/workspace.js';
 import {WorkspaceThumbnail} from 'resource:///org/gnome/shell/ui/workspaceThumbnail.js';
-import {WindowPreview} from 'resource:///org/gnome/shell/ui/windowPreview.js';
+
+
 import {PACKAGE_VERSION} from 'resource:///org/gnome/shell/misc/config.js';
 import * as Tags from './tags.js';
 import {get_current_path} from './paths.js';
@@ -114,10 +113,6 @@ export class Ext extends Ecs.System<ExtEvent> {
 
     /** Animate window movements */
     animate_windows: boolean = true;
-
-    button: any = null;
-    button_gio_icon_auto_on: any = null;
-    button_gio_icon_auto_off: any = null;
 
     conf: Config.Config = new Config.Config();
 
@@ -189,6 +184,12 @@ export class Ext extends Ecs.System<ExtEvent> {
     moved_by_mouse: boolean = false;
 
     workareas_update: null | SignalID = null;
+
+    /** Whether a workspace switch is currently in progress */
+    is_switching_workspace: boolean = false;
+
+    /** Timeout ID for delayed border showing */
+    border_timeout: null | number = null;
 
     /** Record of misc. global objects and their attached signals */
     private signals: Map<GObject.Object, Array<SignalID>> = new Map();
@@ -523,6 +524,9 @@ export class Ext extends Ecs.System<ExtEvent> {
     }
 
     // Extension methods
+    open_preferences() {
+        globalThis.MosaicExtension.openPreferences();
+    }
 
     activate_window(window: Window.ShellWindow | null) {
         if (window) {
@@ -1024,8 +1028,7 @@ export class Ext extends Ecs.System<ExtEvent> {
                 `  monitor: ${win.meta.get_monitor()},\n` +
                 `  name: ${win.name(this)},\n` +
                 `  rect: ${win.rect().fmt()},\n` +
-                `  workspace: ${win.workspace_id()},\n` +
-                `  xid: ${win.xid()},\n`;
+                `  workspace: ${win.workspace_id()},\n`;
 
             if (this.auto_tiler) {
                 msg += `  fork: (${this.auto_tiler.attached.get(win.entity)}),\n`;
@@ -1042,18 +1045,39 @@ export class Ext extends Ecs.System<ExtEvent> {
     }
 
     show_border_on_focused() {
+        if (this.is_switching_workspace) {
+            if (this.border_timeout) {
+                GLib.source_remove(this.border_timeout);
+                this.border_timeout = null;
+            }
+
+            this.border_timeout = GLib.timeout_add(
+                GLib.PRIORITY_DEFAULT,
+                250,
+                () => {
+                    this.is_switching_workspace = false;
+                    this.show_border_on_focused();
+                    this.border_timeout = null;
+                    return GLib.SOURCE_REMOVE;
+                }
+            );
+            return;
+        }
+
         this.hide_all_borders();
         const focus = this.focus_window();
         if (focus) focus.show_border(this);
     }
 
+    open_settings() {
+        if (globalThis.MosaicExtension) {
+            globalThis.MosaicExtension.openPreferences();
+        }
+    }
+
     toggle_indicator() {
-        if (indicator && !this.settings.show_indicator()) {
-            indicator.destroy();
-            indicator = null;
-        } else {
-            indicator = new PanelSettings.Indicator(this);
-            panel.addToStatusArea('gnome-mosaic', indicator.button);
+        if (indicator) {
+            indicator.visible = this.settings.show_indicator();
         }
     }
 
@@ -1913,24 +1937,6 @@ export class Ext extends Ecs.System<ExtEvent> {
         this.unset_grab_op();
     }
 
-    on_show_window_titles() {
-        const show_title = this.settings.show_title();
-
-        if (indicator) {
-            indicator.toggle_titles.setToggleState(show_title);
-        }
-
-        for (const window of this.windows.values()) {
-            if (window.is_client_decorated()) continue;
-
-            if (show_title) {
-                window.decoration_show(this);
-            } else {
-                window.decoration_hide(this);
-            }
-        }
-    }
-
     on_smart_gap() {
         if (this.auto_tiler) {
             const smart_gaps = this.settings.smart_gaps();
@@ -2169,20 +2175,13 @@ export class Ext extends Ecs.System<ExtEvent> {
         this.connect(this.settings.ext, 'changed', (_s, key: string) => {
             switch (key) {
                 case 'active-hint':
-                    if (indicator)
-                        indicator.toggle_active.setToggleState(
-                            this.settings.active_hint()
-                        );
-
                     this.show_border_on_focused();
+                    break;
                 case 'gap-inner':
                     this.on_gap_inner();
                     break;
                 case 'gap-outer':
                     this.on_gap_outer();
-                    break;
-                case 'show-title':
-                    this.on_show_window_titles();
                     break;
                 case 'smart-gaps':
                     this.on_smart_gap();
@@ -2344,6 +2343,22 @@ export class Ext extends Ecs.System<ExtEvent> {
 
         this.connect(wim, 'switch-workspace', () => {
             this.hide_all_borders();
+            this.is_switching_workspace = true;
+
+            if (this.border_timeout) {
+                GLib.source_remove(this.border_timeout);
+                this.border_timeout = null;
+            }
+
+            this.border_timeout = GLib.timeout_add(
+                GLib.PRIORITY_DEFAULT,
+                1000,
+                () => {
+                    this.is_switching_workspace = false;
+                    this.border_timeout = null;
+                    return GLib.SOURCE_REMOVE;
+                }
+            );
         });
 
         this.connect(workspace_manager, 'active-workspace-changed', () => {
@@ -2428,10 +2443,6 @@ export class Ext extends Ecs.System<ExtEvent> {
 
         for (const window of this.windows.values()) {
             window.timeouts_remove();
-        }
-
-        if (indicator) {
-            indicator.timeouts_remove();
         }
 
         if (this.migration_exec) {
@@ -2538,13 +2549,7 @@ export class Ext extends Ecs.System<ExtEvent> {
             this.auto_tiler = null;
             this.settings.set_tile_by_default(false);
 
-            if (indicator) indicator.toggle_tiled.setToggleState(false);
-
-            this.button.icon.gicon = this.button_gio_icon_auto_off; // type: Gio.Icon
-
-            if (this.settings.active_hint()) {
-                this.show_border_on_focused();
-            }
+            if (indicator) indicator.set_active(false);
         }
     }
 
@@ -2552,7 +2557,7 @@ export class Ext extends Ecs.System<ExtEvent> {
         this.settings.set_edge_tiling(false);
         this.hide_all_borders();
 
-        if (indicator) indicator.toggle_tiled.setToggleState(true);
+        if (indicator) indicator.set_active(true);
 
         const original = this.active_workspace();
 
@@ -2567,7 +2572,6 @@ export class Ext extends Ecs.System<ExtEvent> {
             this.auto_tiler = tiler;
 
             this.settings.set_tile_by_default(true);
-            this.button.icon.gicon = this.button_gio_icon_auto_on; // type: Gio.Icon
 
             for (const window of this.windows.values()) {
                 if (window.is_tilable(this)) {
@@ -3091,7 +3095,8 @@ export class Ext extends Ecs.System<ExtEvent> {
 }
 
 let ext: Ext | null = null;
-let indicator: Indicator | null = null;
+let indicator: any = null;
+let sysIndicator: any = null;
 
 declare global {
     var MosaicExtension: any;
@@ -3145,8 +3150,7 @@ export default class MosaicExtension extends Extension {
             layoutManager.addChrome(ext.overlay);
 
             if (!indicator) {
-                indicator = new PanelSettings.Indicator(ext);
-                panel.addToStatusArea('gnome-mosaic', indicator.button);
+                indicator = new PanelSettings.MosaicIndicator(ext);
             }
 
             ext.keybindings
@@ -3156,6 +3160,7 @@ export default class MosaicExtension extends Extension {
             if (ext.settings.tile_by_default()) {
                 ext.auto_tile_on(restored);
             }
+            if (sysIndicator) sysIndicator.update();
             return true;
         });
     }
@@ -3251,7 +3256,10 @@ let default_isoverviewwindow_ws: any;
 let default_isoverviewwindow_ws_thumbnail: any;
 let default_init_appswitcher: any;
 let default_getwindowlist_windowswitcher: any;
-let default_getcaption_windowpreview: any;
+
+
+
+
 
 /**
  * Decorates the default gnome-shell workspace/overview handling
@@ -3284,19 +3292,11 @@ function _show_skip_taskbar_windows(ext: Ext) {
         };
     }
 
-    // Handle _getCaption errors
-    if (!default_getcaption_windowpreview) {
-        default_getcaption_windowpreview = WindowPreview.prototype._getCaption;
-        log.debug(`override workspace._getCaption`);
-        // 3.38 _getCaption
-        WindowPreview.prototype._getCaption = function () {
-            if (this.metaWindow.title) return this.metaWindow.title;
 
-            let tracker = Shell.WindowTracker.get_default();
-            let app = tracker.get_window_app(this.metaWindow);
-            return app ? app.get_name() : '';
-        };
-    }
+
+
+
+    // Handle the workspace thumbnail
 
     // Handle the workspace thumbnail
     if (!default_isoverviewwindow_ws_thumbnail) {
@@ -3362,10 +3362,11 @@ function _hide_skip_taskbar_windows() {
         default_isoverviewwindow_ws = null;
     }
 
-    if (default_getcaption_windowpreview) {
-        WindowPreview.prototype._getCaption = default_getcaption_windowpreview;
-        default_getcaption_windowpreview = null;
-    }
+
+
+
+
+
 
     if (default_isoverviewwindow_ws_thumbnail) {
         WorkspaceThumbnail.prototype._isOverviewWindow =
