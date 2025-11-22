@@ -1014,8 +1014,8 @@ export class Ext extends Ecs.System<ExtEvent> {
                     if (prev.is_maximized()) {
                         prev.meta.set_unmaximize_flags
                             ? prev.meta.set_unmaximize_flags(
-                                Meta.MaximizeFlags.BOTH
-                            )
+                                  Meta.MaximizeFlags.BOTH
+                              )
                             : prev.meta.unmaximize(Meta.MaximizeFlags.BOTH);
                     }
                 }
@@ -1054,12 +1054,16 @@ export class Ext extends Ecs.System<ExtEvent> {
                 this.border_timeout = null;
             }
 
-            this.border_timeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 250, () => {
-                this.is_switching_workspace = false;
-                this.show_border_on_focused();
-                this.border_timeout = null;
-                return GLib.SOURCE_REMOVE;
-            });
+            this.border_timeout = GLib.timeout_add(
+                GLib.PRIORITY_DEFAULT,
+                250,
+                () => {
+                    this.is_switching_workspace = false;
+                    this.show_border_on_focused();
+                    this.border_timeout = null;
+                    return GLib.SOURCE_REMOVE;
+                }
+            );
             return;
         }
 
@@ -1742,14 +1746,14 @@ export class Ext extends Ecs.System<ExtEvent> {
                                 ? swap
                                     ? [area.x, area.y, half_width, area.height]
                                     : [
-                                        area.x + half_width,
-                                        area.y,
-                                        half_width,
-                                        area.height,
-                                    ]
+                                          area.x + half_width,
+                                          area.y,
+                                          half_width,
+                                          area.height,
+                                      ]
                                 : swap
-                                    ? [area.x, area.y, area.width, half_height]
-                                    : [
+                                  ? [area.x, area.y, area.width, half_height]
+                                  : [
                                         area.x,
                                         area.y + half_height,
                                         area.width,
@@ -2131,7 +2135,7 @@ export class Ext extends Ecs.System<ExtEvent> {
         if (this.overlay) {
             this.overlay.set_style(
                 `border-radius: ${radii_values};` +
-                `background-color: ${major > 46 ? '-st-accent-color' : this.settings.gnome_legacy_accent_color()};`
+                    `background-color: ${major > 46 ? '-st-accent-color' : this.settings.gnome_legacy_accent_color()};`
             );
         }
     }
@@ -2315,7 +2319,7 @@ export class Ext extends Ecs.System<ExtEvent> {
                             if (
                                 this.auto_tiler &&
                                 meta_window.window_type ===
-                                Meta.WindowType.DESKTOP
+                                    Meta.WindowType.DESKTOP
                             ) {
                                 refocus_tiled_window();
                             } else {
@@ -2372,11 +2376,15 @@ export class Ext extends Ecs.System<ExtEvent> {
                 this.border_timeout = null;
             }
 
-            this.border_timeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1000, () => {
-                this.is_switching_workspace = false;
-                this.border_timeout = null;
-                return GLib.SOURCE_REMOVE;
-            });
+            this.border_timeout = GLib.timeout_add(
+                GLib.PRIORITY_DEFAULT,
+                1000,
+                () => {
+                    this.is_switching_workspace = false;
+                    this.border_timeout = null;
+                    return GLib.SOURCE_REMOVE;
+                }
+            );
         });
 
         this.connect(workspace_manager, 'active-workspace-changed', () => {
