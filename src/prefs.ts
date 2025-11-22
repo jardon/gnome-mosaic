@@ -156,9 +156,8 @@ export default class MosaicPreferences extends ExtensionPreferences {
             Gio.SettingsBindFlags.DEFAULT
         );
         gapWidthRow.connect('notify::value', () => {
-             gioSettings.set_uint('gap-outer', gapWidthRow.get_value());
+            gioSettings.set_uint('gap-outer', gapWidthRow.get_value());
         });
-
 
         // Group: Advanced
         const advancedGroup = new Adw.PreferencesGroup({

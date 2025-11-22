@@ -35,7 +35,6 @@ const MosaicIndicator = GObject.registerClass(
             );
             this._icon_auto_off = new Gio.FileIcon({file: file_off});
 
-
             this._toggle = new QuickSettings.QuickMenuToggle({
                 title: 'Mosaic',
                 toggleMode: true,
