@@ -60,7 +60,6 @@ import {
 // import { SwitcherList } from 'resource:///org/gnome/shell/ui/switcherPopup.js';
 import {Workspace} from 'resource:///org/gnome/shell/ui/workspace.js';
 import {WorkspaceThumbnail} from 'resource:///org/gnome/shell/ui/workspaceThumbnail.js';
-import {WindowPreview} from 'resource:///org/gnome/shell/ui/windowPreview.js';
 import {PACKAGE_VERSION} from 'resource:///org/gnome/shell/misc/config.js';
 import * as Tags from './tags.js';
 import {get_current_path} from './paths.js';
@@ -3277,7 +3276,6 @@ let default_isoverviewwindow_ws: any;
 let default_isoverviewwindow_ws_thumbnail: any;
 let default_init_appswitcher: any;
 let default_getwindowlist_windowswitcher: any;
-let default_getcaption_windowpreview: any;
 
 /**
  * Decorates the default gnome-shell workspace/overview handling
@@ -3307,20 +3305,6 @@ function _show_skip_taskbar_windows(ext: Ext) {
                 is_valid_minimize_to_tray(meta_win, ext) ||
                 default_isoverviewwindow_ws(win)
             );
-        };
-    }
-
-    // Handle _getCaption errors
-    if (!default_getcaption_windowpreview) {
-        default_getcaption_windowpreview = WindowPreview.prototype._getCaption;
-        log.debug(`override workspace._getCaption`);
-        // 3.38 _getCaption
-        WindowPreview.prototype._getCaption = function () {
-            if (this.metaWindow.title) return this.metaWindow.title;
-
-            let tracker = Shell.WindowTracker.get_default();
-            let app = tracker.get_window_app(this.metaWindow);
-            return app ? app.get_name() : '';
         };
     }
 
@@ -3386,11 +3370,6 @@ function _hide_skip_taskbar_windows() {
     if (default_isoverviewwindow_ws) {
         Workspace.prototype._isOverviewWindow = default_isoverviewwindow_ws;
         default_isoverviewwindow_ws = null;
-    }
-
-    if (default_getcaption_windowpreview) {
-        WindowPreview.prototype._getCaption = default_getcaption_windowpreview;
-        default_getcaption_windowpreview = null;
     }
 
     if (default_isoverviewwindow_ws_thumbnail) {
