@@ -190,6 +190,12 @@ export class Ext extends Ecs.System<ExtEvent> {
 
     workareas_update: null | SignalID = null;
 
+    /** Whether a workspace switch is currently in progress */
+    is_switching_workspace: boolean = false;
+
+    /** Timeout ID for delayed border showing */
+    border_timeout: null | number = null;
+
     /** Record of misc. global objects and their attached signals */
     private signals: Map<GObject.Object, Array<SignalID>> = new Map();
 
@@ -1042,6 +1048,25 @@ export class Ext extends Ecs.System<ExtEvent> {
     }
 
     show_border_on_focused() {
+        if (this.is_switching_workspace) {
+            if (this.border_timeout) {
+                GLib.source_remove(this.border_timeout);
+                this.border_timeout = null;
+            }
+
+            this.border_timeout = GLib.timeout_add(
+                GLib.PRIORITY_DEFAULT,
+                250,
+                () => {
+                    this.is_switching_workspace = false;
+                    this.show_border_on_focused();
+                    this.border_timeout = null;
+                    return GLib.SOURCE_REMOVE;
+                }
+            );
+            return;
+        }
+
         this.hide_all_borders();
         const focus = this.focus_window();
         if (focus) focus.show_border(this);
@@ -2344,6 +2369,22 @@ export class Ext extends Ecs.System<ExtEvent> {
 
         this.connect(wim, 'switch-workspace', () => {
             this.hide_all_borders();
+            this.is_switching_workspace = true;
+
+            if (this.border_timeout) {
+                GLib.source_remove(this.border_timeout);
+                this.border_timeout = null;
+            }
+
+            this.border_timeout = GLib.timeout_add(
+                GLib.PRIORITY_DEFAULT,
+                1000,
+                () => {
+                    this.is_switching_workspace = false;
+                    this.border_timeout = null;
+                    return GLib.SOURCE_REMOVE;
+                }
+            );
         });
 
         this.connect(workspace_manager, 'active-workspace-changed', () => {
