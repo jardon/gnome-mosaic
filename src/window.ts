@@ -478,8 +478,7 @@ export class ShellWindow {
                     ext.focus_window() == this &&
                     !this.meta.is_fullscreen() &&
                     (!this.is_single_max_screen() || this.is_snap_edge()) &&
-                    !this.meta.minimized &&
-                    ext.contains_tag(this.entity, Tags.Tiled)
+                    !this.meta.minimized
                 );
             };
 
