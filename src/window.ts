@@ -68,7 +68,10 @@ export class ShellWindow {
         xid_: new OnceCell(),
     };
 
-    private border_size = 0;
+    // Cache last border rect to avoid redundant updates
+    private last_border_rect: { x: number, y: number, w: number, h: number } | null = null;
+
+
 
     constructor(
         entity: Entity,
@@ -93,7 +96,11 @@ export class ShellWindow {
         this.bind_window_events(ext);
         this.bind_hint_events(ext);
 
-        if (this.border) global.window_group.add_child(this.border);
+        if (this.border) {
+            // Parent to global.window_group
+            global.window_group.add_child(this.border);
+            this.restack();
+        }
 
         this.hide_border();
         this.update_border_layout(ext);
@@ -160,6 +167,9 @@ export class ShellWindow {
                 }),
                 this.meta.connect('raised', () => {
                     this.window_raised(ext);
+                }),
+                global.display.connect('restacked', () => {
+                    this.restack();
                 })
             );
     }
@@ -400,10 +410,13 @@ export class ShellWindow {
 
     private on_style_changed(ext: Ext) {
         if (!this.border) return;
-        this.border_size = this.border
-            .get_theme_node()
-            .get_border_width(St.Side.TOP);
-        this.update_border_style(ext);
+        // Use idle callback for non-critical style updates
+        GLib.idle_add(GLib.PRIORITY_LOW, () => {
+            if (!this.destroying && this.border) {
+                this.update_border_style(ext);
+            }
+            return GLib.SOURCE_REMOVE;
+        });
     }
 
     rect(): Rectangle {
@@ -465,7 +478,8 @@ export class ShellWindow {
                     ext.focus_window() == this &&
                     !this.meta.is_fullscreen() &&
                     (!this.is_single_max_screen() || this.is_snap_edge()) &&
-                    !this.meta.minimized
+                    !this.meta.minimized &&
+                    ext.contains_tag(this.entity, Tags.Tiled)
                 );
             };
 
@@ -535,49 +549,38 @@ export class ShellWindow {
     }
 
     hide_border() {
+        this.timeouts_remove();
         let b = this.border;
         if (b) b.hide();
     }
 
     update_border_layout(ext: Ext) {
-        let {x, y, width, height} = this.meta.get_frame_rect();
+        if (this.border) {
+            const actor = this.meta.get_compositor_private();
+            if (actor) {
+                const borderWidth = ext.settings.active_hint_border_width();
+                const rect = this.meta.get_frame_rect();
 
-        const border = this.border;
-        let borderSize = this.border_size;
+                const newX = rect.x - borderWidth;
+                const newY = rect.y - borderWidth;
+                const newW = rect.width + 2 * borderWidth;
+                const newH = rect.height + 2 * borderWidth;
 
-        if (border) {
-            if (!(this.is_max_screen(ext) || this.is_snap_edge())) {
-                border.remove_style_class_name('gnome-mosaic-border-maximize');
-            } else {
-                borderSize = 0;
-                border.add_style_class_name('gnome-mosaic-border-maximize');
-            }
-
-            let dimensions = [
-                x - borderSize,
-                y - borderSize,
-                width + 2 * borderSize,
-                height + 2 * borderSize,
-            ];
-
-            if (dimensions) {
-                [x, y, width, height] = dimensions;
-
-                const workspace = this.meta.get_workspace();
-
-                if (workspace === null) return;
-
-                const screen = workspace.get_work_area_for_monitor(
-                    this.meta.get_monitor()
-                );
-
-                if (screen) {
-                    width = Math.min(width, screen.x + screen.width);
-                    height = Math.min(height, screen.y + screen.height);
+                // Skip update if nothing changed
+                if (this.last_border_rect &&
+                    this.last_border_rect.x === newX &&
+                    this.last_border_rect.y === newY &&
+                    this.last_border_rect.w === newW &&
+                    this.last_border_rect.h === newH) {
+                    return;
                 }
 
-                border.set_position(x, y);
-                border.set_size(width, height);
+                // Direct positioning
+                this.border.set_position(newX, newY);
+                this.border.set_size(newW, newH);
+
+                // Cache for next comparison
+                this.last_border_rect = { x: newX, y: newY, w: newW, h: newH };
             }
         }
     }
@@ -592,8 +595,8 @@ export class ShellWindow {
         if (this.border) {
             this.border.set_style(
                 `border-radius: ${radii_values};` +
-                    `border-width: ${ext.settings.active_hint_border_width()}px;` +
-                    `border-color: ${major > 46 ? '-st-accent-color' : ext.settings.gnome_legacy_accent_color()}`
+                `border-width: ${ext.settings.active_hint_border_width()}px;` +
+                `border-color: ${major > 46 ? '-st-accent-color' : ext.settings.gnome_legacy_accent_color()}`
             );
         }
     }
@@ -609,14 +612,26 @@ export class ShellWindow {
 
     private window_changed(ext: Ext) {
         this.update_border_layout(ext);
-        ext.show_border_on_focused();
+        if (ext.focus_window() === this && (!this.border || !this.border.visible)) {
+            ext.show_border_on_focused();
+        }
     }
 
     private window_raised(ext: Ext) {
         ext.show_border_on_focused();
     }
 
-    private workspace_changed() {}
+    private workspace_changed() { }
+
+    restack(): boolean {
+        if (this.border) {
+            // Place at the top of the stack
+            // The border is transparent except for the border itself (CSS)
+            global.window_group.set_child_above_sibling(this.border, null);
+            return true;
+        }
+        return false;
+    }
 
     timeouts_remove() {
         if (this.active_hint_show_id) {
