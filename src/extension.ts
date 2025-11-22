@@ -190,6 +190,12 @@ export class Ext extends Ecs.System<ExtEvent> {
 
     workareas_update: null | SignalID = null;
 
+    /** Whether a workspace switch is currently in progress */
+    is_switching_workspace: boolean = false;
+
+    /** Timeout ID for delayed border showing */
+    border_timeout: null | number = null;
+
     /** Record of misc. global objects and their attached signals */
     private signals: Map<GObject.Object, Array<SignalID>> = new Map();
 
@@ -1008,8 +1014,8 @@ export class Ext extends Ecs.System<ExtEvent> {
                     if (prev.is_maximized()) {
                         prev.meta.set_unmaximize_flags
                             ? prev.meta.set_unmaximize_flags(
-                                  Meta.MaximizeFlags.BOTH
-                              )
+                                Meta.MaximizeFlags.BOTH
+                            )
                             : prev.meta.unmaximize(Meta.MaximizeFlags.BOTH);
                     }
                 }
@@ -1042,6 +1048,21 @@ export class Ext extends Ecs.System<ExtEvent> {
     }
 
     show_border_on_focused() {
+        if (this.is_switching_workspace) {
+            if (this.border_timeout) {
+                GLib.source_remove(this.border_timeout);
+                this.border_timeout = null;
+            }
+
+            this.border_timeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 250, () => {
+                this.is_switching_workspace = false;
+                this.show_border_on_focused();
+                this.border_timeout = null;
+                return GLib.SOURCE_REMOVE;
+            });
+            return;
+        }
+
         this.hide_all_borders();
         const focus = this.focus_window();
         if (focus) focus.show_border(this);
@@ -1721,14 +1742,14 @@ export class Ext extends Ecs.System<ExtEvent> {
                                 ? swap
                                     ? [area.x, area.y, half_width, area.height]
                                     : [
-                                          area.x + half_width,
-                                          area.y,
-                                          half_width,
-                                          area.height,
-                                      ]
+                                        area.x + half_width,
+                                        area.y,
+                                        half_width,
+                                        area.height,
+                                    ]
                                 : swap
-                                  ? [area.x, area.y, area.width, half_height]
-                                  : [
+                                    ? [area.x, area.y, area.width, half_height]
+                                    : [
                                         area.x,
                                         area.y + half_height,
                                         area.width,
@@ -2110,7 +2131,7 @@ export class Ext extends Ecs.System<ExtEvent> {
         if (this.overlay) {
             this.overlay.set_style(
                 `border-radius: ${radii_values};` +
-                    `background-color: ${major > 46 ? '-st-accent-color' : this.settings.gnome_legacy_accent_color()};`
+                `background-color: ${major > 46 ? '-st-accent-color' : this.settings.gnome_legacy_accent_color()};`
             );
         }
     }
@@ -2294,7 +2315,7 @@ export class Ext extends Ecs.System<ExtEvent> {
                             if (
                                 this.auto_tiler &&
                                 meta_window.window_type ===
-                                    Meta.WindowType.DESKTOP
+                                Meta.WindowType.DESKTOP
                             ) {
                                 refocus_tiled_window();
                             } else {
@@ -2322,24 +2343,13 @@ export class Ext extends Ecs.System<ExtEvent> {
             this.register({tag: 3, window});
         });
 
-        if (GNOME_VERSION?.startsWith('3.')) {
-            this.connect(display, 'grab-op-begin', (_, _display, win, op) => {
-                this.on_grab_start(win, op);
-            });
+        this.connect(display, 'grab-op-begin', (_display, win, op) => {
+            this.on_grab_start(win, op);
+        });
 
-            this.connect(display, 'grab-op-end', (_, _display, win, op) => {
-                this.register_fn(() => this.on_grab_end(win, op));
-            });
-        } else {
-            // GNOME 40 removed the first argument of the callback
-            this.connect(display, 'grab-op-begin', (_display, win, op) => {
-                this.on_grab_start(win, op);
-            });
-
-            this.connect(display, 'grab-op-end', (_display, win, op) => {
-                this.register_fn(() => this.on_grab_end(win, op));
-            });
-        }
+        this.connect(display, 'grab-op-end', (_display, win, op) => {
+            this.register_fn(() => this.on_grab_end(win, op));
+        });
 
         this.connect(overview, 'window-drag-begin', (_, win) => {
             this.on_grab_start(win, 1);
@@ -2355,6 +2365,18 @@ export class Ext extends Ecs.System<ExtEvent> {
 
         this.connect(wim, 'switch-workspace', () => {
             this.hide_all_borders();
+            this.is_switching_workspace = true;
+
+            if (this.border_timeout) {
+                GLib.source_remove(this.border_timeout);
+                this.border_timeout = null;
+            }
+
+            this.border_timeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 1000, () => {
+                this.is_switching_workspace = false;
+                this.border_timeout = null;
+                return GLib.SOURCE_REMOVE;
+            });
         });
 
         this.connect(workspace_manager, 'active-workspace-changed', () => {
