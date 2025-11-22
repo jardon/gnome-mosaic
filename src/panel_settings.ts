@@ -1,238 +1,138 @@
-import * as Utils from './utils.js';
-
-import type {Ext} from './extension.js';
-
-import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
-import St from 'gi://St';
+import GObject from 'gi://GObject';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 
 import {
-    PopupBaseMenuItem,
     PopupMenuItem,
-    PopupSwitchMenuItem,
     PopupSeparatorMenuItem,
+    PopupSwitchMenuItem,
 } from 'resource:///org/gnome/shell/ui/popupMenu.js';
-import {Button} from 'resource:///org/gnome/shell/ui/panelMenu.js';
-import GLib from 'gi://GLib';
+import * as QuickSettings from 'resource:///org/gnome/shell/ui/quickSettings.js';
 import {get_current_path} from './paths.js';
+import type {Ext} from './extension.js';
 
-export class Indicator {
-    button: any;
-    appearances: any;
-    menu_timeout: null | SignalID = null;
+const MosaicIndicator = GObject.registerClass(
+    class MosaicIndicator extends QuickSettings.SystemIndicator {
+        _toggle: QuickSettings.QuickMenuToggle;
+        _icon_auto_on: any;
+        _icon_auto_off: any;
 
-    toggle_tiled: any;
-    toggle_titles: null | any;
-    toggle_active: any;
-    border_radius: any;
+        _indicator: any;
 
-    constructor(ext: Ext) {
-        this.button = new Button(0.0, _('GNOME Mosaic Settings'));
+        constructor(ext: Ext) {
+            super();
 
-        const path = get_current_path();
-        ext.button = this.button;
-        ext.button_gio_icon_auto_on = Gio.icon_new_for_string(
-            `${path}/icons/gnome-mosaic-auto-on-symbolic.svg`
-        );
-        ext.button_gio_icon_auto_off = Gio.icon_new_for_string(
-            `${path}/icons/gnome-mosaic-auto-off-symbolic.svg`
-        );
+            this._indicator = (this as any)._addIndicator();
 
-        let button_icon_auto_on = new St.Icon({
-            gicon: ext.button_gio_icon_auto_on,
-            style_class: 'system-status-icon',
-        });
-        let button_icon_auto_off = new St.Icon({
-            gicon: ext.button_gio_icon_auto_off,
-            style_class: 'system-status-icon',
-        });
+            const path = get_current_path();
+            const file_on = Gio.File.new_for_path(
+                `${path}/icons/gnome-mosaic-auto-on-symbolic.svg`
+            );
+            this._icon_auto_on = new Gio.FileIcon({file: file_on});
 
-        if (ext.settings.tile_by_default()) {
-            this.button.icon = button_icon_auto_on;
-        } else {
-            this.button.icon = button_icon_auto_off;
-        }
+            const file_off = Gio.File.new_for_path(
+                `${path}/icons/gnome-mosaic-auto-off-symbolic.svg`
+            );
+            this._icon_auto_off = new Gio.FileIcon({file: file_off});
 
-        this.button.add_child(this.button.icon);
-
-        let bm = this.button.menu;
-
-        this.toggle_tiled = tiled(ext);
-
-        this.toggle_active = toggle(
-            _('Show Active Hint'),
-            ext.settings.active_hint(),
-            toggle => {
-                ext.settings.set_active_hint(toggle.state);
-            }
-        );
-
-        bm.addMenuItem(this.toggle_tiled);
-        bm.addMenuItem(this.system_exceptions_menu(ext, bm));
-
-        bm.addMenuItem(menu_separator(''));
-        bm.addMenuItem(shortcuts(bm));
-        bm.addMenuItem(settings_button(bm));
-        bm.addMenuItem(menu_separator(''));
-
-        if (!Utils.is_wayland()) {
-            this.toggle_titles = show_title(ext);
-            bm.addMenuItem(this.toggle_titles);
-        }
-
-        bm.addMenuItem(this.toggle_active);
-    }
-
-    system_exceptions_menu(ext: Ext, menu: any): any {
-        let label = new St.Label({text: 'Floating Window Exceptions'});
-        label.set_x_expand(true);
-
-        let icon = new St.Icon({icon_name: 'go-next-symbolic', icon_size: 16});
-
-        let widget = new St.BoxLayout({vertical: false});
-        widget.add_child(label);
-        widget.add_child(icon);
-        widget.set_x_expand(true);
-
-        let base = new PopupBaseMenuItem();
-        base.add_child(widget);
-        base.connect('activate', () => {
-            ext.exception_dialog();
-
-            if (this.menu_timeout) {
-                GLib.source_remove(this.menu_timeout);
-                this.menu_timeout = null;
-            }
-            this.menu_timeout = GLib.timeout_add(GLib.PRIORITY_LOW, 300, () => {
-                menu.close();
-                return false;
+            this._toggle = new QuickSettings.QuickMenuToggle({
+                title: 'Mosaic',
+                toggleMode: true,
+                iconName: 'view-grid-symbolic',
             });
-        });
 
-        return base;
-    }
+            this._toggle.gicon = this._icon_auto_off;
 
-    timeouts_remove() {
-        if (this.menu_timeout) {
-            GLib.source_remove(this.menu_timeout);
-            this.menu_timeout = null;
+            this._toggle.connect('clicked', () => {
+                ext.toggle_tiling();
+            });
+
+            this._toggle.menu.setHeader(
+                'view-grid-symbolic',
+                'Mosaic',
+                'Tiled window management'
+            );
+
+            this._toggle.menu.addMenuItem(this._createSmartGapsSwitch(ext));
+            this._toggle.menu.addMenuItem(this._createActiveHintSwitch(ext));
+            this._toggle.menu.addMenuItem(this._createMouseFollowsSwitch(ext));
+
+            this._toggle.menu.addMenuItem(new PopupSeparatorMenuItem());
+            this._toggle.menu.addMenuItem(this._createExceptionsItem(ext));
+
+            this._toggle.menu.addMenuItem(new PopupSeparatorMenuItem());
+            this._toggle.menu.addMenuItem(this._createSettingsItem(ext));
+
+            this.quickSettingsItems.push(this._toggle);
+
+            Main.panel.statusArea.quickSettings.addExternalIndicator(this);
+        }
+
+        set_active(active: boolean) {
+            this._toggle.set({checked: active});
+            this._toggle.gicon = active
+                ? this._icon_auto_on
+                : this._icon_auto_off;
+
+            // Update system indicator icon
+            this._indicator.gicon = active ? this._icon_auto_on : null;
+            this._indicator.visible = active;
+        }
+
+        _createSmartGapsSwitch(ext: Ext) {
+            const item = new PopupSwitchMenuItem(
+                'Smart Gaps',
+                ext.settings.smart_gaps()
+            );
+            item.connect('toggled', (_: any, state: boolean) => {
+                ext.settings.set_smart_gaps(state);
+            });
+            return item;
+        }
+
+        _createActiveHintSwitch(ext: Ext) {
+            const item = new PopupSwitchMenuItem(
+                'Show Active Hint',
+                ext.settings.active_hint()
+            );
+            item.connect('toggled', (_: any, state: boolean) => {
+                ext.settings.set_active_hint(state);
+            });
+            return item;
+        }
+
+        _createMouseFollowsSwitch(ext: Ext) {
+            const item = new PopupSwitchMenuItem(
+                'Move Pointer With Focus',
+                ext.settings.mouse_cursor_follows_active_window()
+            );
+            item.connect('toggled', (_: any, state: boolean) => {
+                ext.settings.set_mouse_cursor_follows_active_window(state);
+            });
+            return item;
+        }
+
+        _createExceptionsItem(ext: Ext) {
+            const item = new PopupMenuItem('Floating Window Exceptions');
+            item.connect('activate', () => {
+                ext.exception_dialog();
+            });
+            return item;
+        }
+
+        _createSettingsItem(ext: Ext) {
+            const item = new PopupMenuItem('Settings');
+            item.connect('activate', () => {
+                ext.open_settings();
+            });
+            return item;
+        }
+
+        destroy() {
+            this._toggle.destroy();
+            super.destroy();
         }
     }
+);
 
-    destroy() {
-        this.timeouts_remove();
-        this.button.destroy();
-    }
-}
-
-function menu_separator(text: any): any {
-    return new PopupSeparatorMenuItem(text);
-}
-
-function settings_button(menu: any): any {
-    let item = new PopupMenuItem(_('View All'));
-    item.connect('activate', () => {
-        Gio.AppInfo.launch_default_for_uri(
-            'https://github.com/jardon/gnome-mosaic/blob/main/SHORTCUTS.md',
-            null
-        );
-
-        menu.close();
-    });
-
-    item.label.get_clutter_text().set_margin_left(12);
-
-    return item;
-}
-
-function shortcuts(menu: any): any {
-    let layout_manager = new Clutter.GridLayout({
-        orientation: Clutter.Orientation.HORIZONTAL,
-    });
-    let widget = new St.Widget({layout_manager, x_expand: true});
-
-    let item = new PopupBaseMenuItem();
-    item.add_child(widget);
-    item.connect('activate', () => {
-        Gio.AppInfo.launch_default_for_uri(
-            'https://github.com/jardon/gnome-mosaic/blob/main/SHORTCUTS.md',
-            null
-        );
-
-        menu.close();
-    });
-
-    function create_label(text: string): any {
-        return new St.Label({text});
-    }
-
-    function create_shortcut_label(text: string): any {
-        let label = create_label(text);
-        label.set_x_align(Clutter.ActorAlign.END);
-        return label;
-    }
-
-    layout_manager.set_row_spacing(12);
-    layout_manager.set_column_spacing(30);
-    layout_manager.attach(create_label(_('Shortcuts')), 0, 0, 2, 1);
-
-    [
-        [_('Navigate Windows'), _('Super + Arrow Keys')],
-        [_('Toggle Tiling'), _('Super + Y')],
-        [_('Resize Windows'), 'Super + R'],
-    ].forEach((section, idx) => {
-        let key = create_label(section[0]);
-        key.get_clutter_text().set_margin_left(12);
-
-        let val = create_shortcut_label(section[1]);
-
-        layout_manager.attach(key, 0, idx + 1, 1, 1);
-        layout_manager.attach(val, 1, idx + 1, 1, 1);
-    });
-
-    return item;
-}
-
-function show_title(ext: Ext): any {
-    const t = toggle(
-        _('Show Window Titles'),
-        ext.settings.show_title(),
-        (toggle: any) => {
-            ext.settings.set_show_title(toggle.state);
-        }
-    );
-
-    return t;
-}
-
-function toggle(
-    desc: string,
-    active: boolean,
-    connect: (toggle: any, state: boolean) => void
-): any {
-    let toggle = new PopupSwitchMenuItem(desc, active);
-
-    toggle.label.set_y_align(Clutter.ActorAlign.CENTER);
-
-    toggle.connect('toggled', (_: any, state: boolean) => {
-        connect(toggle, state);
-        return true;
-    });
-
-    return toggle;
-}
-
-function tiled(ext: Ext): any {
-    let t = toggle(
-        _('Tile Windows'),
-        null != ext.auto_tiler,
-        (_, shouldTile) => {
-            if (shouldTile) {
-                ext.auto_tile_on();
-            } else {
-                ext.auto_tile_off();
-            }
-        }
-    );
-    return t;
-}
+export {MosaicIndicator};
