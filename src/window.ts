@@ -69,9 +69,15 @@ export class ShellWindow {
     };
 
     // Cache last border rect to avoid redundant updates
-    private last_border_rect: { x: number, y: number, w: number, h: number } | null = null;
+    private last_border_rect: {
+        x: number;
+        y: number;
+        w: number;
+        h: number;
+    } | null = null;
 
-
+    // Track current border width for dynamic adjustment
+    private border_width: number = 0;
 
     constructor(
         entity: Entity,
@@ -566,11 +572,13 @@ export class ShellWindow {
                 const newH = rect.height + 2 * borderWidth;
 
                 // Skip update if nothing changed
-                if (this.last_border_rect &&
+                if (
+                    this.last_border_rect &&
                     this.last_border_rect.x === newX &&
                     this.last_border_rect.y === newY &&
                     this.last_border_rect.w === newW &&
-                    this.last_border_rect.h === newH) {
+                    this.last_border_rect.h === newH
+                ) {
                     return;
                 }
 
@@ -579,7 +587,7 @@ export class ShellWindow {
                 this.border.set_size(newW, newH);
 
                 // Cache for next comparison
-                this.last_border_rect = { x: newX, y: newY, w: newW, h: newH };
+                this.last_border_rect = {x: newX, y: newY, w: newW, h: newH};
             }
         }
     }
@@ -591,12 +599,24 @@ export class ShellWindow {
         );
         const radii_values =
             radii?.map(v => `${v + margin}px`).join(' ') || '0px 0px 0px 0px';
+        const borderWidth = ext.settings.active_hint_border_width();
+        const borderColor =
+            major > 46
+                ? '-st-accent-color'
+                : ext.settings.gnome_legacy_accent_color();
+
         if (this.border) {
             this.border.set_style(
                 `border-radius: ${radii_values};` +
-                `border-width: ${ext.settings.active_hint_border_width()}px;` +
-                `border-color: ${major > 46 ? '-st-accent-color' : ext.settings.gnome_legacy_accent_color()}`
+                    `border-width: ${borderWidth}px;` +
+                    `border-color: ${borderColor}`
             );
+
+            // When border width changes, trigger layout update to recalculate size
+            if (this.border_width !== borderWidth) {
+                this.border_width = borderWidth;
+                this.update_border_layout(ext);
+            }
         }
     }
 
@@ -611,7 +631,10 @@ export class ShellWindow {
 
     private window_changed(ext: Ext) {
         this.update_border_layout(ext);
-        if (ext.focus_window() === this && (!this.border || !this.border.visible)) {
+        if (
+            ext.focus_window() === this &&
+            (!this.border || !this.border.visible)
+        ) {
             ext.show_border_on_focused();
         }
     }
@@ -620,7 +643,7 @@ export class ShellWindow {
         ext.show_border_on_focused();
     }
 
-    private workspace_changed() { }
+    private workspace_changed() {}
 
     restack(): boolean {
         if (this.border) {
