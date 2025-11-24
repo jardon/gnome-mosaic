@@ -64,6 +64,7 @@ function settings_new_schema(schema: string): Settings {
 const ACTIVE_HINT = 'active-hint';
 const ACTIVE_HINT_BORDER_WIDTH = 'active-hint-border-width';
 const GNOME_LEGACY_ACCENT_COLOR = 'gnome-legacy-accent-color';
+const GNOME_OVERRIDE_ACCENT_COLOR = 'gnome-override-accent-color';
 const COLUMN_SIZE = 'column-size';
 const EDGE_TILING = 'edge-tiling';
 const GAP_INNER = 'gap-inner';
@@ -102,6 +103,10 @@ export class ExtensionSettings {
 
     gnome_legacy_accent_color(): string {
         return this.ext.get_string(GNOME_LEGACY_ACCENT_COLOR);
+    }
+
+    gnome_override_accent_color(): string {
+        return this.ext.get_string(GNOME_OVERRIDE_ACCENT_COLOR);
     }
 
     column_size(): number {
@@ -201,6 +206,10 @@ export class ExtensionSettings {
 
     set_gnome_legacy_accent_color(color: string) {
         this.ext.set_string(GNOME_LEGACY_ACCENT_COLOR, color);
+    }
+
+    set_gnome_override_accent_color(color: string) {
+        this.ext.set_string(GNOME_OVERRIDE_ACCENT_COLOR, color);
     }
 
     set_column_size(size: number) {

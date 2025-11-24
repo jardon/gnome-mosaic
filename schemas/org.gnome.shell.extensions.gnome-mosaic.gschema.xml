@@ -18,6 +18,11 @@
             <summary>Color to use for accents on pre-Gnome 47</summary>
         </key>
 
+        <key type="s" name="gnome-override-accent-color">
+            <default>''</default>
+            <summary>Color to override for accents on Gnome 47+</summary>
+        </key>
+
         <key type="u" name="gap-inner">
             <default>6</default>
             <summary>Gap between tiled windows, in pixels</summary>
