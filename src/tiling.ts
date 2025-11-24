@@ -8,7 +8,6 @@ import * as exec from './executor.js';
 import * as movement from './movement.js';
 import * as utils from './utils.js';
 
-import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 import type {Entity} from './ecs.js';
 import type {Rectangle} from './rectangle.js';
 import type {Ext} from './extension.js';
@@ -234,23 +233,10 @@ export class Tiler {
 
             this.update_resize_position();
 
-            const [major] = Config.PACKAGE_VERSION.split('.').map((s: string) =>
-                Number(s)
+            const colors: [string, string] = utils.get_accent_colors(
+                this.ext.settings
             );
-
-            var background: string;
-            var color: string;
-
-            if (major > 46) {
-                background = '-st-accent-color';
-                color = '-st-fg-accent-color';
-            } else {
-                background = this.ext.settings.gnome_legacy_accent_color();
-                const background_rgba = utils.hex_to_rgba(background);
-                color = utils.is_dark(background_rgba) ? 'white' : 'black';
-            }
-
-            const css = `background: ${background}; color: ${color}`;
+            const css = `background: ${colors[0]}; color: ${colors[1]}`;
 
             this.resize_up.set_style(css);
             this.resize_down.set_style(css);

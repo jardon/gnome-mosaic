@@ -60,11 +60,9 @@ import {
 // import { SwitcherList } from 'resource:///org/gnome/shell/ui/switcherPopup.js';
 import {Workspace} from 'resource:///org/gnome/shell/ui/workspace.js';
 import {WorkspaceThumbnail} from 'resource:///org/gnome/shell/ui/workspaceThumbnail.js';
-import {PACKAGE_VERSION} from 'resource:///org/gnome/shell/misc/config.js';
 import * as Tags from './tags.js';
 import {get_current_path} from './paths.js';
 
-const GNOME_VERSION = PACKAGE_VERSION;
 const MOSAIC_CACHED_STATE = 'mosaic-cached-state';
 
 enum Style {
@@ -2124,7 +2122,6 @@ export class Ext extends Ecs.System<ExtEvent> {
         this.overlay.width = win.rect().width;
         this.overlay.height = win.rect().height;
 
-        const [major] = GNOME_VERSION.split('.').map((s: string) => Number(s));
         const radii = await getBorderRadii(
             win.meta.get_compositor_private() as Meta.WindowActor
         );
@@ -2133,7 +2130,7 @@ export class Ext extends Ecs.System<ExtEvent> {
         if (this.overlay) {
             this.overlay.set_style(
                 `border-radius: ${radii_values};` +
-                    `background-color: ${major > 46 ? '-st-accent-color' : this.settings.gnome_legacy_accent_color()};`
+                    `background-color: ${utils.get_accent_colors(ext?.settings)[0]};`
             );
         }
     }

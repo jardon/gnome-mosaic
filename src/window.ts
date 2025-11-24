@@ -17,7 +17,6 @@ import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import Mtk from 'gi://Mtk';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 
 const {OnceCell} = once_cell;
 
@@ -26,8 +25,6 @@ const WM_TITLE_BLACKLIST: Array<string> = [
     'Nightly', // Firefox Nightly
     'Tor Browser',
 ];
-
-const [major] = Config.PACKAGE_VERSION.split('.').map((s: string) => Number(s));
 
 interface X11Info {
     normal_hints: once_cell.OnceCell<lib.SizeHint | null>;
@@ -600,16 +597,13 @@ export class ShellWindow {
         const radii_values =
             radii?.map(v => `${v + margin}px`).join(' ') || '0px 0px 0px 0px';
         const borderWidth = ext.settings.active_hint_border_width();
-        const borderColor =
-            major > 46
-                ? '-st-accent-color'
-                : ext.settings.gnome_legacy_accent_color();
+        const colors: [string, string] = utils.get_accent_colors(ext.settings);
 
         if (this.border) {
             this.border.set_style(
                 `border-radius: ${radii_values};` +
                     `border-width: ${borderWidth}px;` +
-                    `border-color: ${borderColor}`
+                    `border-color: ${colors[0]}`
             );
 
             // When border width changes, trigger layout update to recalculate size
