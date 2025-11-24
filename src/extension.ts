@@ -185,7 +185,7 @@ export class Ext extends Ecs.System<ExtEvent> {
     is_switching_workspace: boolean = false;
 
     /** Timeout ID for delayed border showing */
-    border_timeout: null | number = null;
+    border_timeout: null | SignalID = null;
 
     /** Record of misc. global objects and their attached signals */
     private signals: Map<GObject.Object, Array<SignalID>> = new Map();
@@ -2448,6 +2448,7 @@ export class Ext extends Ecs.System<ExtEvent> {
             'displays_updating',
             'new_s',
             'exception_select_timeout',
+            'border_timeout',
         ];
 
         for (const prop of timeoutProps) {
