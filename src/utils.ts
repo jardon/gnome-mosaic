@@ -6,6 +6,7 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 import Meta from 'gi://Meta';
+import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 const {Ok, Err} = result;
 const {Error} = error;
 
@@ -45,6 +46,31 @@ export function source_remove(id: SignalID): boolean {
 
 export function exists(path: string): boolean {
     return Gio.File.new_for_path(path).query_exists(null);
+}
+
+export function get_accent_colors(settings: any): [string, string] {
+    const [major] = Config.PACKAGE_VERSION.split('.').map((s: string) =>
+        Number(s)
+    );
+    var background: string;
+    var color: string;
+    var override_bg_color = settings.gnome_override_accent_color();
+
+    if (major > 46 && override_bg_color) {
+        background = override_bg_color;
+        const background_rgba = hex_to_rgba(background);
+        color = is_dark(background_rgba) ? 'white' : 'black';
+    } else if (major > 46) {
+        background = '-st-accent-color';
+        color = '-st-fg-accent-color';
+    } else {
+        // setting for GNOME 44-46
+        background = settings.gnome_legacy_accent_color();
+        const background_rgba = hex_to_rgba(background);
+        color = is_dark(background_rgba) ? 'white' : 'black';
+    }
+
+    return [background, color];
 }
 
 /**
