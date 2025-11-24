@@ -4,7 +4,7 @@
   </a>
 </div>
 <div align="right">
-  <img src="https://img.shields.io/badge/GNOME-44--49-e66100?style=for-the-badge&logo=gnome&logoColor=white"/>
+  <img src="https://img.shields.io/badge/GNOME-45--49-e66100?style=for-the-badge&logo=gnome&logoColor=white"/>
   <img src="https://img.shields.io/github/license/jardon/gnome-mosaic?style=for-the-badge&color=2ec27e"/>
 </div>
 
