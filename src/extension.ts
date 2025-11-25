@@ -41,6 +41,7 @@ import St from 'gi://St';
 import Shell from 'gi://Shell';
 import Meta from 'gi://Meta';
 import Mtk from 'gi://Mtk';
+import Clutter from 'gi://Clutter';
 const {GlobalEvent, WindowEvent} = Events;
 const {cursor_rect, is_keyboard_op, is_resize_op, is_move_op} = Lib;
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
@@ -429,8 +430,44 @@ export class Ext extends Ecs.System<ExtEvent> {
                     actor.remove_all_transitions();
                     const {x, y, width, height} = movement;
 
-                    window.meta.move_resize_frame(true, x, y, width, height);
-                    window.meta.move_frame(true, x, y);
+                    let resize = (
+                        x: number,
+                        y: number,
+                        width: number,
+                        height: number
+                    ) => {
+                        window.meta.move_resize_frame(
+                            true,
+                            x,
+                            y,
+                            width,
+                            height
+                        );
+                        window.meta.move_frame(true, x, y);
+                    };
+
+                    if (actor) {
+                        try {
+                            let geom = window.meta.get_buffer_rect();
+                            actor.ease({
+                                x: geom.x,
+                                y: geom.y,
+                                width: geom.width,
+                                height: geom.height,
+                                duration: 100,
+                                mode: Clutter.AnimationMode
+                                    .CLUTTER_EASE_IN_OUT_SINE,
+                                onComplete: () => resize(x, y, width, height),
+                            });
+                        } catch (e) {
+                            log.debug('Animation failed: ' + e);
+                            resize(x, y, width, height);
+                        }
+                    }
+
+                    log.debug(
+                        `EVENT: ${window.title()} ${x} ${y} ${height} ${width}`
+                    );
 
                     this.monitors.insert(window.entity, [
                         win.meta.get_monitor(),

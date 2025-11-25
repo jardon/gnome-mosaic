@@ -661,13 +661,37 @@ export class Tiler {
                         after.clamp(work_area);
 
                         const movements = movement.calculate(before, after);
-                        window.meta.move_resize_frame(
-                            true,
-                            after.x,
-                            after.y,
-                            after.width,
-                            after.height
-                        );
+                        let actor = window.meta.get_compositor_private();
+                        if (actor) {
+                            try {
+                                actor.ease({
+                                    x: after.x,
+                                    y: after.y,
+                                    width: after.width,
+                                    height: after.height,
+                                    duration: 200,
+                                    mode: Clutter.AnimationMode.EASE_OUT_QUAD,
+                                    onComplete: () => {
+                                        window.meta.move_resize_frame(
+                                            true,
+                                            after.x,
+                                            after.y,
+                                            after.width,
+                                            after.height
+                                        );
+                                    },
+                                });
+                            } catch (e) {
+                                log.debug('Animation failed: ' + e);
+                                window.meta.move_resize_frame(
+                                    true,
+                                    after.x,
+                                    after.y,
+                                    after.width,
+                                    after.height
+                                );
+                            }
+                        }
                         if (this.ext.movements_are_valid(window, movements)) {
                             for (const movement of movements) {
                                 forest.resize(
