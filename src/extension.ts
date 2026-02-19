@@ -53,11 +53,8 @@ const {
 } = Main;
 import {ScreenShield} from 'resource:///org/gnome/shell/ui/screenShield.js';
 import {
-    // AppSwitcher,
-    // AppIcon,
     WindowSwitcherPopup,
 } from 'resource:///org/gnome/shell/ui/altTab.js';
-// import { SwitcherList } from 'resource:///org/gnome/shell/ui/switcherPopup.js';
 import {Workspace} from 'resource:///org/gnome/shell/ui/workspace.js';
 import {WorkspaceThumbnail} from 'resource:///org/gnome/shell/ui/workspaceThumbnail.js';
 import * as Tags from './tags.js';
