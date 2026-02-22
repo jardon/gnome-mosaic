@@ -102,6 +102,7 @@ export class ShellWindow {
         if (this.border) {
             // Parent to global.window_group
             global.window_group.add_child(this.border);
+            this.border.set_z_position(-1.0);
             this.restack();
         }
 

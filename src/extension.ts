@@ -52,9 +52,7 @@ const {
     windowAttentionHandler,
 } = Main;
 import {ScreenShield} from 'resource:///org/gnome/shell/ui/screenShield.js';
-import {
-    WindowSwitcherPopup,
-} from 'resource:///org/gnome/shell/ui/altTab.js';
+import {WindowSwitcherPopup} from 'resource:///org/gnome/shell/ui/altTab.js';
 import {Workspace} from 'resource:///org/gnome/shell/ui/workspace.js';
 import {WorkspaceThumbnail} from 'resource:///org/gnome/shell/ui/workspaceThumbnail.js';
 import * as Tags from './tags.js';

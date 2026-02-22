@@ -437,6 +437,7 @@ declare namespace St {
         set_style(inlinecss: string): boolean;
         set_style_class_name(name: string): void;
         set_style_pseudo_class(name: string): void;
+        set_z_position(z_position: number): void;
         show_all(): void;
         show(): void;
     }
