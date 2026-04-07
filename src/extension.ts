@@ -3210,6 +3210,8 @@ export default class MosaicExtension extends Extension {
 
             layoutManager.removeChrome(ext.overlay);
 
+            ext.dbus.destroy();
+
             ext.keybindings
                 .disable(ext.keybindings.global)
                 .disable(ext.keybindings.window_focus);
