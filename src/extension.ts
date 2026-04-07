@@ -3128,10 +3128,10 @@ export default class MosaicExtension extends Extension {
         GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
             let restored = false;
             globalThis.MosaicExtension = this;
+            const settings = globalThis.MosaicExtension.getSettings();
             log.info('enable');
 
             if (!ext) {
-                const settings = globalThis.MosaicExtension.getSettings();
                 try {
                     const data = JSON.parse(
                         settings.get_string(MOSAIC_CACHED_STATE)
@@ -3142,7 +3142,6 @@ export default class MosaicExtension extends Extension {
                     ext = null;
                     log.debug('COULD NOT READ CACHED STATE');
                 }
-                settings.set_string(MOSAIC_CACHED_STATE, '');
 
                 if (!restored) {
                     log.debug('CREATING NEW EXTENSION INSTANCE');
@@ -3157,6 +3156,8 @@ export default class MosaicExtension extends Extension {
                 log.error('EXT IS NULL - CONFIGURATION SKIPPED');
                 return false;
             }
+
+            settings.set_string(MOSAIC_CACHED_STATE, '');
 
             log.debug('CONFIGURING EXTENSION');
             if (ext.settings.show_skiptaskbar()) {
