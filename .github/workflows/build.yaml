@@ -8,6 +8,13 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
-            - name: Install typescript
-              run: sudo apt install -y node-typescript make
+            - name: Set up Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: '20'
+            - name: Install dependencies
+              run: |
+                  sudo apt update
+                  sudo apt install -y make
+                  npm install typescript@latest
             - run: make compile
