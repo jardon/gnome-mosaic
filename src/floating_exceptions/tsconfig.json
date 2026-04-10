@@ -4,6 +4,7 @@
         "target": "es2015",
         // "strict": true,
         "outDir": "../../target/floating_exceptions",
+        "rootDir": "./src",
         "forceConsistentCasingInFileNames": true,
         "lib": ["es2015", "dom"],
         "pretty": true,
