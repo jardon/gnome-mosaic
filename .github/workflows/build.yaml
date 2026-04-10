@@ -16,5 +16,7 @@ jobs:
               run: |
                   sudo apt update
                   sudo apt install -y make
-                  npm install typescript@latest
+                  npm install typescript@5.7.3
+            - name: Add node_modules to PATH
+              run: echo "${{ github.workspace }}/node_modules/.bin:$PATH" >> $GITHUB_PATH
             - run: make compile
