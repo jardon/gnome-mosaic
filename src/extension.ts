@@ -1087,7 +1087,10 @@ export class Ext extends Ecs.System<ExtEvent> {
     destroy_all_borders() {
         this.hide_all_borders();
         for (const win of this.windows.values()) {
-            win.border = null;
+            if (win.border) {
+                win.destroy();
+                win.border = null;
+            }
         }
     }
 

@@ -144,6 +144,13 @@ export class ShellWindow {
         return win;
     }
 
+    destroy() {
+        if (this.border) {
+            global.window_group.remove_child(this.border);
+            this.border.destroy();
+        }
+    }
+
     activate(ext: Ext, move_mouse: boolean = true): void {
         activate(ext, move_mouse, this.meta);
     }
