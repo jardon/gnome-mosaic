@@ -1089,7 +1089,6 @@ export class Ext extends Ecs.System<ExtEvent> {
         for (const win of this.windows.values()) {
             if (win.border) {
                 win.destroy();
-                win.border = null;
             }
         }
     }
