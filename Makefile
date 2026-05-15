@@ -93,9 +93,8 @@ update-repository:
 	git clean -fd
 
 zip-file: all
-	cd _build
-	rm schemas/gschemas.compiled
-	zip -qr "../$(UUID)_$(VERSION).zip" .
+	rm -f _build/schemas/gschemas.compiled
+	cd _build && zip -qr "../$(UUID)_$(VERSION).zip" .
 
 .NOTPARALLEL: debug local-install
 
