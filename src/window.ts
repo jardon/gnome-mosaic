@@ -148,6 +148,7 @@ export class ShellWindow {
         if (this.border) {
             global.window_group.remove_child(this.border);
             this.border.destroy();
+            this.border = null;
         }
     }
 
