@@ -3150,12 +3150,12 @@ export default class MosaicExtension extends Extension {
                 }
             }
 
+            settings.set_string(MOSAIC_CACHED_STATE, '');
+
             if (!ext) {
                 log.error('EXT IS NULL - CONFIGURATION SKIPPED');
                 return false;
             }
-
-            settings.set_string(MOSAIC_CACHED_STATE, '');
 
             log.debug('CONFIGURING EXTENSION');
             if (ext.settings.show_skiptaskbar()) {
