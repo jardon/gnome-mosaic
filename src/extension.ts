@@ -3240,8 +3240,6 @@ export default class MosaicExtension extends Extension {
 
         enable_window_attention_handler();
     }
-
-    // delete_cache = () => ext!.settings.ext.set_string(MOSAIC_CACHED_STATE, '');
 }
 
 const handler = windowAttentionHandler;
