@@ -384,12 +384,8 @@ export class Ext extends Ecs.System<ExtEvent> {
             log.debug('CACHE SUCCESSFULLY RESTORED');
             return ext;
         } catch (error) {
-            if (error instanceof Error) {
-                log.debug(error.message);
-            }
-            log.debug('CACHE UNSUCCESSFULLY RESTORED');
+            throw error;
         }
-        return null;
     }
 
     // System interface
@@ -3137,9 +3133,12 @@ export default class MosaicExtension extends Extension {
                     );
                     ext = Ext.fromJSON(data);
                     restored = true;
-                } catch {
+                } catch (error) {
                     ext = null;
                     log.debug('COULD NOT READ CACHED STATE');
+                    if (error instanceof Error) {
+                        log.debug(error.message);
+                    }
                 }
 
                 if (!restored) {
