@@ -3187,20 +3187,18 @@ export default class MosaicExtension extends Extension {
     disable() {
         log.info('disable');
 
+        const settings = globalThis.MosaicExtension.getSettings();
+        settings.set_string(MOSAIC_CACHED_STATE, '');
+
         if (ext) {
             if (sessionMode.isLocked) {
                 try {
-                    ext.settings.ext.set_string(
-                        MOSAIC_CACHED_STATE,
-                        JSON.stringify(ext)
-                    );
+                    const cachedState = JSON.stringify(ext);
+                    settings.set_string(MOSAIC_CACHED_STATE, cachedState);
                     log.debug('CACHE SUCCESFULLY STORED');
                 } catch {
                     log.debug('CACHE UNSUCCESSFULLY STORED');
-                    ext.settings.ext.set_string(MOSAIC_CACHED_STATE, '');
                 }
-            } else {
-                ext.settings.ext.set_string(MOSAIC_CACHED_STATE, '');
             }
             delete globalThis.MosaicExtension;
             ext.destroy_all_borders();
