@@ -2229,7 +2229,7 @@ export class Ext extends Ecs.System<ExtEvent> {
 
         this.connect(sessionMode, 'updated', () => {
             if (indicator) {
-                indicator.button.visible = !sessionMode.isLocked;
+                indicator.visible = !sessionMode.isLocked;
             }
 
             if (sessionMode.isLocked) {
