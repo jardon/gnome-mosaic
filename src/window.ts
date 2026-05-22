@@ -651,7 +651,8 @@ export class ShellWindow {
         if (this.border) {
             // Place at the top of the stack
             // The border is transparent except for the border itself (CSS)
-            global.window_group.set_child_above_sibling(this.border, null);
+            const actor = this.meta.get_compositor_private();
+            global.window_group.set_child_above_sibling(this.border, actor);
             return true;
         }
         return false;
