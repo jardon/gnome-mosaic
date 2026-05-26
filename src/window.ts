@@ -219,7 +219,9 @@ export class ShellWindow {
     }
 
     private async decorate(ext: Ext) {
-        if (await this.may_decorate()) {
+        var may_decorate = false;
+        may_decorate = await this.may_decorate().catch(() => false);
+        if (may_decorate) {
             if (!this.is_client_decorated()) {
                 if (ext.settings.show_title()) {
                     this.decoration_show(ext);
@@ -234,7 +236,9 @@ export class ShellWindow {
         _ext: Ext,
         callback: (xid: string) => void
     ): Promise<void> {
-        if (await this.may_decorate()) {
+        var may_decorate = false;
+        may_decorate = await this.may_decorate().catch(() => false);
+        if (may_decorate) {
             const xid = this.xid();
             if (xid) callback(xid);
         }
