@@ -1,4 +1,8 @@
 # Retrieve the UUID from ``metadata.json``
+ifeq ($(shell id -u), 0)
+  $(error "This Makefile should not be run as root. Please run as a normal user.")
+endif
+
 UUID = $(shell grep -E '^[ ]*"uuid":' ./metadata.json | sed 's@^[ ]*"uuid":[ ]*"\(.\+\)",[ ]*@\1@')
 VERSION = $(shell grep version tsconfig.json | awk -F\" '{print $$4}')
 
