@@ -16,6 +16,7 @@ import {Fork} from './fork.js';
 import Clutter from 'gi://Clutter';
 import Meta from 'gi://Meta';
 import St from 'gi://St';
+import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 const {layoutManager} = Main;
 const {ShellWindow} = window;
@@ -244,6 +245,21 @@ export class Tiler {
             this.resize_right.set_style(css);
         }
     }
+    enable_keybindings(ext: Ext) {
+        ext.keybindings.enable(ext, Shell.ActionMode.NONE);
+    }
+
+    disable_keybindings(ext: Ext) {
+        ext.keybindings.disable(ext.keybindings);
+    }
+
+    toggle_orientation(ext: Ext) {
+        const window = ext.focus_window();
+        if (window && ext.auto_tiler) {
+            ext.auto_tiler.toggle_orientation(ext, window);
+            ext.register_fn(() => window.activate(ext));
+        }
+    }
 
     private reverse_arrows() {
         this.resize_up.icon_name = ICON_DOWN_ARROW;
@@ -257,14 +273,6 @@ export class Tiler {
         this.resize_down.icon_name = ICON_DOWN_ARROW;
         this.resize_left.icon_name = ICON_LEFT_ARROW;
         this.resize_right.icon_name = ICON_RIGHT_ARROW;
-    }
-
-    toggle_orientation() {
-        const window = this.ext.focus_window();
-        if (window && this.ext.auto_tiler) {
-            this.ext.auto_tiler.toggle_orientation(this.ext, window);
-            this.ext.register_fn(() => window.activate(this.ext, true));
-        }
     }
 
     rect(monitor: Rectangle): Rectangle | null {
@@ -768,6 +776,9 @@ export class Tiler {
             this.ext.keybindings
                 .disable(this.ext.keybindings.window_focus)
                 .enable(this.ext, this.ext.keybindings.tiler_bindings);
+            this.ext.keybindings
+                .allow(this.ext.keybindings.window_focus, Shell.ActionMode.NONE)
+                .allow(this.ext.keybindings, Shell.ActionMode.NORMAL);
         }
     }
 
@@ -842,6 +853,9 @@ export class Tiler {
                 .disable(this.ext.keybindings.tiler_bindings)
                 .disable(this.ext.keybindings.resize_bindings)
                 .enable(this.ext, this.ext.keybindings.window_focus);
+            this.ext.keybindings
+                .allow(this.ext.keybindings, Shell.ActionMode.NONE)
+                .allow(this.ext.keybindings.window_focus, Shell.ActionMode.NORMAL);
         }
     }
 

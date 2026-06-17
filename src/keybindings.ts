@@ -11,6 +11,8 @@ export class Keybindings {
     tiler_bindings: Object;
     resize_bindings: Object;
 
+    private active: Set<string> = new Set();
+
     constructor(ext: Ext) {
         this.global = {
             'resize-mode': () => ext.tiler.resize_mode(),
@@ -78,7 +80,7 @@ export class Keybindings {
         };
 
         this.tiler_bindings = {
-            'management-orientation': () => ext.tiler.toggle_orientation(),
+            'management-orientation': () => ext.tiler.toggle_orientation(ext),
             'tile-move-left': () => ext.tiler.move_left(),
             'tile-move-down': () => ext.tiler.move_down(),
             'tile-move-up': () => ext.tiler.move_up(),
@@ -97,15 +99,22 @@ export class Keybindings {
         };
     }
 
-    enable(ext: Ext, keybindings: any) {
+    enable(ext: Ext, keybindings: any, modes: number = Shell.ActionMode.NORMAL) {
         for (const name in keybindings) {
+            if (this.active.has(name)) {
+                wm.allowKeybinding(name, modes);
+                continue;
+            }
+
             wm.addKeybinding(
                 name,
                 ext.settings.ext,
                 Meta.KeyBindingFlags.NONE,
-                Shell.ActionMode.NORMAL,
+                modes,
                 keybindings[name]
             );
+
+            this.active.add(name);
         }
 
         return this;
@@ -113,7 +122,20 @@ export class Keybindings {
 
     disable(keybindings: Object) {
         for (const name in keybindings) {
+            if (!this.active.has(name))
+                continue;
+
             wm.removeKeybinding(name);
+            this.active.delete(name);
+        }
+
+        return this;
+    }
+
+    allow(keybindings: Object, modes: number) {
+        for (const name in keybindings) {
+            if (this.active.has(name))
+                wm.allowKeybinding(name, modes);
         }
 
         return this;

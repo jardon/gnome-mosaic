@@ -58,8 +58,6 @@ export class AutoTiler {
 
             if (branch.inner.kind === NodeKind.WINDOW)
                 entities = [branch.inner.entity];
-            else if (branch.inner.kind === NodeKind.STACK)
-                entities = branch.inner.entities;
 
             for (const entity of entities) {
                 const win = ext.windows.get(entity);

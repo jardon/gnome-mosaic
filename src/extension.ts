@@ -3331,6 +3331,7 @@ export default class MosaicExtension extends Extension {
             ext.keybindings
                 .enable(ext, ext.keybindings.global)
                 .enable(ext, ext.keybindings.window_focus);
+            ext.tiler.enable_keybindings(ext);
 
             if (ext.settings.tile_by_default()) {
                 ext.auto_tile_on(restored);
@@ -3370,6 +3371,7 @@ export default class MosaicExtension extends Extension {
             ext.keybindings
                 .disable(ext.keybindings.global)
                 .disable(ext.keybindings.window_focus);
+            ext.tiler.disable_keybindings(ext);
 
             if (ext.auto_tiler) {
                 ext.auto_tiler.destroy(ext);
