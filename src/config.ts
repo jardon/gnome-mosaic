@@ -61,6 +61,7 @@ export const DEFAULT_FLOAT_RULES: Array<FloatRule> = [
     {class: '^.*action=join.*$'},
     {class: 'gjs'},
     {class: 'io.github.bugaevc.wl-clipboard'},
+    {class: 'org.gnome.NautilusPreviewer'},
     {class: 'com.rastersoft.ding'},
 ];
 
@@ -81,6 +82,7 @@ export const SKIPTASKBAR_EXCEPTIONS: Array<WindowRule> = [
     {class: 'Com.github.amezin.ddterm'},
     {class: 'plank'},
     {class: 'io.github.bugaevc.wl-clipboard'},
+    {class: 'org.gnome.NautilusPreviewer'},
     {class: 'com.rastersoft.ding'},
 ];
 
