@@ -915,3 +915,16 @@ export async function getBorderRadii(
         memoryBuffer.close(null);
     }
 }
+
+/** Detect desktop surfaces, including DING's Wayland desktop emulation. */
+export function is_desktop_window(meta_win: Meta.Window): boolean {
+    const is_ding_desktop =
+        !meta_win.decorated &&
+        (meta_win as any).get_gtk_application_id?.() === 'com.rastersoft.ding';
+
+    return (
+        meta_win.window_type === Meta.WindowType.DESKTOP ||
+        (meta_win as any).customJS_ding?.keepAtBottom === true ||
+        is_ding_desktop
+    );
+}
