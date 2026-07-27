@@ -25,7 +25,7 @@ import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 import type {Entity} from './ecs.js';
 import type {ExtEvent} from './events.js';
 import {Rectangle} from './rectangle.js';
-import {getBorderRadii} from './window.js';
+import {getBorderRadii, is_desktop_window} from './window.js';
 
 import {Fork} from './fork.js';
 
@@ -2328,6 +2328,16 @@ export class Ext extends Ecs.System<ExtEvent> {
                     let meta_window = global.display.get_focus_window();
 
                     if (meta_window) {
+                        // Desktop icon extensions initially map their desktop surface as a
+                        // normal window and only mark it as a desktop afterwards. It may
+                        // therefore already have a ShellWindow entry by the time it receives
+                        // focus, so check for desktop surfaces before consulting our window
+                        // table.
+                        if (this.auto_tiler && is_desktop_window(meta_window)) {
+                            refocus_tiled_window();
+                            return;
+                        }
+
                         const shell_window = this.get_window(meta_window);
 
                         if (shell_window) {
@@ -2339,17 +2349,8 @@ export class Ext extends Ecs.System<ExtEvent> {
                                 this.on_focused(shell_window);
                             }
                         } else if (!meta_window.is_override_redirect()) {
-                            // Prevent focusing desktop extension in auto-tiler mode
-                            if (
-                                this.auto_tiler &&
-                                meta_window.window_type ===
-                                    Meta.WindowType.DESKTOP
-                            ) {
-                                refocus_tiled_window();
-                            } else {
-                                // This section fixes Steam's sub-menus.
-                                meta_window.activate(global.get_current_time());
-                            }
+                            // This section fixes Steam's sub-menus.
+                            meta_window.activate(global.get_current_time());
                         }
                     } else if (this.auto_tiler) {
                         refocus_tiled_window();
@@ -3091,6 +3092,8 @@ export class Ext extends Ecs.System<ExtEvent> {
     /// Fetches the window entity which is associated with the metacity window metadata.
     window_entity(meta: Meta.Window | null): Entity | null {
         if (!meta) return null;
+
+        if (is_desktop_window(meta)) return null;
 
         let id: number;
 
