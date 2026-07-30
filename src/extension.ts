@@ -307,7 +307,7 @@ export class Ext extends Ecs.System<ExtEvent> {
             auto_tiler: this.auto_tiler,
             entities: this.entities_,
             storages: this.storages,
-            tags: this.tags_,
+            tags: this.tags_.map(set => [...set]),
             free_slots: this.free_slots,
             displays: [
                 this.displays[0],
@@ -382,7 +382,8 @@ export class Ext extends Ecs.System<ExtEvent> {
                 )
             );
             ext.tags_ = data.tags.map(
-                (obj: any) => new Set(Object.entries(obj))
+                (val: any) =>
+                    new Set(Array.isArray(val) ? val : Object.entries(val))
             );
             ext.free_slots = data.free_slots;
             if (data.displays) {
