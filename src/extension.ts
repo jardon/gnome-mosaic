@@ -2880,8 +2880,8 @@ export class Ext extends Ecs.System<ExtEvent> {
                             toplevels.push(f);
 
                             let migration:
-                                | null
-                                | [Fork, number, Rectangle, boolean] = null;
+                                null | [Fork, number, Rectangle, boolean] =
+                                null;
 
                             const displays = this.displays[1];
 
