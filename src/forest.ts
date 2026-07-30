@@ -89,7 +89,7 @@ export class Forest extends Ecs.World {
             string_reps: this.string_reps,
             entities: this.entities_,
             storages: this.storages,
-            tags: this.tags_,
+            tags: this.tags_.map(set => [...set]),
             free_slots: this.free_slots,
         };
     }
@@ -114,7 +114,8 @@ export class Forest extends Ecs.World {
             Ecs.Storage.fromJSON(obj.store, val => val)
         );
         forest.tags_ = data.tags.map(
-            (obj: any) => new Set(Object.entries(obj))
+            (val: any) =>
+                new Set(Array.isArray(val) ? val : Object.entries(val))
         );
         forest.free_slots = data.free_slots;
         return forest;
