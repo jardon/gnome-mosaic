@@ -4,10 +4,7 @@ import type {Ext} from './extension.js';
 
 /** Type representing all possible events handled by the extension's system. */
 export type ExtEvent =
-    | GenericCallback
-    | ManagedWindow
-    | CreateWindow
-    | GlobalEventTag;
+    GenericCallback | ManagedWindow | CreateWindow | GlobalEventTag;
 
 /** Eevnt with generic callback */
 export interface GenericCallback {
