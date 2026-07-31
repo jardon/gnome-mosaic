@@ -76,6 +76,9 @@ export class ShellWindow {
     // Track current border width for dynamic adjustment
     private border_width: number = 0;
 
+    private border_style_in_progress: boolean = false;
+    private border_style_queued: boolean = false;
+
     constructor(
         entity: Entity,
         window: Meta.Window,
@@ -488,52 +491,49 @@ export class ShellWindow {
 
     show_border(ext: Ext) {
         if (!this.border) return;
+        if (!ext.settings.active_hint()) return;
 
-        this.update_border_style(ext);
-        if (ext.settings.active_hint()) {
-            const border = this.border;
+        const border = this.border;
 
-            const permitted = () => {
-                return (
-                    this.actor_exists() &&
-                    ext.focus_window() == this &&
-                    !this.meta.is_fullscreen() &&
-                    (!this.is_single_max_screen() || this.is_snap_edge()) &&
-                    !this.meta.minimized
-                );
-            };
+        const permitted = () => {
+            return (
+                this.actor_exists() &&
+                ext.focus_window() == this &&
+                !this.meta.is_fullscreen() &&
+                (!this.is_single_max_screen() || this.is_snap_edge()) &&
+                !this.meta.minimized
+            );
+        };
 
-            if (permitted()) {
-                if (this.meta.appears_focused) {
-                    border.show();
+        if (!permitted()) return;
 
-                    // Focus will be re-applied to fix windows moving across workspaces
-                    let applications = 0;
+        if (this.meta.appears_focused) {
+            this.update_border_style(ext);
+            border.show();
 
-                    // Ensure that the border is shown
-                    if (this.active_hint_show_id !== null) {
-                        GLib.source_remove(this.active_hint_show_id);
-                        this.active_hint_show_id = null;
-                    }
-                    this.active_hint_show_id = GLib.timeout_add(
-                        GLib.PRIORITY_DEFAULT,
-                        600,
-                        () => {
-                            if (
-                                (applications > 4 && !this.same_workspace()) ||
-                                !permitted()
-                            ) {
-                                this.active_hint_show_id = null;
-                                return GLib.SOURCE_REMOVE;
-                            }
+            let applications = 0;
 
-                            applications += 1;
-                            border.show();
-                            return GLib.SOURCE_CONTINUE;
-                        }
-                    );
-                }
+            if (this.active_hint_show_id !== null) {
+                GLib.source_remove(this.active_hint_show_id);
+                this.active_hint_show_id = null;
             }
+            this.active_hint_show_id = GLib.timeout_add(
+                GLib.PRIORITY_DEFAULT,
+                600,
+                () => {
+                    if (
+                        (applications > 4 && !this.same_workspace()) ||
+                        !permitted()
+                    ) {
+                        this.active_hint_show_id = null;
+                        return GLib.SOURCE_REMOVE;
+                    }
+
+                    applications += 1;
+                    border.show();
+                    return GLib.SOURCE_CONTINUE;
+                }
+            );
         }
     }
 
@@ -608,27 +608,43 @@ export class ShellWindow {
     }
 
     async update_border_style(ext: Ext) {
-        const margin = 6;
-        const radii = await getBorderRadii(
-            this.meta.get_compositor_private() as Meta.WindowActor
-        );
-        const radii_values =
-            radii?.map(v => `${v + margin}px`).join(' ') || '0px 0px 0px 0px';
-        const borderWidth = ext.settings.active_hint_border_width();
-        const colors: [string, string] = utils.get_accent_colors(ext.settings);
+        if (this.border_style_in_progress) {
+            this.border_style_queued = true;
+            return;
+        }
 
-        if (this.border) {
-            this.border.set_style(
-                `border-radius: ${radii_values};` +
-                    `border-width: ${borderWidth}px;` +
-                    `border-color: ${colors[0]}`
-            );
+        this.border_style_in_progress = true;
+        try {
+            do {
+                this.border_style_queued = false;
 
-            // When border width changes, trigger layout update to recalculate size
-            if (this.border_width !== borderWidth) {
-                this.border_width = borderWidth;
-                this.update_border_layout(ext);
-            }
+                const margin = 6;
+                const radii = await getBorderRadii(
+                    this.meta.get_compositor_private() as Meta.WindowActor
+                );
+                const radii_values =
+                    radii?.map(v => `${v + margin}px`).join(' ') ||
+                    '0px 0px 0px 0px';
+                const borderWidth = ext.settings.active_hint_border_width();
+                const colors: [string, string] = utils.get_accent_colors(
+                    ext.settings
+                );
+
+                if (this.border) {
+                    this.border.set_style(
+                        `border-radius: ${radii_values};` +
+                            `border-width: ${borderWidth}px;` +
+                            `border-color: ${colors[0]}`
+                    );
+
+                    if (this.border_width !== borderWidth) {
+                        this.border_width = borderWidth;
+                        this.update_border_layout(ext);
+                    }
+                }
+            } while (this.border_style_queued);
+        } finally {
+            this.border_style_in_progress = false;
         }
     }
 
@@ -645,6 +661,7 @@ export class ShellWindow {
         this.update_border_layout(ext);
         if (
             ext.focus_window() === this &&
+            !this.meta.is_fullscreen() &&
             (!this.border || !this.border.visible)
         ) {
             ext.show_border_on_focused();
@@ -794,15 +811,20 @@ function radii_signature(meta: Meta.Window, scale: number): string {
 export async function getBorderRadii(
     actor: Meta.WindowActor
 ): Promise<Radii | undefined> {
+    if (!actor) return;
+    const meta = actor.get_meta_window();
+    if (!meta) return;
+
+    if (meta.is_fullscreen() || meta.is_maximized()) return;
+
     const opaqueLimit = 200;
-    const {x, y, width, height} = actor.get_meta_window().get_frame_rect();
-    const monitorIndex = actor.get_meta_window().get_monitor();
+    const {x, y, width, height} = meta.get_frame_rect();
+    const monitorIndex = meta.get_monitor();
     // @ts-expect-error
     const scale = Math.ceil(global.display.get_monitor_scale(monitorIndex));
 
     if (height <= 0) return;
 
-    const meta = actor.get_meta_window();
     const signature = radii_signature(meta, scale);
 
     // Radii depend only on the window decoration, so cache them to avoid a
@@ -819,75 +841,77 @@ export async function getBorderRadii(
     if (!capture) return;
 
     const memoryBuffer = Gio.MemoryOutputStream.new_resizable();
-    const surface = capture.get_texture();
+    try {
+        const surface = capture.get_texture();
 
-    const imageBuf = await Shell.Screenshot.composite_to_stream(
-        surface,
-        0,
-        0,
-        width,
-        height * scale,
-        1,
-        null,
-        0,
-        0,
-        1,
-        memoryBuffer
-    );
+        const imageBuf = await Shell.Screenshot.composite_to_stream(
+            surface,
+            0,
+            0,
+            width,
+            height * scale,
+            1,
+            null,
+            0,
+            0,
+            1,
+            memoryBuffer
+        );
 
-    const rawPixels = imageBuf.get_pixels();
-    if (!rawPixels) return;
+        const rawPixels = imageBuf.get_pixels();
+        if (!rawPixels) return;
 
-    memoryBuffer.close(null);
-
-    const scanAlpha = (start: number): number => {
-        for (let x = 0; x < width / 2; x++) {
-            const idx = (start * width + x) * 4;
-            const alpha = rawPixels[idx + 3];
-            if (alpha > opaqueLimit) {
-                return x;
+        const scanAlpha = (start: number): number => {
+            for (let x = 0; x < width / 2; x++) {
+                const idx = (start * width + x) * 4;
+                const alpha = rawPixels[idx + 3];
+                if (alpha > opaqueLimit) {
+                    return x;
+                }
             }
+            return -1;
+        };
+
+        let alphaTop = -1;
+        for (var row = 0; row < 3; row++) {
+            alphaTop = scanAlpha(row);
+            if (alphaTop > -1) break;
         }
-        return -1;
-    };
+        if (alphaTop === -1) alphaTop = 0;
 
-    let alphaTop = -1;
-    for (var row = 0; row < 3; row++) {
-        alphaTop = scanAlpha(row);
-        if (alphaTop > -1) break;
-    }
-    if (alphaTop === -1) alphaTop = 0;
-
-    let alphaBottom = -1;
-    for (var row = height * scale - 1; row > height * scale - 4; row--) {
-        alphaBottom = scanAlpha(row);
-        if (alphaBottom > -1) break;
-    }
-    if (alphaBottom === -1) alphaBottom = 0;
-
-    const radiusTop = alphaTop / scale;
-    const radiusBottom = alphaBottom / scale;
-
-    const radii: Radii = [radiusTop, radiusTop, radiusBottom, radiusBottom];
-
-    const same_radii =
-        cached &&
-        cached.signature === signature &&
-        cached.radii.every((v, i) => v === radii[i]);
-
-    if (same_radii) {
-        cached.count += 1;
-        if (cached.count >= RADII_CACHE_STABILITY_THRESHOLD) {
-            cached.stable = true;
+        let alphaBottom = -1;
+        for (var row = height * scale - 1; row > height * scale - 4; row--) {
+            alphaBottom = scanAlpha(row);
+            if (alphaBottom > -1) break;
         }
-    } else {
-        border_radii_cache.set(actor, {
-            signature,
-            radii,
-            count: 1,
-            stable: RADII_CACHE_STABILITY_THRESHOLD <= 1,
-        });
-    }
+        if (alphaBottom === -1) alphaBottom = 0;
 
-    return radii;
+        const radiusTop = alphaTop / scale;
+        const radiusBottom = alphaBottom / scale;
+
+        const radii: Radii = [radiusTop, radiusTop, radiusBottom, radiusBottom];
+
+        const same_radii =
+            cached &&
+            cached.signature === signature &&
+            cached.radii.every((v, i) => v === radii[i]);
+
+        if (same_radii) {
+            cached.count += 1;
+            if (cached.count >= RADII_CACHE_STABILITY_THRESHOLD) {
+                cached.stable = true;
+            }
+        } else {
+            border_radii_cache.set(actor, {
+                signature,
+                radii,
+                count: 1,
+                stable: RADII_CACHE_STABILITY_THRESHOLD <= 1,
+            });
+        }
+
+        return radii;
+    } finally {
+        memoryBuffer.close(null);
+    }
 }
