@@ -309,6 +309,10 @@ export class Ext extends Ecs.System<ExtEvent> {
             storages: this.storages,
             tags: this.tags_,
             free_slots: this.free_slots,
+            displays: [
+                this.displays[0],
+                Array.from(this.displays[1].entries()),
+            ],
         };
         return data;
     }
@@ -381,6 +385,17 @@ export class Ext extends Ecs.System<ExtEvent> {
                 (obj: any) => new Set(Object.entries(obj))
             );
             ext.free_slots = data.free_slots;
+            if (data.displays) {
+                const [primary, entries] = data.displays;
+                const restored = new Map<number, Display>();
+                for (const [index, {area, ws}] of entries) {
+                    restored.set(index, {
+                        area: Rectangle.fromJSON(area),
+                        ws: Rectangle.fromJSON(ws),
+                    });
+                }
+                ext.displays = [primary, restored];
+            }
             log.debug('CACHE SUCCESSFULLY RESTORED');
             return ext;
         } catch (error) {
