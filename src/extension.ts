@@ -2131,9 +2131,11 @@ export class Ext extends Ecs.System<ExtEvent> {
         // Skip radii capture for better performance
         if (!this.overlay.visible) return;
 
-        const radii = await getBorderRadii(
-            win.meta.get_compositor_private() as Meta.WindowActor
-        );
+        const radii = win.meta.is_fullscreen()
+            ? undefined
+            : await getBorderRadii(
+                  win.meta.get_compositor_private() as Meta.WindowActor
+              );
         const radii_values =
             radii?.map(v => `${v}px`).join(' ') || '0px 0px 0px 0px';
         if (this.overlay) {
