@@ -80,7 +80,8 @@ export class ShellWindow {
         entity: Entity,
         window: Meta.Window,
         window_app: any,
-        ext: Ext
+        ext: Ext,
+        skip_tags: boolean = false
     ) {
         this.window_app = window_app;
 
@@ -90,7 +91,7 @@ export class ShellWindow {
         this.known_workspace = this.workspace_id();
 
         // Float fullscreen windows by default, such as Kodi.
-        if (this.meta.is_fullscreen()) {
+        if (!skip_tags && this.meta.is_fullscreen()) {
             ext.add_tag(entity, Tags.Floating);
         }
 
@@ -132,7 +133,8 @@ export class ShellWindow {
             data.entity,
             data.meta,
             Shell.WindowTracker.get_default().get_window_app(data.meta),
-            ext
+            ext,
+            true
         );
         win.known_workspace = data.workspace;
         win.grab = data.grab;

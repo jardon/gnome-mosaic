@@ -484,21 +484,11 @@ export class Ext extends Ecs.System<ExtEvent> {
 
                     case WindowEvent.Fullscreen:
                         if (this.auto_tiler) {
-                            let attachment = this.auto_tiler.attached.get(
+                            const attachment = this.auto_tiler.attached.get(
                                 win.entity
                             );
-                            if (attachment) {
-                                if (!win.meta.is_fullscreen()) {
-                                    let fork = this.auto_tiler.forest.forks.get(
-                                        win.entity
-                                    );
-                                    if (fork) {
-                                        this.auto_tiler.reflow(
-                                            this,
-                                            win.entity
-                                        );
-                                    }
-                                }
+                            if (attachment && !win.meta.is_fullscreen()) {
+                                this.auto_tiler.reflow(this, win.entity);
                             }
                         }
 
