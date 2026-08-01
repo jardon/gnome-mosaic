@@ -388,6 +388,10 @@ export class ShellWindow {
     }
 
     move(ext: Ext, rect: Rectangular, on_complete?: () => void) {
+        if (this.meta.is_fullscreen()) {
+            return;
+        }
+
         if (!this.same_workspace() && this.is_maximized()) {
             return;
         }
