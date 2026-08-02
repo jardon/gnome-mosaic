@@ -2248,11 +2248,14 @@ export class Ext extends Ecs.System<ExtEvent> {
         });
 
         this.connect(overview, 'hiding', () => {
+            this.register(Events.global(GlobalEvent.OverviewHidden));
+        });
+
+        this.connect(overview, 'hidden', () => {
             const window = this.focus_window();
             if (window) {
                 this.on_focused(window);
             }
-            this.register(Events.global(GlobalEvent.OverviewHidden));
         });
 
         // We have to connect this signal in an idle_add; otherwise work areas stop being calculated
