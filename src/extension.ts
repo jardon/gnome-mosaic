@@ -983,36 +983,38 @@ export class Ext extends Ecs.System<ExtEvent> {
             this.prev_focused[1] = win.entity;
         }
 
-        this.unmaximize_workspace(win);
+        if (!Main.overview.animationInProgress) {
+            this.unmaximize_workspace(win);
 
-        this.show_border_on_focused();
-        this.set_overlay(win);
-
-        if (
-            this.auto_tiler &&
-            win.is_tilable(this) &&
-            this.prev_focused[0] !== null
-        ) {
-            let prev = this.windows.get(this.prev_focused[0]);
-            let is_attached = this.auto_tiler.attached.contains(
-                this.prev_focused[0]
-            );
+            this.show_border_on_focused();
+            this.set_overlay(win);
 
             if (
-                prev &&
-                prev !== win &&
-                is_attached &&
-                prev.actor_exists() &&
-                prev.name(this) !== win.name(this) &&
-                prev.workspace_id() === win.workspace_id()
+                this.auto_tiler &&
+                win.is_tilable(this) &&
+                this.prev_focused[0] !== null
             ) {
-                if (prev.rect().contains(win.rect())) {
-                    if (prev.is_maximized()) {
-                        prev.meta.set_unmaximize_flags
-                            ? prev.meta.set_unmaximize_flags(
-                                  Meta.MaximizeFlags.BOTH
-                              )
-                            : prev.meta.unmaximize(Meta.MaximizeFlags.BOTH);
+                let prev = this.windows.get(this.prev_focused[0]);
+                let is_attached = this.auto_tiler.attached.contains(
+                    this.prev_focused[0]
+                );
+
+                if (
+                    prev &&
+                    prev !== win &&
+                    is_attached &&
+                    prev.actor_exists() &&
+                    prev.name(this) !== win.name(this) &&
+                    prev.workspace_id() === win.workspace_id()
+                ) {
+                    if (prev.rect().contains(win.rect())) {
+                        if (prev.is_maximized()) {
+                            prev.meta.set_unmaximize_flags
+                                ? prev.meta.set_unmaximize_flags(
+                                      Meta.MaximizeFlags.BOTH
+                                  )
+                                : prev.meta.unmaximize(Meta.MaximizeFlags.BOTH);
+                        }
                     }
                 }
             }
