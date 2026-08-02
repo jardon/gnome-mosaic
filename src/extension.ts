@@ -3206,6 +3206,10 @@ export default class MosaicExtension extends Extension {
         settings.set_string(MOSAIC_CACHED_STATE, '');
 
         if (ext) {
+            if (ext.exceptions_ipc) {
+                ext.exceptions_ipc.cancellable.cancel();
+            }
+
             if (sessionMode.isLocked) {
                 try {
                     const cachedState = JSON.stringify(ext);
@@ -3237,7 +3241,6 @@ export default class MosaicExtension extends Extension {
             }
 
             if (ext.exceptions_ipc) {
-                ext.exceptions_ipc.cancellable.cancel();
                 ext.exceptions_ipc.child.force_exit();
                 ext.exceptions_ipc = null;
             }
