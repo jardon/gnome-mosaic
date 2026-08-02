@@ -3178,6 +3178,7 @@ export default class MosaicExtension extends Extension {
             if (!indicator) {
                 indicator = new PanelSettings.MosaicIndicator(ext);
             }
+            ext.toggle_indicator();
 
             ext.keybindings
                 .enable(ext, ext.keybindings.global)
