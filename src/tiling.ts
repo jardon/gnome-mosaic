@@ -752,8 +752,8 @@ export class Tiler {
             }
 
             // Set overlay to match window
-            this.ext.set_overlay(win);
             this.ext.overlay.visible = true;
+            this.ext.set_overlay(win);
 
             if (
                 !this.ext.auto_tiler ||

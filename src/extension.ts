@@ -2128,6 +2128,9 @@ export class Ext extends Ecs.System<ExtEvent> {
         this.overlay.width = win.rect().width;
         this.overlay.height = win.rect().height;
 
+        // Skip radii capture for better performance
+        if (!this.overlay.visible) return;
+
         const radii = await getBorderRadii(
             win.meta.get_compositor_private() as Meta.WindowActor
         );
