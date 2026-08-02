@@ -767,9 +767,33 @@ function pointer_already_on_window(meta: Meta.Window): boolean {
     return cursor.intersects(meta.get_frame_rect());
 }
 
+type Radii = [number, number, number, number];
+
+interface RadiiCacheEntry {
+    signature: string;
+    radii: Radii;
+    count: number;
+    stable: boolean;
+}
+
+// Radii are only cached after being observed consistently this many times, so
+// transient states (e.g. startup animations) don't get stuck in the cache.
+const RADII_CACHE_STABILITY_THRESHOLD = 3;
+
+const border_radii_cache = new WeakMap<Meta.WindowActor, RadiiCacheEntry>();
+
+function radii_signature(meta: Meta.Window, scale: number): string {
+    return [
+        meta.get_wm_class(),
+        meta.is_fullscreen(),
+        meta.is_maximized(),
+        scale,
+    ].join(':');
+}
+
 export async function getBorderRadii(
     actor: Meta.WindowActor
-): Promise<[number, number, number, number] | undefined> {
+): Promise<Radii | undefined> {
     const opaqueLimit = 200;
     const {x, y, width, height} = actor.get_meta_window().get_frame_rect();
     const monitorIndex = actor.get_meta_window().get_monitor();
@@ -777,6 +801,17 @@ export async function getBorderRadii(
     const scale = Math.ceil(global.display.get_monitor_scale(monitorIndex));
 
     if (height <= 0) return;
+
+    const meta = actor.get_meta_window();
+    const signature = radii_signature(meta, scale);
+
+    // Radii depend only on the window decoration, so cache them to avoid a
+    // full-window paint_to_content readback on every focus change. Only
+    // short-circuit once the value has stabilized across multiple reads.
+    const cached = border_radii_cache.get(actor);
+    if (cached && cached.signature === signature && cached.stable) {
+        return cached.radii;
+    }
 
     const capture = (actor as any).paint_to_content(
         new Mtk.Rectangle({x, y, width, height})
@@ -833,5 +868,26 @@ export async function getBorderRadii(
     const radiusTop = alphaTop / scale;
     const radiusBottom = alphaBottom / scale;
 
-    return [radiusTop, radiusTop, radiusBottom, radiusBottom];
+    const radii: Radii = [radiusTop, radiusTop, radiusBottom, radiusBottom];
+
+    const same_radii =
+        cached &&
+        cached.signature === signature &&
+        cached.radii.every((v, i) => v === radii[i]);
+
+    if (same_radii) {
+        cached.count += 1;
+        if (cached.count >= RADII_CACHE_STABILITY_THRESHOLD) {
+            cached.stable = true;
+        }
+    } else {
+        border_radii_cache.set(actor, {
+            signature,
+            radii,
+            count: 1,
+            stable: RADII_CACHE_STABILITY_THRESHOLD <= 1,
+        });
+    }
+
+    return radii;
 }
