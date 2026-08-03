@@ -1730,12 +1730,8 @@ export class Ext extends Ecs.System<ExtEvent> {
                             : auto_tiler.cursor_placement(area, cursor);
 
                         if (!result) {
-                            this.overlay.x = area.x;
-                            this.overlay.y = area.y;
-                            this.overlay.width = area.width;
-                            this.overlay.height = area.height;
-
                             this.overlay.visible = true;
+                            this.set_overlay(attach_to ?? win, area);
 
                             return true;
                         }
@@ -1773,11 +1769,11 @@ export class Ext extends Ecs.System<ExtEvent> {
                             );
                         }
 
-                        this.overlay.x = new_area[0];
-                        this.overlay.y = new_area[1];
-                        this.overlay.width = new_area[2];
-                        this.overlay.height = new_area[3];
                         this.overlay.visible = true;
+                        this.set_overlay(
+                            attach_to ?? win,
+                            new Rect.Rectangle(new_area)
+                        );
 
                         return true;
                     }
@@ -2122,11 +2118,13 @@ export class Ext extends Ecs.System<ExtEvent> {
         this.gap_outer = gap * 4 * this.dpi;
     }
 
-    async set_overlay(win: Window.ShellWindow) {
-        this.overlay.x = win.rect().x;
-        this.overlay.y = win.rect().y;
-        this.overlay.width = win.rect().width;
-        this.overlay.height = win.rect().height;
+    async set_overlay(win: Window.ShellWindow, area?: Rectangular) {
+        const rect = area ?? win.rect();
+
+        this.overlay.x = rect.x;
+        this.overlay.y = rect.y;
+        this.overlay.width = rect.width;
+        this.overlay.height = rect.height;
 
         // Skip radii capture for better performance
         if (!this.overlay.visible) return;
