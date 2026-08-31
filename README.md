@@ -26,6 +26,8 @@ GNU Make and TypeScript are also required to build the project.
 
 Proper functionality of the shell requires modifying GNOME's default keyboard shortcuts. For a local installation, run `make local-install`.
 
+Installing Mosaic from extensions.gnome.org does not modify those shortcuts. To apply Mosaic's shortcut configuration without reinstalling the extension, clone this repository and run `make configure` from the repository directory as your normal user.
+
 If you want to uninstall the extension, you may invoke `make uninstall`, and then open the "Keyboard Shortcuts" panel in GNOME Settings to select the "Reset All.." button in the header bar.
 
 > [!Important]
