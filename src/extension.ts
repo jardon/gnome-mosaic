@@ -85,6 +85,13 @@ interface Injection {
     func: any;
 }
 
+interface DeferredTile {
+    id: SignalID;
+    last: Rectangle;
+    stable: number;
+    ticks: number;
+}
+
 type Migration = [Fork, number, Rectangle, boolean];
 
 export class Ext extends Ecs.System<ExtEvent> {
@@ -191,6 +198,9 @@ export class Ext extends Ecs.System<ExtEvent> {
     private signals: Map<GObject.Object, Array<SignalID>> = new Map();
 
     private size_requests: Map<GObject.Object, SignalID> = new Map();
+
+    /** Auto-tile timers for windows created under the pointer (tab drags) */
+    private deferred_tiles: Map<Entity, DeferredTile> = new Map();
 
     /** Stores windows that were focused on a workspace */
     private workspace_active: Map<number, null | Entity> = new Map();
@@ -934,6 +944,14 @@ export class Ext extends Ecs.System<ExtEvent> {
         if (!window) return;
 
         window.destroying = true;
+
+        const deferred = this.deferred_tiles.get(win);
+        if (deferred) {
+            GLib.source_remove(deferred.id);
+            this.deferred_tiles.delete(win);
+        }
+
+        this.size_requests.delete(window.meta);
 
         // Disconnect all signals on this window
         this.window_signals.take_with(win, signals => {
@@ -2976,6 +2994,75 @@ export class Ext extends Ecs.System<ExtEvent> {
         }
     }
 
+    /// Defers auto-tiling until a window created under the pointer stops moving.
+    schedule_deferred_tile(win: Window.ShellWindow) {
+        if (this.deferred_tiles.has(win.entity)) return;
+
+        let cursor = cursor_rect();
+
+        const finish = () => {
+            if (
+                !win.actor_exists() ||
+                !this.auto_tiler ||
+                !win.is_tilable(this)
+            ) {
+                return;
+            }
+            this.size_signals_block(win);
+            this.auto_tiler.auto_tile(this, win, this.init);
+            this.size_signals_unblock(win);
+            this.schedule_idle(() => {
+                this.windows.with(win.entity, window => {
+                    window.meta.raise();
+                    window.meta.unminimize();
+                    window.activate(this, false);
+                });
+
+                return false;
+            });
+        };
+
+        const check = () => {
+            const entry = this.deferred_tiles.get(win.entity);
+            if (!entry) return GLib.SOURCE_REMOVE;
+
+            if (
+                !win.actor_exists() ||
+                this.auto_tiler?.attached.get(win.entity)
+            ) {
+                this.deferred_tiles.delete(win.entity);
+                return GLib.SOURCE_REMOVE;
+            }
+
+            const rect = win.rect();
+            const pointer = cursor_rect();
+            entry.ticks += 1;
+
+            if (!rect.eq(entry.last) || !pointer.eq(cursor)) {
+                entry.last = rect;
+                entry.stable = 0;
+                cursor = pointer;
+                return GLib.SOURCE_CONTINUE;
+            }
+
+            entry.stable += 1;
+            if (entry.stable < 2 && entry.ticks < 40) {
+                return GLib.SOURCE_CONTINUE;
+            }
+
+            this.deferred_tiles.delete(win.entity);
+            finish();
+            return GLib.SOURCE_REMOVE;
+        };
+
+        this.deferred_tiles.set(win.entity, {
+            id: GLib.timeout_add(GLib.PRIORITY_LOW, 250, check),
+            last: win.rect().clone(),
+            stable: 0,
+            ticks: 0,
+        });
+    }
+
     /// Fetches the window entity which is associated with the metacity window metadata.
     window_entity(meta: Meta.Window | null): Entity | null {
         if (!meta) return null;
@@ -3043,8 +3130,12 @@ export class Ext extends Ecs.System<ExtEvent> {
                 win.is_tilable(this)
             ) {
                 let id = actor.connect('first-frame', () => {
-                    this.auto_tiler?.auto_tile(this, win, this.init);
-                    grab_focus();
+                    if (win.rect().contains(cursor_rect())) {
+                        this.schedule_deferred_tile(win);
+                    } else {
+                        this.auto_tiler?.auto_tile(this, win, this.init);
+                        grab_focus();
+                    }
                     actor.disconnect(id);
                 });
             } else {
