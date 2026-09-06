@@ -65,6 +65,7 @@ export const DEFAULT_FLOAT_RULES: Array<FloatRule> = [
     {class: 'io.github.bugaevc.wl-clipboard'},
     {class: 'org.gnome.NautilusPreviewer'},
     {class: 'com.rastersoft.ding'},
+    {class: 'git-credential-manager'},
 ];
 
 export interface WindowRule {
