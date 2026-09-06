@@ -85,6 +85,14 @@ interface Injection {
     func: any;
 }
 
+interface DeferredTile {
+    id: SignalID;
+    last: Rectangle;
+    stable: number;
+    ticks: number;
+    moved_once: boolean;
+}
+
 type Migration = [Fork, number, Rectangle, boolean];
 
 export class Ext extends Ecs.System<ExtEvent> {
@@ -191,6 +199,9 @@ export class Ext extends Ecs.System<ExtEvent> {
     private signals: Map<GObject.Object, Array<SignalID>> = new Map();
 
     private size_requests: Map<GObject.Object, SignalID> = new Map();
+
+    /** Auto-tile timers for windows that move after mapping (tab drags) */
+    private deferred_tiles: Map<Entity, DeferredTile> = new Map();
 
     /** Stores windows that were focused on a workspace */
     private workspace_active: Map<number, null | Entity> = new Map();
@@ -935,6 +946,14 @@ export class Ext extends Ecs.System<ExtEvent> {
 
         window.destroying = true;
 
+        const deferred = this.deferred_tiles.get(win);
+        if (deferred) {
+            GLib.source_remove(deferred.id);
+            this.deferred_tiles.delete(win);
+        }
+
+        this.size_requests.delete(window.meta);
+
         // Disconnect all signals on this window
         this.window_signals.take_with(win, signals => {
             for (const signal of signals) {
@@ -1210,6 +1229,8 @@ export class Ext extends Ecs.System<ExtEvent> {
         if (win !== null) {
             win.grab = false;
         }
+
+        this.finish_deferred_tiles();
 
         if (null === win || !win.is_tilable(this)) {
             this.unset_grab_op();
@@ -2976,6 +2997,97 @@ export class Ext extends Ecs.System<ExtEvent> {
         }
     }
 
+    /// Auto-tiles a window immediately (used for plain new windows and drag
+    /// ghosts once their grab has ended).
+    tile_instant(win: Window.ShellWindow) {
+        if (!win.actor_exists() || !this.auto_tiler || !win.is_tilable(this)) {
+            return;
+        }
+        this.size_signals_block(win);
+        this.auto_tiler.auto_tile(this, win, this.init);
+        this.size_signals_unblock(win);
+        this.schedule_idle(() => {
+            this.windows.with(win.entity, window => {
+                window.meta.raise();
+                window.meta.unminimize();
+                window.activate(this, false);
+            });
+
+            return false;
+        });
+    }
+
+    /// Force-finishes every pending deferred tile (e.g. when a grab ends) and
+    /// tiles those windows immediately.
+    finish_deferred_tiles() {
+        const tiled = [];
+
+        for (const [entity, entry] of this.deferred_tiles) {
+            GLib.source_remove(entry.id);
+            tiled.push(this.windows.get(entity));
+        }
+
+        this.deferred_tiles.clear();
+
+        for (const win of tiled) {
+            if (win) this.tile_instant(win);
+        }
+    }
+
+    /// Defers auto-tiling until a window moving with the pointer stops moving.
+    schedule_deferred_tile(win: Window.ShellWindow) {
+        if (this.deferred_tiles.has(win.entity)) return;
+
+        const finish = () => this.tile_instant(win);
+
+        const check = () => {
+            const entry = this.deferred_tiles.get(win.entity);
+            if (!entry) return GLib.SOURCE_REMOVE;
+
+            if (
+                !win.actor_exists() ||
+                this.auto_tiler?.attached.get(win.entity)
+            ) {
+                this.deferred_tiles.delete(win.entity);
+                return GLib.SOURCE_REMOVE;
+            }
+
+            const rect = win.rect();
+            entry.ticks += 1;
+
+            // A window that moves is a drag ghost tracking the pointer.
+            if (!rect.eq(entry.last)) {
+                entry.last = rect;
+                entry.moved_once = true;
+                entry.stable = 0;
+            } else {
+                entry.stable += 1;
+            }
+
+            // Deferred tiles only exist for windows created during a drag.
+            // Drag ghosts tile once motionless for ~500ms (5 ticks at 100ms);
+            // a window that never moved is a fallback and tiles after 1 tick.
+            const settled =
+                (!entry.moved_once && entry.ticks >= 1) ||
+                (entry.moved_once && entry.stable >= 5) ||
+                entry.ticks >= 100;
+
+            if (!settled) return GLib.SOURCE_CONTINUE;
+
+            this.deferred_tiles.delete(win.entity);
+            finish();
+            return GLib.SOURCE_REMOVE;
+        };
+
+        this.deferred_tiles.set(win.entity, {
+            id: GLib.timeout_add(GLib.PRIORITY_LOW, 100, check),
+            last: win.rect().clone(),
+            stable: 0,
+            ticks: 0,
+            moved_once: false,
+        });
+    }
+
     /// Fetches the window entity which is associated with the metacity window metadata.
     window_entity(meta: Meta.Window | null): Entity | null {
         if (!meta) return null;
@@ -3043,8 +3155,11 @@ export class Ext extends Ecs.System<ExtEvent> {
                 win.is_tilable(this)
             ) {
                 let id = actor.connect('first-frame', () => {
-                    this.auto_tiler?.auto_tile(this, win, this.init);
-                    grab_focus();
+                    if (this.grab_op !== null) {
+                        this.schedule_deferred_tile(win);
+                    } else {
+                        this.tile_instant(win);
+                    }
                     actor.disconnect(id);
                 });
             } else {
