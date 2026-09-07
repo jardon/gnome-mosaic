@@ -13,9 +13,3 @@ debian/*
 .confirm_shortcut_change
 .vscode
 node_modules
-.vagrant-test
-test-report.md
-.opencode/
-AGENTS.md
-opencode.json
-package-lock.json
