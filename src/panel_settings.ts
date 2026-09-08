@@ -8,6 +8,7 @@ import {
     PopupSwitchMenuItem,
 } from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import * as QuickSettings from 'resource:///org/gnome/shell/ui/quickSettings.js';
+import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 import {get_current_path} from './paths.js';
 import type {Ext} from './extension.js';
 
@@ -21,6 +22,8 @@ const MosaicIndicator = GObject.registerClass(
 
         constructor(ext: Ext) {
             super();
+
+            const title = _('Mosaic');
 
             this._indicator = (this as any)._addIndicator();
 
@@ -36,7 +39,7 @@ const MosaicIndicator = GObject.registerClass(
             this._icon_auto_off = new Gio.FileIcon({file: file_off});
 
             this._toggle = new QuickSettings.QuickMenuToggle({
-                title: 'Mosaic',
+                title: title,
                 toggleMode: true,
                 iconName: 'view-grid-symbolic',
             });
@@ -49,8 +52,8 @@ const MosaicIndicator = GObject.registerClass(
 
             this._toggle.menu.setHeader(
                 'view-grid-symbolic',
-                'Mosaic',
-                'Tiled window management'
+                title,
+                _('Tiled window management')
             );
 
             this._toggle.menu.addMenuItem(this._createSmartGapsSwitch(ext));
@@ -81,7 +84,7 @@ const MosaicIndicator = GObject.registerClass(
 
         _createSmartGapsSwitch(ext: Ext) {
             const item = new PopupSwitchMenuItem(
-                'Smart Gaps',
+                _('Smart Gaps'),
                 ext.settings.smart_gaps()
             );
             item.connect('toggled', (_: any, state: boolean) => {
@@ -92,7 +95,7 @@ const MosaicIndicator = GObject.registerClass(
 
         _createActiveHintSwitch(ext: Ext) {
             const item = new PopupSwitchMenuItem(
-                'Show Active Hint',
+                _('Show Active Hint'),
                 ext.settings.active_hint()
             );
             item.connect('toggled', (_: any, state: boolean) => {
@@ -103,7 +106,7 @@ const MosaicIndicator = GObject.registerClass(
 
         _createMouseFollowsSwitch(ext: Ext) {
             const item = new PopupSwitchMenuItem(
-                'Move Pointer With Focus',
+                _('Move Pointer With Focus'),
                 ext.settings.mouse_cursor_follows_active_window()
             );
             item.connect('toggled', (_: any, state: boolean) => {
@@ -113,7 +116,7 @@ const MosaicIndicator = GObject.registerClass(
         }
 
         _createExceptionsItem(ext: Ext) {
-            const item = new PopupMenuItem('Floating Window Exceptions');
+            const item = new PopupMenuItem(_('Floating Window Exceptions'));
             item.connect('activate', () => {
                 ext.exception_dialog();
             });
@@ -121,7 +124,7 @@ const MosaicIndicator = GObject.registerClass(
         }
 
         _createSettingsItem(ext: Ext) {
-            const item = new PopupMenuItem('Settings');
+            const item = new PopupMenuItem(_('Settings'));
             item.connect('activate', () => {
                 ext.open_settings();
             });

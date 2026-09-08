@@ -2,6 +2,7 @@ import Adw from 'gi://Adw';
 import Gtk from 'gi://Gtk';
 import Gio from 'gi://Gio';
 import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
+import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 import * as settings from './settings.js';
 import {FocusPosition} from './focus.js';
@@ -16,13 +17,13 @@ export default class MosaicPreferences extends ExtensionPreferences {
 
         // Group: Appearance
         const appearanceGroup = new Adw.PreferencesGroup({
-            title: 'Appearance',
+            title: _('Appearance'),
         });
         page.add(appearanceGroup);
 
         // Show Window Titles
         const windowTitlesRow = new Adw.SwitchRow({
-            title: 'Show Window Titles',
+            title: _('Show Window Titles'),
         });
         appearanceGroup.add(windowTitlesRow);
         gioSettings.bind(
@@ -34,7 +35,7 @@ export default class MosaicPreferences extends ExtensionPreferences {
 
         // Show Indicator Panel
         const showIndicatorRow = new Adw.SwitchRow({
-            title: 'Show Indicator Panel',
+            title: _('Show Indicator Panel'),
         });
         appearanceGroup.add(showIndicatorRow);
         gioSettings.bind(
@@ -46,7 +47,7 @@ export default class MosaicPreferences extends ExtensionPreferences {
 
         // Show Minimize to Tray Windows
         const showSkipTaskbarRow = new Adw.SwitchRow({
-            title: 'Show Minimize to Tray Windows',
+            title: _('Show Minimize to Tray Windows'),
         });
         appearanceGroup.add(showSkipTaskbarRow);
         gioSettings.bind(
@@ -58,13 +59,13 @@ export default class MosaicPreferences extends ExtensionPreferences {
 
         // Group: Behavior
         const behaviorGroup = new Adw.PreferencesGroup({
-            title: 'Behavior',
+            title: _('Behavior'),
         });
         page.add(behaviorGroup);
 
         // Snap to Grid
         const snapToGridRow = new Adw.SwitchRow({
-            title: 'Snap to Grid (Floating Mode)',
+            title: _('Snap to Grid (Floating Mode)'),
         });
         behaviorGroup.add(snapToGridRow);
         gioSettings.bind(
@@ -76,7 +77,7 @@ export default class MosaicPreferences extends ExtensionPreferences {
 
         // Smart Gaps
         const smartGapsRow = new Adw.SwitchRow({
-            title: 'Smart Gaps',
+            title: _('Smart Gaps'),
         });
         behaviorGroup.add(smartGapsRow);
         gioSettings.bind(
@@ -88,7 +89,7 @@ export default class MosaicPreferences extends ExtensionPreferences {
 
         // Mouse Cursor Follows Active Window
         const mouseFollowsRow = new Adw.SwitchRow({
-            title: 'Mouse Cursor Follows Active Window',
+            title: _('Mouse Cursor Follows Active Window'),
         });
         behaviorGroup.add(mouseFollowsRow);
         gioSettings.bind(
@@ -100,7 +101,7 @@ export default class MosaicPreferences extends ExtensionPreferences {
 
         // Mouse Cursor Focus Position
         const focusPositionRow = new Adw.ComboRow({
-            title: 'Mouse Cursor Focus Position',
+            title: _('Mouse Cursor Focus Position'),
             model: new Gtk.StringList({
                 strings: Object.values(FocusPosition),
             }),
@@ -115,13 +116,13 @@ export default class MosaicPreferences extends ExtensionPreferences {
 
         // Group: Layout
         const layoutGroup = new Adw.PreferencesGroup({
-            title: 'Layout',
+            title: _('Layout'),
         });
         page.add(layoutGroup);
 
         // Active Hint Width
         const activeHintWidthRow = new Adw.SpinRow({
-            title: 'Active Hint Width',
+            title: _('Active Hint Width'),
             adjustment: new Gtk.Adjustment({
                 lower: 0,
                 upper: 100,
@@ -138,7 +139,7 @@ export default class MosaicPreferences extends ExtensionPreferences {
 
         // Gap Width
         const gapWidthRow = new Adw.SpinRow({
-            title: 'Gap Width',
+            title: _('Gap Width'),
             adjustment: new Gtk.Adjustment({
                 lower: 0,
                 upper: 100,
@@ -161,7 +162,7 @@ export default class MosaicPreferences extends ExtensionPreferences {
 
         // Group: Advanced
         const advancedGroup = new Adw.PreferencesGroup({
-            title: 'Advanced',
+            title: _('Advanced'),
         });
         page.add(advancedGroup);
 
@@ -170,7 +171,7 @@ export default class MosaicPreferences extends ExtensionPreferences {
         // We need to map names.
         const logLevels = ['OFF', 'ERROR', 'WARN', 'INFO', 'DEBUG'];
         const logLevelRow = new Adw.ComboRow({
-            title: 'Log Level',
+            title: _('Log Level'),
             model: new Gtk.StringList({
                 strings: logLevels,
             }),

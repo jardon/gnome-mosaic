@@ -6,12 +6,14 @@ import GioUnix from 'gi://GioUnix';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 import Pango from 'gi://Pango';
+import Gettext from 'gettext';
 import * as config from './config.js';
 
 let app;
 let instance = null;
-const SYS_EXEMPTION_TITLE = 'System Exceptions';
-const SYS_EXCEPTION_DESC = 'Updated based on validated user reports.';
+const _ = Gettext.gettext;
+const SYS_EXEMPTION_TITLE = _('System Exceptions');
+const SYS_EXCEPTION_DESC = _('Updated based on validated user reports.');
 const APPLICATION_ID = 'com.github.jardon.gnome-mosaic-exceptions';
 
 interface SelectWindow {
@@ -81,7 +83,9 @@ export class MainView implements View {
         list_frame.set_child(scroller);
 
         let desc = new Gtk.Label({
-            label: 'Add exceptions by selecting currently running applications and windows.',
+            label: _(
+                'Add exceptions by selecting currently running applications and windows.'
+            ),
             wrap: true,
         });
         desc.set_halign(Gtk.Align.CENTER);
@@ -253,7 +257,7 @@ class App {
         back.set_valign(Gtk.Align.CENTER);
         back.set_halign(Gtk.Align.START);
 
-        const TITLE = 'Floating Window Exceptions';
+        const TITLE = _('Floating Window Exceptions');
 
         let win = new Adw.Window();
         this.window = win;
@@ -374,7 +378,7 @@ function main() {
 
     app.connect('activate', () => {
         GLib.set_prgname(config.WM_CLASS_ID);
-        GLib.set_application_name('GNOME Mosaic Floating Window Exceptions');
+        GLib.set_application_name(_('GNOME Mosaic Floating Window Exceptions'));
 
         if (instance !== null) {
             instance.window.present();
