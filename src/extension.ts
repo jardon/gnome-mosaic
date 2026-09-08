@@ -2496,6 +2496,11 @@ export class Ext extends Ecs.System<ExtEvent> {
             window.timeouts_remove();
         }
 
+        for (const [, entry] of this.deferred_tiles) {
+            GLib.source_remove(entry.id);
+        }
+        this.deferred_tiles.clear();
+
         if (this.migration_exec) {
             this.migration_exec.stop();
             this.migration_exec = null;
