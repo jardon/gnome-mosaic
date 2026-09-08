@@ -3108,6 +3108,23 @@ export class Ext extends Ecs.System<ExtEvent> {
         // Locate the window entity with the matching ID
         let entity = this.ids.find(comp => comp == id).next().value;
 
+        // Validate that the ids entry still resolves to a live ShellWindow.
+        // If it is orphaned (or the ids entry drifted, e.g. across a cached
+        // restore on unlock), fall back to scanning windows by meta identity so
+        // we never return a dead entity or duplicate an existing window/border.
+        if (entity && !this.windows.get(entity)) {
+            entity = null;
+        }
+
+        if (!entity) {
+            for (const [ent, win] of this.windows.iter()) {
+                if (win.meta === meta) {
+                    entity = ent;
+                    break;
+                }
+            }
+        }
+
         // If not found, create a new entity with a ShellWindow component.
         if (!entity) {
             const actor = meta.get_compositor_private();
