@@ -17,6 +17,7 @@ import Clutter from 'gi://Clutter';
 import Meta from 'gi://Meta';
 import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as Config from 'resource:///org/gnome/shell/misc/config.js';
 const {layoutManager} = Main;
 const {ShellWindow} = window;
 
@@ -38,9 +39,18 @@ export class Tiler {
     private resize_keymon: null | number = null;
     private resize_keymon_release: null | number = null;
 
-    private resize_hint: St.Widget = new St.BoxLayout({
-        vertical: true,
-    });
+    private major = Config.PACKAGE_VERSION.split('.').map((s: string) =>
+        Number(s)
+    )[0];
+
+    // MIN GNOME VERSION 48
+    // https://gjs.guide/extensions/upgrading/gnome-shell-48.html
+    private st_vertical_config =
+        this.major >= 48
+            ? {orientation: Clutter.Orientation.VERTICAL}
+            : {vertical: true};
+
+    private resize_hint: St.Widget = new St.BoxLayout(this.st_vertical_config);
 
     private resize_up: St.Icon = new St.Icon({
         icon_name: ICON_UP_ARROW,
@@ -121,7 +131,7 @@ export class Tiler {
         right_box.add_child(this.resize_right);
 
         const middle_arrows: St.Widget = new St.BoxLayout({
-            vertical: false,
+            ...this.st_vertical_config,
             x_expand: true,
             y_expand: true,
         });
