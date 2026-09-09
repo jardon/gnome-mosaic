@@ -30,6 +30,10 @@ SHORTCUT_NAME = $(ICON_NAME).desktop
 SHORTCUT_SRC = ./$(SHORTCUT_NAME)
 SHORTCUT_INSTALL_DIR = $(XDG_DATA_HOME)/applications
 
+# Automatically find all .po files and map them to their target .mo paths
+PO_FILES = $(wildcard po/*.po)
+MO_FILES = $(patsubst po/%.po, _build/locale/%/LC_MESSAGES/$(UUID).mo, $(PO_FILES))
+
 $(info UUID is "$(UUID)")
 
 .PHONY: all clean install zip-file
@@ -48,8 +52,20 @@ configure:
 compile: $(sources) clean
 	env PROJECTS="$(PROJECTS)" ./scripts/transpile.sh
 
+# Main build target for translations
+translations: $(MO_FILES)
+
+# Rule to compile a single .po file into a .mo file
+_build/locale/%/LC_MESSAGES/$(UUID).mo: po/%.po
+	@mkdir -p $(dir $@)
+	msgfmt -o $@ $<
+	@echo "Compiled translation: $< -> $@"
+
+clean-translations:
+	rm -rf _build/locale
+
 # Rebuild, install, reconfigure local settings, restart shell, and listen to journalctl logs
-debug: depcheck compile install configure enable restart-shell listen
+debug: depcheck compile translations install configure enable restart-shell listen
 
 depcheck:
 	@echo depcheck
@@ -68,7 +84,7 @@ disable:
 listen:
 	journalctl -o cat -n 0 -f "$$(which gnome-shell)" | grep -v warning
 
-local-install: depcheck compile install configure restart-shell enable
+local-install: depcheck compile translations install configure restart-shell enable
 
 install: install-icon install-shortcut
 	rm -rf $(INSTALLBASE)/$(INSTALLNAME)
