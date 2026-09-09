@@ -109,10 +109,6 @@ msgstr "Updated based on validated user reports"
 msgid "Add exceptions by selecting currently running applications and windows."
 msgstr "Add exceptions by selecting currently running applications and windows."
 
-#: floating_exceptions/main.js:171
-msgid "Floating Window Exceptions"
-msgstr "Floating Window Exceptions"
-
 #: floating_exceptions/main.js:258
 msgid "GNOME Mosaic Floating Window Exceptions"
 msgstr "GNOME Mosaic Floating Window Exceptions"
