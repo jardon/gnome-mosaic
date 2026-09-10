@@ -1,0 +1,115 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Quentin PAGÈS, 2026
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: gnome_mosaic\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-07 21:47-0400\n"
+"PO-Revision-Date: 2026-09-10 18:08+0200\n"
+"Last-Translator: Quentin PAGÈS\n"
+"Language-Team: \n"
+"Language: oc\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 3.9\n"
+
+#: panel_settings.js:15
+msgid "Mosaic"
+msgstr "Mosaïc"
+
+#: panel_settings.js:31
+msgid "Tiled window management"
+msgstr "Gestion de las fenèstras en mosaïc"
+
+#: panel_settings.js:51 prefs.js:43
+msgid "Smart Gaps"
+msgstr "Espaçaments intelligents"
+
+#: panel_settings.js:58
+msgid "Show Active Hint"
+msgstr "Mostrar la zòna activa"
+
+#: panel_settings.js:65
+msgid "Move Pointer With Focus"
+msgstr "Desplaçar lo ponchador amb lo fòcus"
+
+#: panel_settings.js:72
+msgid "Floating Window Exceptions"
+msgstr "Excepcions de las fenèstras bandejantas"
+
+#: panel_settings.js:79
+msgid "Settings"
+msgstr "Paramètres"
+
+#: prefs.js:15
+msgid "Appearance"
+msgstr "Aparéncia"
+
+#: prefs.js:19
+msgid "Show Window Titles"
+msgstr "Mostrar los títols de fenèstra"
+
+#: prefs.js:24
+msgid "Show Indicator Panel"
+msgstr "Afichar l’indicador de panèl"
+
+#: prefs.js:29
+msgid "Show Minimize to Tray Windows"
+msgstr "Mostrar lo boton Minimizar dins la barra de la fenèstra"
+
+#: prefs.js:34
+msgid "Behavior"
+msgstr "Compòrtament"
+
+#: prefs.js:38
+msgid "Snap to Grid (Floating Mode)"
+msgstr "Alinhar a la grasilha (Mòde bandejant)"
+
+#: prefs.js:48
+msgid "Mouse Cursor Follows Active Window"
+msgstr "Lo cursor de la mirga seguís la fenèstra activa"
+
+#: prefs.js:53
+msgid "Mouse Cursor Focus Position"
+msgstr "Posicion del fòcus del cursor de la mirga"
+
+#: prefs.js:61
+msgid "Layout"
+msgstr "Disposicion"
+
+#: prefs.js:65
+msgid "Active Hint Width"
+msgstr "Largor de la zòna activa"
+
+#: prefs.js:75
+msgid "Gap Width"
+msgstr "Largor de l’espaçament"
+
+#: prefs.js:88
+msgid "Advanced"
+msgstr "Avançat"
+
+#: prefs.js:93
+msgid "Log Level"
+msgstr "Nivèl de log"
+
+#: floating_exceptions/main.js:13
+msgid "System Exceptions"
+msgstr "Excepcions sistèma"
+
+#: floating_exceptions/main.js:14
+msgid "Updated based on validated user reports."
+msgstr "Mesas a jorn basadas suls senhalaments utilizaire validats."
+
+#: floating_exceptions/main.js:43
+msgid "Add exceptions by selecting currently running applications and windows."
+msgstr "Apondètz d'excepcions en seleccionant las aplicacions e las fenèstras actualament en cors d'execucion."
+
+#: floating_exceptions/main.js:258
+msgid "GNOME Mosaic Floating Window Exceptions"
+msgstr "Excepcions de las fenèstras bandejantas de GNOME Mosaic"
