@@ -1,8 +1,10 @@
 import Adw from 'gi://Adw';
 import Gtk from 'gi://Gtk';
 import Gio from 'gi://Gio';
-import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
-import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
+import {
+    ExtensionPreferences,
+    gettext as _,
+} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
 
 import * as settings from './settings.js';
 import {FocusPosition} from './focus.js';
