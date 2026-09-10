@@ -643,6 +643,8 @@ export class ShellWindow {
                     }
                 }
             } while (this.border_style_queued);
+        } catch (error) {
+            log.error(`cannot update border style: ${error}`);
         } finally {
             this.border_style_in_progress = false;
         }
