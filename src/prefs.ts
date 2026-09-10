@@ -23,6 +23,18 @@ export default class MosaicPreferences extends ExtensionPreferences {
         });
         page.add(appearanceGroup);
 
+        // Active Hint
+        const activeHintRow = new Adw.SwitchRow({
+            title: _('Show Active Hint'),
+        });
+        appearanceGroup.add(activeHintRow);
+        gioSettings.bind(
+            'active-hint',
+            activeHintRow,
+            'active',
+            Gio.SettingsBindFlags.DEFAULT
+        );
+
         // Show Window Titles
         const windowTitlesRow = new Adw.SwitchRow({
             title: _('Show Window Titles'),
