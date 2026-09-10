@@ -298,9 +298,7 @@ export class ShellWindow {
     }
 
     is_maximized(): boolean {
-        return this.meta.is_maximized
-            ? this.meta.is_maximized()
-            : this.meta.get_maximized() !== 0;
+        return is_maximized(this.meta);
     }
 
     /**
@@ -805,7 +803,7 @@ function radii_signature(meta: Meta.Window, scale: number): string {
     return [
         meta.get_wm_class(),
         meta.is_fullscreen(),
-        meta.is_maximized(),
+        is_maximized(meta),
         scale,
     ].join(':');
 }
@@ -817,7 +815,7 @@ export async function getBorderRadii(
     const meta = actor.get_meta_window();
     if (!meta) return;
 
-    if (meta.is_fullscreen() || meta.is_maximized()) return;
+    if (meta.is_fullscreen() || is_maximized(meta)) return;
 
     const opaqueLimit = 200;
     const {x, y, width, height} = meta.get_frame_rect();
@@ -929,4 +927,9 @@ export function is_desktop_window(meta_win: Meta.Window): boolean {
         (meta_win as any).customJS_ding?.keepAtBottom === true ||
         is_ding_desktop
     );
+}
+
+function is_maximized(meta: Meta.Window): boolean {
+    // MIN GNOME 49
+    return meta.is_maximized ? meta.is_maximized() : meta.get_maximized() !== 0;
 }
