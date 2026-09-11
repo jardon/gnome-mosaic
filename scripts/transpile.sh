@@ -14,8 +14,6 @@ transpile() {
     #     | sed -E "s/import \* as (\w+) from '(\w+)'/const \1 = Me.imports.\2/g" > "${dest}"
 }
 
-rm -rf _build
-
 glib-compile-schemas schemas &
 
 # Transpile to JavaScript
