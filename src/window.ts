@@ -817,7 +817,7 @@ export async function getBorderRadii(
 
     if (meta.is_fullscreen() || is_maximized(meta)) return;
 
-    const opaqueLimit = 200;
+    const opaqueLimit = 240;
     const {x, y, width, height} = meta.get_frame_rect();
     const monitorIndex = meta.get_monitor();
     // @ts-expect-error
