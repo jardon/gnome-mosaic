@@ -40,7 +40,7 @@ $(info UUID is "$(UUID)")
 
 sources = src/*.ts *.css
 
-all: depcheck compile
+all: depcheck compile translations
 
 clean:
 	rm -rf _build target
