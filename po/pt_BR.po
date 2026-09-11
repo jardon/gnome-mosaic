@@ -2,15 +2,15 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # Éberson Polita, 2026.
-#
+# Heron Ximenes, 2026.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome_mosaic\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-07 21:47-0400\n"
-"PO-Revision-Date: 2026-09-10 23:38-0300\n"
-"Last-Translator: Éberson Polita\n"
+"PO-Revision-Date: 2026-09-11 10:00-0300\n"
+"Last-Translator: Heron Ximenes\n"
 "Language-Team: \n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
@@ -24,7 +24,7 @@ msgstr "Mosaic"
 
 #: panel_settings.js:31
 msgid "Tiled window management"
-msgstr "Gestor de janelas em mosaico"
+msgstr "Gerenciamento de janelas em mosaico"
 
 #: panel_settings.js:51 prefs.js:43
 msgid "Smart Gaps"
@@ -32,11 +32,11 @@ msgstr "Espaçamento inteligente"
 
 #: panel_settings.js:58
 msgid "Show Active Hint"
-msgstr "Exibir contorno de foco"
+msgstr "Exibir indicação de janela ativa"
 
 #: panel_settings.js:65
 msgid "Move Pointer With Focus"
-msgstr "Mover ponteiro com o foco"
+msgstr "Mover o ponteiro com o foco"
 
 #: panel_settings.js:72
 msgid "Floating Window Exceptions"
@@ -72,7 +72,7 @@ msgstr "Alinhar à grade (modo flutuante)"
 
 #: prefs.js:48
 msgid "Mouse Cursor Follows Active Window"
-msgstr "O cursor do mouse segue a janela ativa"
+msgstr "O cursor do mouse acompanha a janela ativa"
 
 #: prefs.js:53
 msgid "Mouse Cursor Focus Position"
@@ -100,7 +100,7 @@ msgstr "Nível do log"
 
 #: floating_exceptions/main.js:13
 msgid "System Exceptions"
-msgstr "Exceções de sistema"
+msgstr "Exceções do sistema"
 
 #: floating_exceptions/main.js:14
 msgid "Updated based on validated user reports."
@@ -112,4 +112,4 @@ msgstr "Adicione exceções selecionando aplicativos e janelas em execução."
 
 #: floating_exceptions/main.js:258
 msgid "GNOME Mosaic Floating Window Exceptions"
-msgstr "Exceções para janelas flutuantes no Gnome Mosaic"
+msgstr "Exceções para janelas flutuantes no GNOME Mosaic"
