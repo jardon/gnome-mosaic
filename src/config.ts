@@ -66,6 +66,7 @@ export const DEFAULT_FLOAT_RULES: Array<FloatRule> = [
     {class: 'org.gnome.NautilusPreviewer'},
     {class: 'com.rastersoft.ding'},
     {class: 'git-credential-manager'},
+    {class: 'xwaylandvideobridge'},
 ];
 
 export interface WindowRule {
