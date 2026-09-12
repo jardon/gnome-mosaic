@@ -942,24 +942,24 @@ export class Ext extends Ecs.System<ExtEvent> {
         }
 
         const window = this.windows.get(win);
-        if (!window) return;
+        if (window) {
+            window.destroying = true;
 
-        window.destroying = true;
+            this.size_requests.delete(window.meta);
+
+            // Disconnect all signals on this window
+            this.window_signals.take_with(win, signals => {
+                for (const signal of signals) {
+                    window.meta.disconnect(signal);
+                }
+            });
+        }
 
         const deferred = this.deferred_tiles.get(win);
         if (deferred) {
             GLib.source_remove(deferred.id);
             this.deferred_tiles.delete(win);
         }
-
-        this.size_requests.delete(window.meta);
-
-        // Disconnect all signals on this window
-        this.window_signals.take_with(win, signals => {
-            for (const signal of signals) {
-                window.meta.disconnect(signal);
-            }
-        });
 
         if (this.auto_tiler) {
             const entity = this.auto_tiler.attached.get(win);
