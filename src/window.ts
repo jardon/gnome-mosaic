@@ -843,12 +843,13 @@ export async function getBorderRadii(
     const memoryBuffer = Gio.MemoryOutputStream.new_resizable();
     try {
         const surface = capture.get_texture();
+        const physicalWidth = width * scale;
 
         const imageBuf = await Shell.Screenshot.composite_to_stream(
             surface,
             0,
             0,
-            width,
+            physicalWidth,
             height * scale,
             1,
             null,
@@ -862,8 +863,8 @@ export async function getBorderRadii(
         if (!rawPixels) return;
 
         const scanAlpha = (start: number): number => {
-            for (let x = 0; x < width / 2; x++) {
-                const idx = (start * width + x) * 4;
+            for (let x = 0; x < physicalWidth / 2; x++) {
+                const idx = (start * physicalWidth + x) * 4;
                 const alpha = rawPixels[idx + 3];
                 if (alpha > opaqueLimit) {
                     return x;
