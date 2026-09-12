@@ -930,6 +930,7 @@ export function is_desktop_window(meta_win: Meta.Window): boolean {
 }
 
 function is_maximized(meta: Meta.Window): boolean {
-    // MIN GNOME 49
+    // MIN GNOME 49 VERSION
+    // https://gjs.guide/extensions/upgrading/gnome-shell-49.html
     return meta.is_maximized ? meta.is_maximized() : meta.get_maximized() !== 0;
 }
