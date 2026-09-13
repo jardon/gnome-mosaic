@@ -245,6 +245,11 @@ export class World {
     ///
     /// Sets the `id` of the entity to `null`, thus marking its slot as unused.
     delete_entity(entity: Entity) {
+        if (this.free_slots.indexOf(entity[0]) > -1) return;
+
+        const current = this.entities_[entity[0]];
+        if (!current || current[1] !== entity[1]) return;
+
         this.tags(entity).clear();
         for (const storage of this.storages) {
             storage.remove(entity);
