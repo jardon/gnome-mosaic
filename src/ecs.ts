@@ -125,8 +125,8 @@ export class Storage<T> {
     insert(entity: Entity, component: T) {
         let [id, gen] = entity;
 
-        let length = this.store.length;
-        if (length >= id) {
+        const length = this.store.length;
+        if (id >= length) {
             this.store.fill(null, length, id);
         }
 
