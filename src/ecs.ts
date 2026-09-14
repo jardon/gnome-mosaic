@@ -14,7 +14,7 @@ import {Executor} from './executor.js';
 export type Entity = [number, number];
 
 export function entity_eq(a: Entity, b: Entity): boolean {
-    return a[0] == b[0] && b[1] == b[1];
+    return a[0] === b[0] && a[1] === b[1];
 }
 
 export function entity_new(pos: number, gen: number): Entity {
