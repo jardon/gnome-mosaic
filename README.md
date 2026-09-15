@@ -153,3 +153,9 @@ Licensed under the GNU General Public License, Version 3.0, ([LICENSE](LICENSE) 
 ### Contribution
 
 Any contribution intentionally submitted for inclusion in the work by you shall be licensed under the GNU GPLv3.
+
+## Translations
+
+Translations can be submitted via [Weblate](https://hosted.weblate.org/engage/gnome-mosaic/).
+
+<a href="https://hosted.weblate.org/engage/gnome-mosaic/"><img src="https://hosted.weblate.org/widget/gnome-mosaic/svg-badge.svg" alt="Translation status"></a>
