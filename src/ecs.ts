@@ -229,11 +229,12 @@ export class World {
     create_entity(): Entity {
         let slot = this.free_slots.pop();
 
-        if (slot) {
-            var entity = this.entities_[slot];
+        let entity: Entity;
+        if (slot !== undefined) {
+            entity = this.entities_[slot];
             entity[1] += 1;
         } else {
-            var entity = entity_new(this.capacity, 0);
+            entity = entity_new(this.capacity, 0);
             this.entities_.push(entity);
             this.tags_.push(new Set());
         }
