@@ -47,6 +47,7 @@ export const DEFAULT_FLOAT_RULES: Array<FloatRule> = [
     {class: 'TelegramDesktop', title: 'Media viewer'},
     {class: 'Zotero', title: 'Quick Format Citation'},
     {class: 'firefox', title: '^(?!.*Mozilla Firefox).*$'},
+    {class: 'org.mozilla.firefox', title: 'Picture-in-Picture'},
     {class: 'gnome-screenshot'},
     {class: 'ibus-.*'},
     {class: 'jetbrains-toolbox'},
