@@ -14,188 +14,195 @@ export default class MosaicPreferences extends ExtensionPreferences {
         const extSettings = new settings.ExtensionSettings();
         const gioSettings = extSettings.ext;
 
-        const page = new Adw.PreferencesPage();
-        window.add(page);
-
-        // Group: Appearance
-        const appearanceGroup = new Adw.PreferencesGroup({
-            title: _('Appearance'),
-        });
-        page.add(appearanceGroup);
-
-        // Active Hint
-        const activeHintRow = new Adw.SwitchRow({
-            title: _('Show Active Hint'),
-        });
-        appearanceGroup.add(activeHintRow);
-        gioSettings.bind(
-            'active-hint',
-            activeHintRow,
-            'active',
-            Gio.SettingsBindFlags.DEFAULT
-        );
-
-        // Show Window Titles
-        const windowTitlesRow = new Adw.SwitchRow({
-            title: _('Show Window Titles'),
-        });
-        appearanceGroup.add(windowTitlesRow);
-        gioSettings.bind(
-            'show-title',
-            windowTitlesRow,
-            'active',
-            Gio.SettingsBindFlags.DEFAULT
-        );
-
-        // Show Indicator Panel
-        const showIndicatorRow = new Adw.SwitchRow({
-            title: _('Show Indicator Panel'),
-        });
-        appearanceGroup.add(showIndicatorRow);
-        gioSettings.bind(
-            'show-indicator',
-            showIndicatorRow,
-            'active',
-            Gio.SettingsBindFlags.DEFAULT
-        );
-
-        // Show Minimize to Tray Windows
-        const showSkipTaskbarRow = new Adw.SwitchRow({
-            title: _('Show Minimize to Tray Windows'),
-        });
-        appearanceGroup.add(showSkipTaskbarRow);
-        gioSettings.bind(
-            'show-skip-taskbar',
-            showSkipTaskbarRow,
-            'active',
-            Gio.SettingsBindFlags.DEFAULT
-        );
-
-        // Group: Behavior
-        const behaviorGroup = new Adw.PreferencesGroup({
-            title: _('Behavior'),
-        });
-        page.add(behaviorGroup);
-
-        // Snap to Grid
-        const snapToGridRow = new Adw.SwitchRow({
-            title: _('Snap to Grid (Floating Mode)'),
-        });
-        behaviorGroup.add(snapToGridRow);
-        gioSettings.bind(
-            'snap-to-grid',
-            snapToGridRow,
-            'active',
-            Gio.SettingsBindFlags.DEFAULT
-        );
-
-        // Smart Gaps
-        const smartGapsRow = new Adw.SwitchRow({
-            title: _('Smart Gaps'),
-        });
-        behaviorGroup.add(smartGapsRow);
-        gioSettings.bind(
-            'smart-gaps',
-            smartGapsRow,
-            'active',
-            Gio.SettingsBindFlags.DEFAULT
-        );
-
-        // Mouse Cursor Follows Active Window
-        const mouseFollowsRow = new Adw.SwitchRow({
-            title: _('Mouse Cursor Follows Active Window'),
-        });
-        behaviorGroup.add(mouseFollowsRow);
-        gioSettings.bind(
-            'mouse-cursor-follows-active-window',
-            mouseFollowsRow,
-            'active',
-            Gio.SettingsBindFlags.DEFAULT
-        );
-
-        // Mouse Cursor Focus Position
-        const focusPositionRow = new Adw.ComboRow({
-            title: _('Mouse Cursor Focus Position'),
-            model: new Gtk.StringList({
-                strings: Object.values(FocusPosition),
-            }),
-        });
-        behaviorGroup.add(focusPositionRow);
-        gioSettings.bind(
-            'mouse-cursor-focus-location',
-            focusPositionRow,
-            'selected',
-            Gio.SettingsBindFlags.DEFAULT
-        );
-
-        // Group: Layout
-        const layoutGroup = new Adw.PreferencesGroup({
-            title: _('Layout'),
-        });
-        page.add(layoutGroup);
-
-        // Active Hint Width
-        const activeHintWidthRow = new Adw.SpinRow({
-            title: _('Active Hint Width'),
-            adjustment: new Gtk.Adjustment({
-                lower: 0,
-                upper: 100,
-                step_increment: 1,
-            }),
-        });
-        layoutGroup.add(activeHintWidthRow);
-        gioSettings.bind(
-            'active-hint-border-width',
-            activeHintWidthRow,
-            'value',
-            Gio.SettingsBindFlags.DEFAULT
-        );
-
-        // Gap Width
-        const gapWidthRow = new Adw.SpinRow({
-            title: _('Gap Width'),
-            adjustment: new Gtk.Adjustment({
-                lower: 0,
-                upper: 100,
-                step_increment: 1,
-            }),
-        });
-        layoutGroup.add(gapWidthRow);
-        // Bind both inner and outer gaps to this single control as per original logic
-        // Original logic: if (inner == outer) show inner; on set, set both.
-        // Here we bind to inner, and listen to change to set outer.
-        gioSettings.bind(
-            'gap-inner',
-            gapWidthRow,
-            'value',
-            Gio.SettingsBindFlags.DEFAULT
-        );
-        gapWidthRow.connect('notify::value', () => {
-            gioSettings.set_uint('gap-outer', gapWidthRow.get_value());
-        });
-
-        // Group: Advanced
-        const advancedGroup = new Adw.PreferencesGroup({
-            title: _('Advanced'),
-        });
-        page.add(advancedGroup);
-
-        // Log Level
-        // LOG_LEVELS is numeric enum 0..4
-        // We need to map names.
-        const logLevels = ['OFF', 'ERROR', 'WARN', 'INFO', 'DEBUG'];
-        const logLevelRow = new Adw.ComboRow({
-            title: _('Log Level'),
-            model: new Gtk.StringList({
-                strings: logLevels,
-            }),
-        });
-        advancedGroup.add(logLevelRow);
-        gioSettings.bind(
-            'log-level',
-            logLevelRow,
-            'selected',
-            Gio.SettingsBindFlags.DEFAULT
-        );
+        const general = generateGeneralPage(gioSettings);
+        window.add(general);
     }
+}
+
+function generateGeneralPage(gioSettings: any) {
+    const page = new Adw.PreferencesPage({
+        title: _('General'),
+    });
+    // Group: Appearance
+    const appearanceGroup = new Adw.PreferencesGroup({
+        title: _('Appearance'),
+    });
+    page.add(appearanceGroup);
+
+    // Active Hint
+    const activeHintRow = new Adw.SwitchRow({
+        title: _('Show Active Hint'),
+    });
+    appearanceGroup.add(activeHintRow);
+    gioSettings.bind(
+        'active-hint',
+        activeHintRow,
+        'active',
+        Gio.SettingsBindFlags.DEFAULT
+    );
+
+    // Show Window Titles
+    const windowTitlesRow = new Adw.SwitchRow({
+        title: _('Show Window Titles'),
+    });
+    appearanceGroup.add(windowTitlesRow);
+    gioSettings.bind(
+        'show-title',
+        windowTitlesRow,
+        'active',
+        Gio.SettingsBindFlags.DEFAULT
+    );
+
+    // Show Indicator Panel
+    const showIndicatorRow = new Adw.SwitchRow({
+        title: _('Show Indicator Panel'),
+    });
+    appearanceGroup.add(showIndicatorRow);
+    gioSettings.bind(
+        'show-indicator',
+        showIndicatorRow,
+        'active',
+        Gio.SettingsBindFlags.DEFAULT
+    );
+
+    // Show Minimize to Tray Windows
+    const showSkipTaskbarRow = new Adw.SwitchRow({
+        title: _('Show Minimize to Tray Windows'),
+    });
+    appearanceGroup.add(showSkipTaskbarRow);
+    gioSettings.bind(
+        'show-skip-taskbar',
+        showSkipTaskbarRow,
+        'active',
+        Gio.SettingsBindFlags.DEFAULT
+    );
+
+    // Group: Behavior
+    const behaviorGroup = new Adw.PreferencesGroup({
+        title: _('Behavior'),
+    });
+    page.add(behaviorGroup);
+
+    // Snap to Grid
+    const snapToGridRow = new Adw.SwitchRow({
+        title: _('Snap to Grid (Floating Mode)'),
+    });
+    behaviorGroup.add(snapToGridRow);
+    gioSettings.bind(
+        'snap-to-grid',
+        snapToGridRow,
+        'active',
+        Gio.SettingsBindFlags.DEFAULT
+    );
+
+    // Smart Gaps
+    const smartGapsRow = new Adw.SwitchRow({
+        title: _('Smart Gaps'),
+    });
+    behaviorGroup.add(smartGapsRow);
+    gioSettings.bind(
+        'smart-gaps',
+        smartGapsRow,
+        'active',
+        Gio.SettingsBindFlags.DEFAULT
+    );
+
+    // Mouse Cursor Follows Active Window
+    const mouseFollowsRow = new Adw.SwitchRow({
+        title: _('Mouse Cursor Follows Active Window'),
+    });
+    behaviorGroup.add(mouseFollowsRow);
+    gioSettings.bind(
+        'mouse-cursor-follows-active-window',
+        mouseFollowsRow,
+        'active',
+        Gio.SettingsBindFlags.DEFAULT
+    );
+
+    // Mouse Cursor Focus Position
+    const focusPositionRow = new Adw.ComboRow({
+        title: _('Mouse Cursor Focus Position'),
+        model: new Gtk.StringList({
+            strings: Object.values(FocusPosition),
+        }),
+    });
+    behaviorGroup.add(focusPositionRow);
+    gioSettings.bind(
+        'mouse-cursor-focus-location',
+        focusPositionRow,
+        'selected',
+        Gio.SettingsBindFlags.DEFAULT
+    );
+
+    // Group: Layout
+    const layoutGroup = new Adw.PreferencesGroup({
+        title: _('Layout'),
+    });
+    page.add(layoutGroup);
+
+    // Active Hint Width
+    const activeHintWidthRow = new Adw.SpinRow({
+        title: _('Active Hint Width'),
+        adjustment: new Gtk.Adjustment({
+            lower: 0,
+            upper: 100,
+            step_increment: 1,
+        }),
+    });
+    layoutGroup.add(activeHintWidthRow);
+    gioSettings.bind(
+        'active-hint-border-width',
+        activeHintWidthRow,
+        'value',
+        Gio.SettingsBindFlags.DEFAULT
+    );
+
+    // Gap Width
+    const gapWidthRow = new Adw.SpinRow({
+        title: _('Gap Width'),
+        adjustment: new Gtk.Adjustment({
+            lower: 0,
+            upper: 100,
+            step_increment: 1,
+        }),
+    });
+    layoutGroup.add(gapWidthRow);
+    // Bind both inner and outer gaps to this single control as per original logic
+    // Original logic: if (inner == outer) show inner; on set, set both.
+    // Here we bind to inner, and listen to change to set outer.
+    gioSettings.bind(
+        'gap-inner',
+        gapWidthRow,
+        'value',
+        Gio.SettingsBindFlags.DEFAULT
+    );
+    gapWidthRow.connect('notify::value', () => {
+        gioSettings.set_uint('gap-outer', gapWidthRow.get_value());
+    });
+
+    // Group: Advanced
+    const advancedGroup = new Adw.PreferencesGroup({
+        title: _('Advanced'),
+    });
+    page.add(advancedGroup);
+
+    // Log Level
+    // LOG_LEVELS is numeric enum 0..4
+    // We need to map names.
+    const logLevels = ['OFF', 'ERROR', 'WARN', 'INFO', 'DEBUG'];
+    const logLevelRow = new Adw.ComboRow({
+        title: _('Log Level'),
+        model: new Gtk.StringList({
+            strings: logLevels,
+        }),
+    });
+    advancedGroup.add(logLevelRow);
+    gioSettings.bind(
+        'log-level',
+        logLevelRow,
+        'selected',
+        Gio.SettingsBindFlags.DEFAULT
+    );
+
+    return page;
 }
