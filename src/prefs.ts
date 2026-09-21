@@ -26,6 +26,7 @@ export default class MosaicPreferences extends ExtensionPreferences {
 function generateKeyBindingsPage(gioSettings: any) {
     const page = new Adw.PreferencesPage({
         title: _('Keybindings'),
+        icon_name: 'preferences-desktop-keyboard-shortcuts',
     });
 
     // Group: Focus
@@ -121,6 +122,7 @@ function addKeybindingRows(
 function generateGeneralPage(gioSettings: any) {
     const page = new Adw.PreferencesPage({
         title: _('General'),
+        icon_name: 'emblem-system',
     });
     // Group: Appearance
     const appearanceGroup = new Adw.PreferencesGroup({
