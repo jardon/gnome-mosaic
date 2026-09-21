@@ -1,4 +1,5 @@
 import Adw from 'gi://Adw';
+import Gdk from 'gi://Gdk';
 import Gtk from 'gi://Gtk';
 import Gio from 'gi://Gio';
 import {
@@ -16,6 +17,104 @@ export default class MosaicPreferences extends ExtensionPreferences {
 
         const general = generateGeneralPage(gioSettings);
         window.add(general);
+
+        const kb = generateKeyBindingsPage(gioSettings);
+        window.add(kb);
+    }
+}
+
+function generateKeyBindingsPage(gioSettings: any) {
+    const page = new Adw.PreferencesPage({
+        title: _('Keybindings'),
+    });
+
+    // Group: Focus
+    const focusGroup = new Adw.PreferencesGroup({
+        title: _('Focus'),
+    });
+    page.add(focusGroup);
+    addKeybindingRows(focusGroup, gioSettings, [
+        ['focus-left', _('Focus left window')],
+        ['focus-down', _('Focus down window')],
+        ['focus-up', _('Focus up window')],
+        ['focus-right', _('Focus right window')],
+        ['toggle-tiling', _('Toggle auto-tiling')],
+        ['toggle-floating', _('Toggle floating/tiling mode')],
+        ['tile-orientation', _('Toggle tiling orientation')],
+    ]);
+
+    const tilingGroup = new Adw.PreferencesGroup({
+        title: _('Tiling'),
+    });
+    page.add(tilingGroup);
+    addKeybindingRows(tilingGroup, gioSettings, [
+        ['tile-enter', _('Enter adjustment mode')],
+        ['tile-accept', _('Accept tiling changes')],
+        ['tile-reject', _('Reject tiling changes')],
+        [
+            'management-orientation',
+            _('Toggle tiling orientation (adjustment mode)'),
+        ],
+        ['tile-move-left', _('Move window left')],
+        ['tile-move-down', _('Move window down')],
+        ['tile-move-up', _('Move window up')],
+        ['tile-move-right', _('Move window right')],
+        ['tile-move-left-global', _('Move window left (global)')],
+        ['tile-move-down-global', _('Move window down (global)')],
+        ['tile-move-up-global', _('Move window up (global)')],
+        ['tile-move-right-global', _('Move window right (global)')],
+    ]);
+
+    const resizeGroup = new Adw.PreferencesGroup({
+        title: _('Resizing'),
+    });
+    page.add(resizeGroup);
+    addKeybindingRows(resizeGroup, gioSettings, [
+        ['resize-mode', _('Toggle resize mode')],
+        ['resize-grow-left', _('Grow window left')],
+        ['resize-shrink-left', _('Shrink window left')],
+        ['resize-grow-up', _('Grow window up')],
+        ['resize-shrink-up', _('Shrink window up')],
+        ['resize-grow-right', _('Grow window right')],
+        ['resize-shrink-right', _('Shrink window right')],
+        ['resize-grow-down', _('Grow window down')],
+        ['resize-shrink-down', _('Shrink window down')],
+    ]);
+
+    const windowGroup = new Adw.PreferencesGroup({
+        title: _('Window Management'),
+    });
+    page.add(windowGroup);
+    addKeybindingRows(windowGroup, gioSettings, [
+        ['tile-swap-left', _('Swap window left')],
+        ['tile-swap-down', _('Swap window down')],
+        ['tile-swap-up', _('Swap window up')],
+        ['tile-swap-right', _('Swap window right')],
+    ]);
+
+    const workspaceGroup = new Adw.PreferencesGroup({
+        title: _('Workspace Management'),
+    });
+    page.add(workspaceGroup);
+    addKeybindingRows(workspaceGroup, gioSettings, [
+        ['mosaic-workspace-up', _('Move window to the upper workspace')],
+        ['mosaic-workspace-down', _('Move window to the lower workspace')],
+        ['mosaic-monitor-up', _('Move window to the upper monitor')],
+        ['mosaic-monitor-down', _('Move window to the lower monitor')],
+        ['mosaic-monitor-left', _('Move window to the leftward monitor')],
+        ['mosaic-monitor-right', _('Move window to the rightward monitor')],
+    ]);
+
+    return page;
+}
+
+function addKeybindingRows(
+    group: any,
+    settings: any,
+    keys: [string, string][]
+) {
+    for (const [settingKey, title] of keys) {
+        group.add(createKeybindingRow(settings, settingKey, title));
     }
 }
 
@@ -205,4 +304,104 @@ function generateGeneralPage(gioSettings: any) {
     );
 
     return page;
+}
+
+function createKeybindingRow(settings: any, settingKey: string, title: string) {
+    const row = new Adw.ActionRow({
+        title: title,
+    });
+
+    const button = new Gtk.Button({
+        valign: Gtk.Align.CENTER,
+        css_classes: ['flat'],
+    });
+
+    const updateLabel = () => {
+        const accelerators = settings.get_strv(settingKey);
+        if (accelerators.length > 0 && accelerators[0]) {
+            button.label = accelerators[0];
+        } else {
+            button.label = _('Disabled');
+        }
+    };
+
+    updateLabel();
+    settings.connect(`changed::${settingKey}`, updateLabel);
+
+    const stopCapture = (root: any) => {
+        if (focusId !== 0) {
+            root?.disconnect(focusId);
+            focusId = 0;
+        }
+
+        if (keyController) {
+            keyController.run_dispose();
+            keyController = null;
+        }
+
+        updateLabel();
+    };
+
+    const keyPressed = (
+        _controller: any,
+        keyval: number,
+        _keycode: number,
+        state: number
+    ) => {
+        const mods = state & Gtk.accelerator_get_default_mod_mask();
+
+        if (keyval === Gdk.KEY_Escape) {
+            stopCapture(root);
+            return Gdk.EVENT_STOP;
+        }
+
+        if (!Gtk.accelerator_valid(keyval, mods)) {
+            return Gdk.EVENT_PROPAGATE;
+        }
+
+        const accelString = Gtk.accelerator_name(keyval, mods);
+
+        if (accelString) {
+            settings.set_strv(settingKey, [
+                accelString.replace('<Control>', '<Primary>'),
+            ]);
+        }
+
+        stopCapture(root);
+        return Gdk.EVENT_STOP;
+    };
+
+    const startCapture = () => {
+        stopCapture(root);
+
+        button.label = _('New accelerator…');
+
+        root = button.get_root();
+        if (!root) {
+            return;
+        }
+
+        keyController = new Gtk.EventControllerKey();
+        root.add_controller(keyController);
+        keyController.connect('key-pressed', keyPressed);
+
+        focusId = root.connect('notify::focus-widget', () => {
+            const focus = root.get_focus();
+            if (
+                focus === null ||
+                (focus !== button && !focus.is_ancestor(button))
+            ) {
+                stopCapture(root);
+            }
+        });
+    };
+
+    let root: any = null;
+    let keyController: any = null;
+    let focusId: number = 0;
+
+    button.connect('clicked', startCapture);
+
+    row.add_suffix(button);
+    return row;
 }
