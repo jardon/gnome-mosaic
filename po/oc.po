@@ -8,13 +8,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome_mosaic\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-07 21:47-0400\n"
+"POT-Creation-Date: 2026-09-21 22:53+0000\n"
 "PO-Revision-Date: 2026-09-10 18:08+0200\n"
 "Last-Translator: Quentin PAGÈS\n"
 "Language-Team: \n"
 "Language: oc\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 3.9\n"
 
@@ -26,11 +26,11 @@ msgstr "Mosaïc"
 msgid "Tiled window management"
 msgstr "Gestion de las fenèstras en mosaïc"
 
-#: panel_settings.js:51 prefs.js:43
+#: panel_settings.js:51 prefs.js:140
 msgid "Smart Gaps"
 msgstr "Espaçaments intelligents"
 
-#: panel_settings.js:58
+#: panel_settings.js:58 prefs.js:111
 msgid "Show Active Hint"
 msgstr "Mostrar la zòna activa"
 
@@ -38,7 +38,7 @@ msgstr "Mostrar la zòna activa"
 msgid "Move Pointer With Focus"
 msgstr "Desplaçar lo ponchador amb lo fòcus"
 
-#: panel_settings.js:72
+#: panel_settings.js:72 floating_exceptions/main.js:171
 msgid "Floating Window Exceptions"
 msgstr "Excepcions de las fenèstras bandejantas"
 
@@ -46,57 +46,251 @@ msgstr "Excepcions de las fenèstras bandejantas"
 msgid "Settings"
 msgstr "Paramètres"
 
-#: prefs.js:15
+#: prefs.js:20
+msgid "Keybindings"
+msgstr ""
+
+#: prefs.js:24
+msgid "Focus"
+msgstr ""
+
+#: prefs.js:28
+msgid "Focus left window"
+msgstr ""
+
+#: prefs.js:29
+msgid "Focus down window"
+msgstr ""
+
+#: prefs.js:30
+msgid "Focus up window"
+msgstr ""
+
+#: prefs.js:31
+msgid "Focus right window"
+msgstr ""
+
+#: prefs.js:32
+msgid "Toggle auto-tiling"
+msgstr ""
+
+#: prefs.js:33
+msgid "Toggle floating/tiling mode"
+msgstr ""
+
+#: prefs.js:34
+msgid "Toggle tiling orientation"
+msgstr ""
+
+#: prefs.js:37
+msgid "Tiling"
+msgstr ""
+
+#: prefs.js:41
+msgid "Enter adjustment mode"
+msgstr ""
+
+#: prefs.js:42
+msgid "Accept tiling changes"
+msgstr ""
+
+#: prefs.js:43
+msgid "Reject tiling changes"
+msgstr ""
+
+#: prefs.js:46
+msgid "Toggle tiling orientation (adjustment mode)"
+msgstr ""
+
+#: prefs.js:48
+msgid "Move window left"
+msgstr ""
+
+#: prefs.js:49
+msgid "Move window down"
+msgstr ""
+
+#: prefs.js:50
+msgid "Move window up"
+msgstr ""
+
+#: prefs.js:51
+msgid "Move window right"
+msgstr ""
+
+#: prefs.js:52
+msgid "Move window left (global)"
+msgstr ""
+
+#: prefs.js:53
+msgid "Move window down (global)"
+msgstr ""
+
+#: prefs.js:54
+msgid "Move window up (global)"
+msgstr ""
+
+#: prefs.js:55
+msgid "Move window right (global)"
+msgstr ""
+
+#: prefs.js:58
+msgid "Resizing"
+msgstr ""
+
+#: prefs.js:62
+msgid "Toggle resize mode"
+msgstr ""
+
+#: prefs.js:63
+#, fuzzy
+msgid "Grow window left"
+msgstr "Mostrar los títols de fenèstra"
+
+#: prefs.js:64
+#, fuzzy
+msgid "Shrink window left"
+msgstr "Mostrar los títols de fenèstra"
+
+#: prefs.js:65
+msgid "Grow window up"
+msgstr ""
+
+#: prefs.js:66
+msgid "Shrink window up"
+msgstr ""
+
+#: prefs.js:67
+#, fuzzy
+msgid "Grow window right"
+msgstr "Mostrar los títols de fenèstra"
+
+#: prefs.js:68
+msgid "Shrink window right"
+msgstr ""
+
+#: prefs.js:69
+msgid "Grow window down"
+msgstr ""
+
+#: prefs.js:70
+msgid "Shrink window down"
+msgstr ""
+
+#: prefs.js:73
+#, fuzzy
+msgid "Window Management"
+msgstr "Gestion de las fenèstras en mosaïc"
+
+#: prefs.js:77
+#, fuzzy
+msgid "Swap window left"
+msgstr "Mostrar los títols de fenèstra"
+
+#: prefs.js:78
+msgid "Swap window down"
+msgstr ""
+
+#: prefs.js:79
+msgid "Swap window up"
+msgstr ""
+
+#: prefs.js:80
+#, fuzzy
+msgid "Swap window right"
+msgstr "Mostrar los títols de fenèstra"
+
+#: prefs.js:83
+msgid "Workspace Management"
+msgstr ""
+
+#: prefs.js:87
+msgid "Move window to the upper workspace"
+msgstr ""
+
+#: prefs.js:88
+msgid "Move window to the lower workspace"
+msgstr ""
+
+#: prefs.js:89
+msgid "Move window to the upper monitor"
+msgstr ""
+
+#: prefs.js:90
+msgid "Move window to the lower monitor"
+msgstr ""
+
+#: prefs.js:91
+msgid "Move window to the leftward monitor"
+msgstr ""
+
+#: prefs.js:92
+msgid "Move window to the rightward monitor"
+msgstr ""
+
+#: prefs.js:103
+msgid "General"
+msgstr ""
+
+#: prefs.js:107
 msgid "Appearance"
 msgstr "Aparéncia"
 
-#: prefs.js:19
+#: prefs.js:116
 msgid "Show Window Titles"
 msgstr "Mostrar los títols de fenèstra"
 
-#: prefs.js:24
+#: prefs.js:121
 msgid "Show Indicator Panel"
 msgstr "Afichar l’indicador de panèl"
 
-#: prefs.js:29
+#: prefs.js:126
 msgid "Show Minimize to Tray Windows"
 msgstr "Mostrar lo boton Minimizar dins la barra de la fenèstra"
 
-#: prefs.js:34
+#: prefs.js:131
 msgid "Behavior"
 msgstr "Compòrtament"
 
-#: prefs.js:38
+#: prefs.js:135
 msgid "Snap to Grid (Floating Mode)"
 msgstr "Alinhar a la grasilha (Mòde bandejant)"
 
-#: prefs.js:48
+#: prefs.js:145
 msgid "Mouse Cursor Follows Active Window"
 msgstr "Lo cursor de la mirga seguís la fenèstra activa"
 
-#: prefs.js:53
+#: prefs.js:150
 msgid "Mouse Cursor Focus Position"
 msgstr "Posicion del fòcus del cursor de la mirga"
 
-#: prefs.js:61
+#: prefs.js:158
 msgid "Layout"
 msgstr "Disposicion"
 
-#: prefs.js:65
+#: prefs.js:162
 msgid "Active Hint Width"
 msgstr "Largor de la zòna activa"
 
-#: prefs.js:75
+#: prefs.js:172
 msgid "Gap Width"
 msgstr "Largor de l’espaçament"
 
-#: prefs.js:88
+#: prefs.js:185
 msgid "Advanced"
 msgstr "Avançat"
 
-#: prefs.js:93
+#: prefs.js:190
 msgid "Log Level"
 msgstr "Nivèl de log"
+
+#: prefs.js:213
+msgid "Disabled"
+msgstr ""
+
+#: prefs.js:249
+msgid "New accelerator…"
+msgstr ""
 
 #: floating_exceptions/main.js:13
 msgid "System Exceptions"
@@ -108,7 +302,9 @@ msgstr "Mesas a jorn basadas suls senhalaments utilizaire validats."
 
 #: floating_exceptions/main.js:43
 msgid "Add exceptions by selecting currently running applications and windows."
-msgstr "Apondètz d'excepcions en seleccionant las aplicacions e las fenèstras actualament en cors d'execucion."
+msgstr ""
+"Apondètz d'excepcions en seleccionant las aplicacions e las fenèstras "
+"actualament en cors d'execucion."
 
 #: floating_exceptions/main.js:258
 msgid "GNOME Mosaic Floating Window Exceptions"
