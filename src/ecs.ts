@@ -127,6 +127,7 @@ export class Storage<T> {
 
         const length = this.store.length;
         if (id >= length) {
+            this.store.length = id + 1;
             this.store.fill(null, length, id);
         }
 
