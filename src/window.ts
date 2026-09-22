@@ -51,6 +51,10 @@ export class ShellWindow {
     // True if this window is currently smart-gapped
     smart_gapped: boolean = false;
 
+    // Last observed WM class, used to ignore spurious
+    // notify::wm-class re-emissions (see wm_class_changed)
+    private last_wm_class: string | null = null;
+
     border: null | St.Bin = new St.Bin({
         style_class: 'gnome-mosaic-active-hint gnome-mosaic-border-normal',
     });
@@ -90,6 +94,7 @@ export class ShellWindow {
 
         this.entity = entity;
         this.meta = window;
+        this.last_wm_class = window.get_wm_class();
 
         this.known_workspace = this.workspace_id();
 
@@ -649,6 +654,17 @@ export class ShellWindow {
     }
 
     private wm_class_changed(ext: Ext) {
+        // Some applications (e.g. Firefox) periodically re-emit
+        // notify::wm-class without changing the value. Reacting to
+        // every emission detached and re-tiled the window — moving it
+        // on its own every ~30 seconds — and leaked signal
+        // connections. Only react to actual class changes.
+        const wm_class = this.meta.get_wm_class();
+        if (this.last_wm_class === wm_class) return;
+
+        this.last_wm_class = wm_class;
+        log.debug(`wm_class changed: ${wm_class}`);
+
         if (this.is_tilable(ext)) {
             ext.connect_window(this);
             if (!this.meta.minimized) {
