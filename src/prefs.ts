@@ -318,14 +318,23 @@ function createKeybindingRow(settings: any, settingKey: string, title: string) {
         css_classes: ['flat'],
     });
 
+    const clearButton = new Gtk.Button({
+        valign: Gtk.Align.CENTER,
+        css_classes: ['flat'],
+        icon_name: 'edit-clear-symbolic',
+        tooltip_text: _('Clear'),
+    });
+
     const updateLabel = () => {
         const accelerators = settings.get_strv(settingKey);
-        if (accelerators.length > 0 && accelerators[0]) {
-            button.label = accelerators[0];
-        } else {
-            button.label = _('Disabled');
-        }
+        const active = accelerators.length > 0 && accelerators[0];
+        button.label = active ? accelerators[0] : _('Disabled');
+        clearButton.visible = !!active;
     };
+
+    clearButton.connect('clicked', () => {
+        settings.set_strv(settingKey, []);
+    });
 
     updateLabel();
     settings.connect(`changed::${settingKey}`, updateLabel);
@@ -405,5 +414,6 @@ function createKeybindingRow(settings: any, settingKey: string, title: string) {
     button.connect('clicked', startCapture);
 
     row.add_suffix(button);
+    row.add_suffix(clearButton);
     return row;
 }
