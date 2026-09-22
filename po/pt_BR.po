@@ -48,189 +48,183 @@ msgstr "Configurações"
 
 #: prefs.js:20
 msgid "Keybindings"
-msgstr ""
+msgstr "Atalhos de teclado"
 
 #: prefs.js:24
 msgid "Focus"
-msgstr ""
+msgstr "Foco"
 
 #: prefs.js:28
 msgid "Focus left window"
-msgstr ""
+msgstr "Focar janela à esquerda"
 
 #: prefs.js:29
 msgid "Focus down window"
-msgstr ""
+msgstr "Focar janela abaixo"
 
 #: prefs.js:30
 msgid "Focus up window"
-msgstr ""
+msgstr "Focar janela acima"
 
 #: prefs.js:31
 msgid "Focus right window"
-msgstr ""
+msgstr "Focar janela à direita"
 
 #: prefs.js:32
 msgid "Toggle auto-tiling"
-msgstr ""
+msgstr "Ativar/desativar mosaico automático"
 
 #: prefs.js:33
 msgid "Toggle floating/tiling mode"
-msgstr ""
+msgstr "Alternar entre modo flutuante e modo mosaico"
 
 #: prefs.js:34
 msgid "Toggle tiling orientation"
-msgstr ""
+msgstr "Alternar orientação do mosaico"
 
 #: prefs.js:37
 msgid "Tiling"
-msgstr ""
+msgstr "Mosaico"
 
 #: prefs.js:41
 msgid "Enter adjustment mode"
-msgstr ""
+msgstr "Entrar no modo de ajuste"
 
 #: prefs.js:42
 msgid "Accept tiling changes"
-msgstr ""
+msgstr "Aceitar alterações no mosaico"
 
 #: prefs.js:43
 msgid "Reject tiling changes"
-msgstr ""
+msgstr "Rejeitar alterações no mosaico"
 
 #: prefs.js:46
 msgid "Toggle tiling orientation (adjustment mode)"
-msgstr ""
+msgstr "Alternar orientação do mosaico (modo de ajuste)"
 
 #: prefs.js:48
 msgid "Move window left"
-msgstr ""
+msgstr "Mover janela para a esquerda"
 
 #: prefs.js:49
 msgid "Move window down"
-msgstr ""
+msgstr "Mover janela para baixo"
 
 #: prefs.js:50
 msgid "Move window up"
-msgstr ""
+msgstr "Mover janela para cima"
 
 #: prefs.js:51
 msgid "Move window right"
-msgstr ""
+msgstr "Mover janela para a direita"
 
 #: prefs.js:52
 msgid "Move window left (global)"
-msgstr ""
+msgstr "Mover janela para a esquerda (global)"
 
 #: prefs.js:53
 msgid "Move window down (global)"
-msgstr ""
+msgstr "Mover janela para baixo (global)"
 
 #: prefs.js:54
 msgid "Move window up (global)"
-msgstr ""
+msgstr "Mover janela para cima (global)"
 
 #: prefs.js:55
 msgid "Move window right (global)"
-msgstr ""
+msgstr "Mover janela para a direita (global)"
 
 #: prefs.js:58
 msgid "Resizing"
-msgstr ""
+msgstr "Redimensionamento"
 
 #: prefs.js:62
 msgid "Toggle resize mode"
-msgstr ""
+msgstr "Alternar modo de redimensionamento"
 
 #: prefs.js:63
-#, fuzzy
 msgid "Grow window left"
-msgstr "Exibir títulos de janelas"
+msgstr "Aumentar janela para a esquerda"
 
 #: prefs.js:64
-#, fuzzy
 msgid "Shrink window left"
-msgstr "Exibir títulos de janelas"
+msgstr "Reduzir janela para a esquerda"
 
 #: prefs.js:65
 msgid "Grow window up"
-msgstr ""
+msgstr "Aumentar janela para cima"
 
 #: prefs.js:66
 msgid "Shrink window up"
-msgstr ""
+msgstr "Reduzir janela para cima"
 
 #: prefs.js:67
-#, fuzzy
 msgid "Grow window right"
-msgstr "Exibir títulos de janelas"
+msgstr "Aumentar janela para a direita"
 
 #: prefs.js:68
 msgid "Shrink window right"
-msgstr ""
+msgstr "Reduzir janela para a direita"
 
 #: prefs.js:69
 msgid "Grow window down"
-msgstr ""
+msgstr "Aumentar janela para baixo"
 
 #: prefs.js:70
 msgid "Shrink window down"
-msgstr ""
+msgstr "Reduzir janela para baixo"
 
 #: prefs.js:73
-#, fuzzy
 msgid "Window Management"
-msgstr "Gerenciamento de janelas em mosaico"
+msgstr "Gerenciamento de janelas"
 
 #: prefs.js:77
-#, fuzzy
 msgid "Swap window left"
-msgstr "Exibir títulos de janelas"
+msgstr "Trocar com a janela à esquerda"
 
 #: prefs.js:78
 msgid "Swap window down"
-msgstr ""
+msgstr "Trocar com a janela abaixo"
 
 #: prefs.js:79
 msgid "Swap window up"
-msgstr ""
+msgstr "Trocar com a janela acima"
 
 #: prefs.js:80
-#, fuzzy
 msgid "Swap window right"
-msgstr "Exibir títulos de janelas"
+msgstr "Trocar com a janela à direita"
 
 #: prefs.js:83
 msgid "Workspace Management"
-msgstr ""
+msgstr "Gerenciamento de espaços de trabalho"
 
 #: prefs.js:87
 msgid "Move window to the upper workspace"
-msgstr ""
+msgstr "Mover janela para o espaço de trabalho superior"
 
 #: prefs.js:88
 msgid "Move window to the lower workspace"
-msgstr ""
+msgstr "Mover janela para o espaço de trabalho inferior"
 
 #: prefs.js:89
 msgid "Move window to the upper monitor"
-msgstr ""
+msgstr "Mover janela para o monitor superior"
 
 #: prefs.js:90
 msgid "Move window to the lower monitor"
-msgstr ""
+msgstr "Mover janela para o monitor inferior"
 
 #: prefs.js:91
 msgid "Move window to the leftward monitor"
-msgstr ""
+msgstr "Mover janela para o monitor à esquerda"
 
 #: prefs.js:92
 msgid "Move window to the rightward monitor"
-msgstr ""
+msgstr "Mover janela para o monitor à direita"
 
 #: prefs.js:103
 msgid "General"
-msgstr ""
+msgstr "Geral"
 
 #: prefs.js:107
 msgid "Appearance"
@@ -286,11 +280,11 @@ msgstr "Nível do log"
 
 #: prefs.js:213
 msgid "Disabled"
-msgstr ""
+msgstr "Desativado"
 
 #: prefs.js:249
 msgid "New accelerator…"
-msgstr ""
+msgstr "Novo atalho…"
 
 #: floating_exceptions/main.js:13
 msgid "System Exceptions"
@@ -306,4 +300,4 @@ msgstr "Adicione exceções selecionando aplicativos e janelas em execução."
 
 #: floating_exceptions/main.js:258
 msgid "GNOME Mosaic Floating Window Exceptions"
-msgstr "Exceções para janelas flutuantes no GNOME Mosaic"
+msgstr "Exceções para janelas flutuantes do GNOME Mosaic"
