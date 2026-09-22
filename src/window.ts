@@ -621,14 +621,13 @@ export class ShellWindow {
             do {
                 this.border_style_queued = false;
 
-                const margin = 6;
+                const borderWidth = ext.settings.active_hint_border_width();
                 const radii = await getBorderRadii(
                     this.meta.get_compositor_private() as Meta.WindowActor
                 );
                 const radii_values =
-                    radii?.map(v => `${v + margin}px`).join(' ') ||
+                    radii?.map(v => `${v + borderWidth}px`).join(' ') ||
                     '0px 0px 0px 0px';
-                const borderWidth = ext.settings.active_hint_border_width();
                 const colors: [string, string] = utils.get_accent_colors(
                     ext.settings
                 );
