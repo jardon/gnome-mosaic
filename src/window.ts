@@ -802,7 +802,8 @@ function pointer_already_on_window(meta: Meta.Window): boolean {
 type Radii = [number, number, number, number];
 
 interface RadiiCacheEntry {
-    signature: string;
+    /** Exact monitor scale this entry was measured at. */
+    scale: number;
     radii: Radii;
     count: number;
     stable: boolean;
@@ -812,15 +813,10 @@ interface RadiiCacheEntry {
 // transient states (e.g. startup animations) don't get stuck in the cache.
 const RADII_CACHE_STABILITY_THRESHOLD = 3;
 
-const border_radii_cache = new WeakMap<Meta.WindowActor, RadiiCacheEntry>();
+let border_radii_cache = new WeakMap<Meta.WindowActor, RadiiCacheEntry>();
 
-function radii_signature(meta: Meta.Window, scale: number): string {
-    return [
-        meta.get_wm_class(),
-        meta.is_fullscreen(),
-        is_maximized(meta),
-        scale,
-    ].join(':');
+export function invalidate_border_radii_cache() {
+    border_radii_cache = new WeakMap();
 }
 
 export async function getBorderRadii(
@@ -836,17 +832,18 @@ export async function getBorderRadii(
     const {x, y, width, height} = meta.get_frame_rect();
     const monitorIndex = meta.get_monitor();
     // @ts-expect-error
-    const scale = Math.ceil(global.display.get_monitor_scale(monitorIndex));
+    const monitorScale = global.display.get_monitor_scale(monitorIndex);
 
-    if (height <= 0) return;
-
-    const signature = radii_signature(meta, scale);
+    if (height <= 0 || width <= 0) return;
 
     // Radii depend only on the window decoration, so cache them to avoid a
     // full-window paint_to_content readback on every focus change. Only
-    // short-circuit once the value has stabilized across multiple reads.
+    // short-circuit once the value has stabilized across multiple reads, and
+    // re-measure whenever the display scale changes (which rescales the
+    // captured buffer). Cache entries are also dropped wholesale on scale
+    // changes (see invalidate_border_radii_cache).
     const cached = border_radii_cache.get(actor);
-    if (cached && cached.signature === signature && cached.stable) {
+    if (cached && cached.scale === monitorScale && cached.stable) {
         return cached.radii;
     }
 
@@ -859,12 +856,23 @@ export async function getBorderRadii(
     try {
         const surface = capture.get_texture();
 
+        // The capture is rendered at the window actor's resource scale (the
+        // ceiled stage-view scale). Derive the actual texel-to-logical ratio
+        // from the captured texture itself so the measurement matches
+        // whatever the compositor really rendered — fractional scaling, X11
+        // buffer scales and mid-transition states all resolve correctly.
+        // Fall back to the ceiled monitor scale only if it can't be read.
+        const texWidth = surface.get_width();
+        const texHeight = surface.get_height();
+        const scale =
+            texWidth > 0 ? texWidth / width : Math.ceil(monitorScale);
+
         const imageBuf = await Shell.Screenshot.composite_to_stream(
             surface,
             0,
             0,
             width,
-            height * scale,
+            texHeight,
             1,
             null,
             0,
@@ -888,14 +896,14 @@ export async function getBorderRadii(
         };
 
         let alphaTop = -1;
-        for (var row = 0; row < 3; row++) {
+        for (let row = 0; row < 3; row++) {
             alphaTop = scanAlpha(row);
             if (alphaTop > -1) break;
         }
         if (alphaTop === -1) alphaTop = 0;
 
         let alphaBottom = -1;
-        for (var row = height * scale - 1; row > height * scale - 4; row--) {
+        for (let row = texHeight - 1; row > texHeight - 4; row--) {
             alphaBottom = scanAlpha(row);
             if (alphaBottom > -1) break;
         }
@@ -908,7 +916,7 @@ export async function getBorderRadii(
 
         const same_radii =
             cached &&
-            cached.signature === signature &&
+            cached.scale === monitorScale &&
             cached.radii.every((v, i) => v === radii[i]);
 
         if (same_radii) {
@@ -918,7 +926,7 @@ export async function getBorderRadii(
             }
         } else {
             border_radii_cache.set(actor, {
-                signature,
+                scale: monitorScale,
                 radii,
                 count: 1,
                 stable: RADII_CACHE_STABILITY_THRESHOLD <= 1,

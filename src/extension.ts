@@ -25,7 +25,11 @@ import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 import type {Entity} from './ecs.js';
 import type {ExtEvent} from './events.js';
 import {Rectangle} from './rectangle.js';
-import {getBorderRadii, is_desktop_window} from './window.js';
+import {
+    getBorderRadii,
+    invalidate_border_radii_cache,
+    is_desktop_window,
+} from './window.js';
 
 import {Fork} from './fork.js';
 
@@ -1104,6 +1108,15 @@ export class Ext extends Ecs.System<ExtEvent> {
     hide_all_borders() {
         for (const win of this.windows.values()) {
             win.hide_border();
+        }
+    }
+
+    /** Re-measure and re-style any visible active hints for the current scale. */
+    refresh_active_hints() {
+        for (const win of this.windows.values()) {
+            if (win.border?.visible) {
+                win.update_border_style(this);
+            }
         }
     }
 
@@ -2256,6 +2269,10 @@ export class Ext extends Ecs.System<ExtEvent> {
         }
 
         this.connect(layoutManager, 'monitors-changed', () => {
+            // Monitor changes include display-scale changes (which may fire
+            // without a St scale-factor change on fractional-scaling Wayland).
+            // Drop cached corner radii so hints re-measure at the new scale.
+            invalidate_border_radii_cache();
             this.register(Events.global(GlobalEvent.MonitorsChanged));
         });
 
@@ -2994,6 +3011,13 @@ export class Ext extends Ecs.System<ExtEvent> {
 
         this.update_inner_gap();
         this.update_outer_gap(diff);
+
+        // Display scale changes rescale window buffers, so cached corner radii
+        // and the active hint's inline style may no longer match. Refresh
+        // visible hints so they track the new scale instead of persisting a
+        // measurement from the previous one.
+        invalidate_border_radii_cache();
+        this.refresh_active_hints();
     }
 
     update_snapped() {
