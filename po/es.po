@@ -8,295 +8,298 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-21 22:53+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-09-23 15:36+0000\n"
+"Last-Translator: Juan Benites <benitesjn@gmail.com>\n"
+"Language-Team: Spanish <https://hosted.weblate.org/projects/gnome-mosaic/"
+"gnome-extension/es/>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2026.10.dev0\n"
 
 #: panel_settings.js:15
 msgid "Mosaic"
-msgstr ""
+msgstr "Mosaic"
 
 #: panel_settings.js:31
 msgid "Tiled window management"
-msgstr ""
+msgstr "Gestión de ventanas en mosaico"
 
 #: panel_settings.js:51 prefs.js:140
 msgid "Smart Gaps"
-msgstr ""
+msgstr "Espaciado inteligente"
 
 #: panel_settings.js:58 prefs.js:111
 msgid "Show Active Hint"
-msgstr ""
+msgstr "Mostrar indicación activa"
 
 #: panel_settings.js:65
 msgid "Move Pointer With Focus"
-msgstr ""
+msgstr "Mover el puntero con el foco"
 
 #: panel_settings.js:72 floating_exceptions/main.js:171
 msgid "Floating Window Exceptions"
-msgstr ""
+msgstr "Excepciones de ventanas flotantes"
 
 #: panel_settings.js:79
 msgid "Settings"
-msgstr ""
+msgstr "Configuración"
 
 #: prefs.js:20
 msgid "Keybindings"
-msgstr ""
+msgstr "Atajos de teclado"
 
 #: prefs.js:24
 msgid "Focus"
-msgstr ""
+msgstr "Foco"
 
 #: prefs.js:28
 msgid "Focus left window"
-msgstr ""
+msgstr "Enfocar la ventana de la izquierda"
 
 #: prefs.js:29
 msgid "Focus down window"
-msgstr ""
+msgstr "Enfocar la ventana inferior"
 
 #: prefs.js:30
 msgid "Focus up window"
-msgstr ""
+msgstr "Enfocar la ventana superior"
 
 #: prefs.js:31
 msgid "Focus right window"
-msgstr ""
+msgstr "Enfocar la ventana de la derecha"
 
 #: prefs.js:32
 msgid "Toggle auto-tiling"
-msgstr ""
+msgstr "Activar o desactivar el mosaico automático"
 
 #: prefs.js:33
 msgid "Toggle floating/tiling mode"
-msgstr ""
+msgstr "Alternar entre el modo flotante y el modo mosaico"
 
 #: prefs.js:34
 msgid "Toggle tiling orientation"
-msgstr ""
+msgstr "Cambiar la orientación del mosaico"
 
 #: prefs.js:37
 msgid "Tiling"
-msgstr ""
+msgstr "Mosaico"
 
 #: prefs.js:41
 msgid "Enter adjustment mode"
-msgstr ""
+msgstr "Entrar en el modo de ajuste"
 
 #: prefs.js:42
 msgid "Accept tiling changes"
-msgstr ""
+msgstr "Aceptar los cambios del mosaico"
 
 #: prefs.js:43
 msgid "Reject tiling changes"
-msgstr ""
+msgstr "Rechazar los cambios del mosaico"
 
 #: prefs.js:46
 msgid "Toggle tiling orientation (adjustment mode)"
-msgstr ""
+msgstr "Cambiar la orientación del mosaico (modo de ajuste)"
 
 #: prefs.js:48
 msgid "Move window left"
-msgstr ""
+msgstr "Mover la ventana a la izquierda"
 
 #: prefs.js:49
 msgid "Move window down"
-msgstr ""
+msgstr "Mover la ventana hacia abajo"
 
 #: prefs.js:50
 msgid "Move window up"
-msgstr ""
+msgstr "Mover la ventana hacia arriba"
 
 #: prefs.js:51
 msgid "Move window right"
-msgstr ""
+msgstr "Mover la ventana a la derecha"
 
 #: prefs.js:52
 msgid "Move window left (global)"
-msgstr ""
+msgstr "Mover la ventana a la izquierda (global)"
 
 #: prefs.js:53
 msgid "Move window down (global)"
-msgstr ""
+msgstr "Mover la ventana hacia abajo (global)"
 
 #: prefs.js:54
 msgid "Move window up (global)"
-msgstr ""
+msgstr "Mover la ventana hacia arriba (global)"
 
 #: prefs.js:55
 msgid "Move window right (global)"
-msgstr ""
+msgstr "Mover la ventana a la derecha (global)"
 
 #: prefs.js:58
 msgid "Resizing"
-msgstr ""
+msgstr "Redimensionamiento"
 
 #: prefs.js:62
 msgid "Toggle resize mode"
-msgstr ""
+msgstr "Alternar el modo de redimensionamiento"
 
 #: prefs.js:63
 msgid "Grow window left"
-msgstr ""
+msgstr "Aumentar el tamaño de la ventana hacia la izquierda"
 
 #: prefs.js:64
 msgid "Shrink window left"
-msgstr ""
+msgstr "Reducir el tamaño de la ventana hacia la izquierda"
 
 #: prefs.js:65
 msgid "Grow window up"
-msgstr ""
+msgstr "Aumentar el tamaño de la ventana hacia arriba"
 
 #: prefs.js:66
 msgid "Shrink window up"
-msgstr ""
+msgstr "Reducir el tamaño de la ventana hacia arriba"
 
 #: prefs.js:67
 msgid "Grow window right"
-msgstr ""
+msgstr "Aumentar el tamaño de la ventana hacia la derecha"
 
 #: prefs.js:68
 msgid "Shrink window right"
-msgstr ""
+msgstr "Reducir el tamaño de la ventana hacia la derecha"
 
 #: prefs.js:69
 msgid "Grow window down"
-msgstr ""
+msgstr "Aumentar el tamaño de la ventana hacia abajo"
 
 #: prefs.js:70
 msgid "Shrink window down"
-msgstr ""
+msgstr "Reducir el tamaño de la ventana hacia abajo"
 
 #: prefs.js:73
 msgid "Window Management"
-msgstr ""
+msgstr "Gestión de ventanas"
 
 #: prefs.js:77
 msgid "Swap window left"
-msgstr ""
+msgstr "Intercambiar la ventana de la izquierda"
 
 #: prefs.js:78
 msgid "Swap window down"
-msgstr ""
+msgstr "Intercambiar la ventana inferior"
 
 #: prefs.js:79
 msgid "Swap window up"
-msgstr ""
+msgstr "Intercambiar la ventana superior"
 
 #: prefs.js:80
 msgid "Swap window right"
-msgstr ""
+msgstr "Intercambiar la ventana de la derecha"
 
 #: prefs.js:83
 msgid "Workspace Management"
-msgstr ""
+msgstr "Gestión de espacios de trabajo"
 
 #: prefs.js:87
 msgid "Move window to the upper workspace"
-msgstr ""
+msgstr "Mover la ventana al espacio de trabajo superior"
 
 #: prefs.js:88
 msgid "Move window to the lower workspace"
-msgstr ""
+msgstr "Mover la ventana al espacio de trabajo inferior"
 
 #: prefs.js:89
 msgid "Move window to the upper monitor"
-msgstr ""
+msgstr "Mover la ventana al monitor superior"
 
 #: prefs.js:90
 msgid "Move window to the lower monitor"
-msgstr ""
+msgstr "Mover la ventana al monitor inferior"
 
 #: prefs.js:91
 msgid "Move window to the leftward monitor"
-msgstr ""
+msgstr "Mover la ventana al monitor de la izquierda"
 
 #: prefs.js:92
 msgid "Move window to the rightward monitor"
-msgstr ""
+msgstr "Mover la ventana al monitor de la derecha"
 
 #: prefs.js:103
 msgid "General"
-msgstr ""
+msgstr "General"
 
 #: prefs.js:107
 msgid "Appearance"
-msgstr ""
+msgstr "Apariencia"
 
 #: prefs.js:116
 msgid "Show Window Titles"
-msgstr ""
+msgstr "Mostrar títulos de las ventanas"
 
 #: prefs.js:121
 msgid "Show Indicator Panel"
-msgstr ""
+msgstr "Mostrar el panel de indicadores"
 
 #: prefs.js:126
 msgid "Show Minimize to Tray Windows"
-msgstr ""
+msgstr "Mostrar las ventanas minimizadas en la bandeja del sistema"
 
 #: prefs.js:131
 msgid "Behavior"
-msgstr ""
+msgstr "Comportamiento"
 
 #: prefs.js:135
 msgid "Snap to Grid (Floating Mode)"
-msgstr ""
+msgstr "Ajustar a la cuadrícula (modo flotante)"
 
 #: prefs.js:145
 msgid "Mouse Cursor Follows Active Window"
-msgstr ""
+msgstr "El cursor del ratón sigue a la ventana activa"
 
 #: prefs.js:150
 msgid "Mouse Cursor Focus Position"
-msgstr ""
+msgstr "Posición del cursor del ratón al enfocar"
 
 #: prefs.js:158
 msgid "Layout"
-msgstr ""
+msgstr "Disposición"
 
 #: prefs.js:162
 msgid "Active Hint Width"
-msgstr ""
+msgstr "Ancho de la indicación activa"
 
 #: prefs.js:172
 msgid "Gap Width"
-msgstr ""
+msgstr "Ancho del espacio"
 
 #: prefs.js:185
 msgid "Advanced"
-msgstr ""
+msgstr "Avanzado"
 
 #: prefs.js:190
 msgid "Log Level"
-msgstr ""
+msgstr "Nivel de registro"
 
 #: prefs.js:213
 msgid "Disabled"
-msgstr ""
+msgstr "Desactivado"
 
 #: prefs.js:249
 msgid "New accelerator…"
-msgstr ""
+msgstr "Nuevo atajo…"
 
 #: floating_exceptions/main.js:13
 msgid "System Exceptions"
-msgstr ""
+msgstr "Excepciones del sistema"
 
 #: floating_exceptions/main.js:14
 msgid "Updated based on validated user reports."
-msgstr ""
+msgstr "Actualizado según informes de usuarios validados."
 
 #: floating_exceptions/main.js:43
 msgid "Add exceptions by selecting currently running applications and windows."
 msgstr ""
+"Añade excepciones seleccionando las aplicaciones y ventanas en ejecución."
 
 #: floating_exceptions/main.js:258
 msgid "GNOME Mosaic Floating Window Exceptions"
-msgstr ""
+msgstr "Excepciones de ventanas flotantes de GNOME Mosaic"
