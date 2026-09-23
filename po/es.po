@@ -1,0 +1,302 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-21 22:53+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: es\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+#: panel_settings.js:15
+msgid "Mosaic"
+msgstr ""
+
+#: panel_settings.js:31
+msgid "Tiled window management"
+msgstr ""
+
+#: panel_settings.js:51 prefs.js:140
+msgid "Smart Gaps"
+msgstr ""
+
+#: panel_settings.js:58 prefs.js:111
+msgid "Show Active Hint"
+msgstr ""
+
+#: panel_settings.js:65
+msgid "Move Pointer With Focus"
+msgstr ""
+
+#: panel_settings.js:72 floating_exceptions/main.js:171
+msgid "Floating Window Exceptions"
+msgstr ""
+
+#: panel_settings.js:79
+msgid "Settings"
+msgstr ""
+
+#: prefs.js:20
+msgid "Keybindings"
+msgstr ""
+
+#: prefs.js:24
+msgid "Focus"
+msgstr ""
+
+#: prefs.js:28
+msgid "Focus left window"
+msgstr ""
+
+#: prefs.js:29
+msgid "Focus down window"
+msgstr ""
+
+#: prefs.js:30
+msgid "Focus up window"
+msgstr ""
+
+#: prefs.js:31
+msgid "Focus right window"
+msgstr ""
+
+#: prefs.js:32
+msgid "Toggle auto-tiling"
+msgstr ""
+
+#: prefs.js:33
+msgid "Toggle floating/tiling mode"
+msgstr ""
+
+#: prefs.js:34
+msgid "Toggle tiling orientation"
+msgstr ""
+
+#: prefs.js:37
+msgid "Tiling"
+msgstr ""
+
+#: prefs.js:41
+msgid "Enter adjustment mode"
+msgstr ""
+
+#: prefs.js:42
+msgid "Accept tiling changes"
+msgstr ""
+
+#: prefs.js:43
+msgid "Reject tiling changes"
+msgstr ""
+
+#: prefs.js:46
+msgid "Toggle tiling orientation (adjustment mode)"
+msgstr ""
+
+#: prefs.js:48
+msgid "Move window left"
+msgstr ""
+
+#: prefs.js:49
+msgid "Move window down"
+msgstr ""
+
+#: prefs.js:50
+msgid "Move window up"
+msgstr ""
+
+#: prefs.js:51
+msgid "Move window right"
+msgstr ""
+
+#: prefs.js:52
+msgid "Move window left (global)"
+msgstr ""
+
+#: prefs.js:53
+msgid "Move window down (global)"
+msgstr ""
+
+#: prefs.js:54
+msgid "Move window up (global)"
+msgstr ""
+
+#: prefs.js:55
+msgid "Move window right (global)"
+msgstr ""
+
+#: prefs.js:58
+msgid "Resizing"
+msgstr ""
+
+#: prefs.js:62
+msgid "Toggle resize mode"
+msgstr ""
+
+#: prefs.js:63
+msgid "Grow window left"
+msgstr ""
+
+#: prefs.js:64
+msgid "Shrink window left"
+msgstr ""
+
+#: prefs.js:65
+msgid "Grow window up"
+msgstr ""
+
+#: prefs.js:66
+msgid "Shrink window up"
+msgstr ""
+
+#: prefs.js:67
+msgid "Grow window right"
+msgstr ""
+
+#: prefs.js:68
+msgid "Shrink window right"
+msgstr ""
+
+#: prefs.js:69
+msgid "Grow window down"
+msgstr ""
+
+#: prefs.js:70
+msgid "Shrink window down"
+msgstr ""
+
+#: prefs.js:73
+msgid "Window Management"
+msgstr ""
+
+#: prefs.js:77
+msgid "Swap window left"
+msgstr ""
+
+#: prefs.js:78
+msgid "Swap window down"
+msgstr ""
+
+#: prefs.js:79
+msgid "Swap window up"
+msgstr ""
+
+#: prefs.js:80
+msgid "Swap window right"
+msgstr ""
+
+#: prefs.js:83
+msgid "Workspace Management"
+msgstr ""
+
+#: prefs.js:87
+msgid "Move window to the upper workspace"
+msgstr ""
+
+#: prefs.js:88
+msgid "Move window to the lower workspace"
+msgstr ""
+
+#: prefs.js:89
+msgid "Move window to the upper monitor"
+msgstr ""
+
+#: prefs.js:90
+msgid "Move window to the lower monitor"
+msgstr ""
+
+#: prefs.js:91
+msgid "Move window to the leftward monitor"
+msgstr ""
+
+#: prefs.js:92
+msgid "Move window to the rightward monitor"
+msgstr ""
+
+#: prefs.js:103
+msgid "General"
+msgstr ""
+
+#: prefs.js:107
+msgid "Appearance"
+msgstr ""
+
+#: prefs.js:116
+msgid "Show Window Titles"
+msgstr ""
+
+#: prefs.js:121
+msgid "Show Indicator Panel"
+msgstr ""
+
+#: prefs.js:126
+msgid "Show Minimize to Tray Windows"
+msgstr ""
+
+#: prefs.js:131
+msgid "Behavior"
+msgstr ""
+
+#: prefs.js:135
+msgid "Snap to Grid (Floating Mode)"
+msgstr ""
+
+#: prefs.js:145
+msgid "Mouse Cursor Follows Active Window"
+msgstr ""
+
+#: prefs.js:150
+msgid "Mouse Cursor Focus Position"
+msgstr ""
+
+#: prefs.js:158
+msgid "Layout"
+msgstr ""
+
+#: prefs.js:162
+msgid "Active Hint Width"
+msgstr ""
+
+#: prefs.js:172
+msgid "Gap Width"
+msgstr ""
+
+#: prefs.js:185
+msgid "Advanced"
+msgstr ""
+
+#: prefs.js:190
+msgid "Log Level"
+msgstr ""
+
+#: prefs.js:213
+msgid "Disabled"
+msgstr ""
+
+#: prefs.js:249
+msgid "New accelerator…"
+msgstr ""
+
+#: floating_exceptions/main.js:13
+msgid "System Exceptions"
+msgstr ""
+
+#: floating_exceptions/main.js:14
+msgid "Updated based on validated user reports."
+msgstr ""
+
+#: floating_exceptions/main.js:43
+msgid "Add exceptions by selecting currently running applications and windows."
+msgstr ""
+
+#: floating_exceptions/main.js:258
+msgid "GNOME Mosaic Floating Window Exceptions"
+msgstr ""
