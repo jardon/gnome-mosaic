@@ -8,14 +8,16 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-21 22:53+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-09-26 11:51+0000\n"
+"Last-Translator: ButterflyOfFire <boffire@users.noreply.hosted.weblate.org>\n"
+"Language-Team: Kabyle <https://hosted.weblate.org/projects/gnome-mosaic/"
+"gnome-extension/kab/>\n"
 "Language: kab\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
+"X-Generator: Weblate 2026.10.dev0\n"
 
 #: panel_settings.js:15
 msgid "Mosaic"
@@ -43,11 +45,11 @@ msgstr ""
 
 #: panel_settings.js:79
 msgid "Settings"
-msgstr ""
+msgstr "Iɣewwaren"
 
 #: prefs.js:20
 msgid "Keybindings"
-msgstr ""
+msgstr "Inegzumen n unasiw"
 
 #: prefs.js:24
 msgid "Focus"
@@ -103,19 +105,19 @@ msgstr ""
 
 #: prefs.js:48
 msgid "Move window left"
-msgstr ""
+msgstr "Smutti asfaylu ɣer tama taẓelmaḍt"
 
 #: prefs.js:49
 msgid "Move window down"
-msgstr ""
+msgstr "Smutti asfaylu d akessar"
 
 #: prefs.js:50
 msgid "Move window up"
-msgstr ""
+msgstr "Smutti asfaylu d asawen"
 
 #: prefs.js:51
 msgid "Move window right"
-msgstr ""
+msgstr "Smutti asfaylu ɣer tama tayeffust"
 
 #: prefs.js:52
 msgid "Move window left (global)"
@@ -155,27 +157,27 @@ msgstr ""
 
 #: prefs.js:66
 msgid "Shrink window up"
-msgstr ""
+msgstr "Semẓi asfaylu d asawen"
 
 #: prefs.js:67
 msgid "Grow window right"
-msgstr ""
+msgstr "Semɣer asfaylu ɣer uyeffus"
 
 #: prefs.js:68
 msgid "Shrink window right"
-msgstr ""
+msgstr "Semẓi asfaylu ɣer yeffus"
 
 #: prefs.js:69
 msgid "Grow window down"
-msgstr ""
+msgstr "Semɣer asfaylu d akessar"
 
 #: prefs.js:70
 msgid "Shrink window down"
-msgstr ""
+msgstr "Semẓi asfaylu d akessar"
 
 #: prefs.js:73
 msgid "Window Management"
-msgstr ""
+msgstr "Asefrek n yisfuyla"
 
 #: prefs.js:77
 msgid "Swap window left"
@@ -195,39 +197,39 @@ msgstr ""
 
 #: prefs.js:83
 msgid "Workspace Management"
-msgstr ""
+msgstr "Asefrek n tallunin n umahil"
 
 #: prefs.js:87
 msgid "Move window to the upper workspace"
-msgstr ""
+msgstr "Smutti asfaylu ɣer tallunt n umahil ufella"
 
 #: prefs.js:88
 msgid "Move window to the lower workspace"
-msgstr ""
+msgstr "Smutti asfaylu ɣer tallunt n umahil wadda"
 
 #: prefs.js:89
 msgid "Move window to the upper monitor"
-msgstr ""
+msgstr "Smutti asfaylu ɣer ugdil ufella"
 
 #: prefs.js:90
 msgid "Move window to the lower monitor"
-msgstr ""
+msgstr "Smutti asfaylu ɣer ugdil wadda"
 
 #: prefs.js:91
 msgid "Move window to the leftward monitor"
-msgstr ""
+msgstr "Smutti asfaylu ɣer ugdil aẓelmaḍ"
 
 #: prefs.js:92
 msgid "Move window to the rightward monitor"
-msgstr ""
+msgstr "Smutti asfaylu ɣer ugdil ayeffus"
 
 #: prefs.js:103
 msgid "General"
-msgstr ""
+msgstr "Amatu"
 
 #: prefs.js:107
 msgid "Appearance"
-msgstr ""
+msgstr "Agrudem"
 
 #: prefs.js:116
 msgid "Show Window Titles"
@@ -243,7 +245,7 @@ msgstr ""
 
 #: prefs.js:131
 msgid "Behavior"
-msgstr ""
+msgstr "Tikli"
 
 #: prefs.js:135
 msgid "Snap to Grid (Floating Mode)"
@@ -259,7 +261,7 @@ msgstr ""
 
 #: prefs.js:158
 msgid "Layout"
-msgstr ""
+msgstr "Tamudemt"
 
 #: prefs.js:162
 msgid "Active Hint Width"
@@ -271,7 +273,7 @@ msgstr ""
 
 #: prefs.js:185
 msgid "Advanced"
-msgstr ""
+msgstr "Talqayt"
 
 #: prefs.js:190
 msgid "Log Level"
@@ -279,11 +281,11 @@ msgstr ""
 
 #: prefs.js:213
 msgid "Disabled"
-msgstr ""
+msgstr "D arurmid"
 
 #: prefs.js:249
 msgid "New accelerator…"
-msgstr ""
+msgstr "Amesɣiwel amaynut…"
 
 #: floating_exceptions/main.js:13
 msgid "System Exceptions"
