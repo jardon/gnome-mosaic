@@ -8,22 +8,24 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-21 22:53+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-09-28 10:51+0000\n"
+"Last-Translator: Jiri Grönroos <jiri.gronroos@iki.fi>\n"
+"Language-Team: Finnish <https://hosted.weblate.org/projects/gnome-mosaic/"
+"gnome-extension/fi/>\n"
 "Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2026.10.dev0\n"
 
 #: panel_settings.js:15
 msgid "Mosaic"
-msgstr ""
+msgstr "Mosaic"
 
 #: panel_settings.js:31
 msgid "Tiled window management"
-msgstr ""
+msgstr "Asettelevaa ikkunanhallintaa"
 
 #: panel_settings.js:51 prefs.js:140
 msgid "Smart Gaps"
@@ -31,75 +33,75 @@ msgstr ""
 
 #: panel_settings.js:58 prefs.js:111
 msgid "Show Active Hint"
-msgstr ""
+msgstr "Näytä aktiivisen vihje"
 
 #: panel_settings.js:65
 msgid "Move Pointer With Focus"
-msgstr ""
+msgstr "Siirrä osoitinta kohdistuksen kanssa"
 
 #: panel_settings.js:72 floating_exceptions/main.js:171
 msgid "Floating Window Exceptions"
-msgstr ""
+msgstr "Kelluvien ikkunoiden poikkeukset"
 
 #: panel_settings.js:79
 msgid "Settings"
-msgstr ""
+msgstr "Asetukset"
 
 #: prefs.js:20
 msgid "Keybindings"
-msgstr ""
+msgstr "Pikanäppäimet"
 
 #: prefs.js:24
 msgid "Focus"
-msgstr ""
+msgstr "Kohdistus"
 
 #: prefs.js:28
 msgid "Focus left window"
-msgstr ""
+msgstr "Kohdistus poistui ikkunasta"
 
 #: prefs.js:29
 msgid "Focus down window"
-msgstr ""
+msgstr "Kohdista alla olevaan ikkunaan"
 
 #: prefs.js:30
 msgid "Focus up window"
-msgstr ""
+msgstr "Kohdista yllä olevaan ikkunaan"
 
 #: prefs.js:31
 msgid "Focus right window"
-msgstr ""
+msgstr "Kohdista oikealla olevaan ikkunaan"
 
 #: prefs.js:32
 msgid "Toggle auto-tiling"
-msgstr ""
+msgstr "Automaattinen asettelu päällä/pois"
 
 #: prefs.js:33
 msgid "Toggle floating/tiling mode"
-msgstr ""
+msgstr "Vaihda asettelevan ja kelluvan tilan välillä"
 
 #: prefs.js:34
 msgid "Toggle tiling orientation"
-msgstr ""
+msgstr "Vaihda asettelun suuntaa"
 
 #: prefs.js:37
 msgid "Tiling"
-msgstr ""
+msgstr "Asettelu"
 
 #: prefs.js:41
 msgid "Enter adjustment mode"
-msgstr ""
+msgstr "Siirry hienosäätötilaan"
 
 #: prefs.js:42
 msgid "Accept tiling changes"
-msgstr ""
+msgstr "Hyväksy asettelumuutokset"
 
 #: prefs.js:43
 msgid "Reject tiling changes"
-msgstr ""
+msgstr "Hylkää asettelumuutokset"
 
 #: prefs.js:46
 msgid "Toggle tiling orientation (adjustment mode)"
-msgstr ""
+msgstr "Vaihda asettelun suuntausta (hienosäätötila)"
 
 #: prefs.js:48
 msgid "Move window left"
@@ -135,7 +137,7 @@ msgstr ""
 
 #: prefs.js:58
 msgid "Resizing"
-msgstr ""
+msgstr "Koon muuttaminen"
 
 #: prefs.js:62
 msgid "Toggle resize mode"
@@ -175,7 +177,7 @@ msgstr ""
 
 #: prefs.js:73
 msgid "Window Management"
-msgstr ""
+msgstr "Ikkunanhallinta"
 
 #: prefs.js:77
 msgid "Swap window left"
@@ -195,63 +197,63 @@ msgstr ""
 
 #: prefs.js:83
 msgid "Workspace Management"
-msgstr ""
+msgstr "Työtilojen hallinta"
 
 #: prefs.js:87
 msgid "Move window to the upper workspace"
-msgstr ""
+msgstr "Siirrä ikkuna yllä olevaan työtilaan"
 
 #: prefs.js:88
 msgid "Move window to the lower workspace"
-msgstr ""
+msgstr "Siirrä ikkuna alla olevaan työtilaan"
 
 #: prefs.js:89
 msgid "Move window to the upper monitor"
-msgstr ""
+msgstr "Siirrä ikkuna yllä olevaan näyttöön"
 
 #: prefs.js:90
 msgid "Move window to the lower monitor"
-msgstr ""
+msgstr "Siirrä ikkuna alla olevaan näyttöön"
 
 #: prefs.js:91
 msgid "Move window to the leftward monitor"
-msgstr ""
+msgstr "Siirrä ikkuna vasemmalla olevaan näyttöön"
 
 #: prefs.js:92
 msgid "Move window to the rightward monitor"
-msgstr ""
+msgstr "Siirrä ikkuna oikealla olevaan näyttöön"
 
 #: prefs.js:103
 msgid "General"
-msgstr ""
+msgstr "Yleiset"
 
 #: prefs.js:107
 msgid "Appearance"
-msgstr ""
+msgstr "Ulkoasu"
 
 #: prefs.js:116
 msgid "Show Window Titles"
-msgstr ""
+msgstr "Näytä ikkunaotsikot"
 
 #: prefs.js:121
 msgid "Show Indicator Panel"
-msgstr ""
+msgstr "Näytä ilmaisinpaneeli"
 
 #: prefs.js:126
 msgid "Show Minimize to Tray Windows"
-msgstr ""
+msgstr "Näytä \"Pienennä ikkunat tehtäväpalkkiin\"-painike"
 
 #: prefs.js:131
 msgid "Behavior"
-msgstr ""
+msgstr "Toiminta"
 
 #: prefs.js:135
 msgid "Snap to Grid (Floating Mode)"
-msgstr ""
+msgstr "Kiinnity ruudukkoon (kelluva tila)"
 
 #: prefs.js:145
 msgid "Mouse Cursor Follows Active Window"
-msgstr ""
+msgstr "Hiiren osoitin seuraa aktiivista ikkunaa"
 
 #: prefs.js:150
 msgid "Mouse Cursor Focus Position"
@@ -263,7 +265,7 @@ msgstr ""
 
 #: prefs.js:162
 msgid "Active Hint Width"
-msgstr ""
+msgstr "Aktiivisen vihjeen leveys"
 
 #: prefs.js:172
 msgid "Gap Width"
@@ -271,15 +273,15 @@ msgstr ""
 
 #: prefs.js:185
 msgid "Advanced"
-msgstr ""
+msgstr "Lisäasetukset"
 
 #: prefs.js:190
 msgid "Log Level"
-msgstr ""
+msgstr "Lokitustaso"
 
 #: prefs.js:213
 msgid "Disabled"
-msgstr ""
+msgstr "Ei käytössä"
 
 #: prefs.js:249
 msgid "New accelerator…"
@@ -287,7 +289,7 @@ msgstr ""
 
 #: floating_exceptions/main.js:13
 msgid "System Exceptions"
-msgstr ""
+msgstr "Järjestelmäpoikkeukset"
 
 #: floating_exceptions/main.js:14
 msgid "Updated based on validated user reports."
@@ -296,6 +298,7 @@ msgstr ""
 #: floating_exceptions/main.js:43
 msgid "Add exceptions by selecting currently running applications and windows."
 msgstr ""
+"Lisää poikkeuksia valitsemalla käynnissä olevia sovelluksia ja ikkunoita."
 
 #: floating_exceptions/main.js:258
 msgid "GNOME Mosaic Floating Window Exceptions"
