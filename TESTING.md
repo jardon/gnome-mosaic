@@ -63,6 +63,38 @@ Tasks for a tester to verify when approving a patch. Use complex window layouts 
 - [ ] Plug an additional display into a laptop - windows and workspaces don't changes
 - [ ] NOTE: Add vertical monitor layout test
 
+#### Display Re-layout
+
+Unplugging a display must re-home each tiling tree onto the remaining display while keeping its
+layout: the same splits, the same orientations, the same ratios, and the same window order. Only
+the monitor and the area may change.
+
+- [ ] 2 monitors, 4 workspaces each, a distinct tree shape per workspace. Unplug one display. The
+      surviving display ends up with 8 workspaces and every tree keeps its original split ratios,
+      orientations, and window order. The unplugged display's workspaces land as 4-7, in order.
+- [ ] 2 monitors, one tree each. Unplug one display. No extra workspace is allocated and the
+      surviving tree keeps its shape.
+- [ ] Unplug the **primary** display. The top bar moves and the layout is still intact. Windows from
+      the old primary should not jump to a different relative position.
+- [ ] Re-plug a display that was just unplugged. Recovery is symmetric and no tree is orphaned.
+- [ ] Unplug two of three displays at once. All surviving trees keep their shapes and order.
+- [ ] Rearrange monitors (change which is left/right) without unplugging. Nothing moves between
+      workspaces and no tree is disturbed.
+- [ ] Change a monitor's resolution. Trees re-area but keep their splits, and no workspace is added.
+- [ ] Unplug a display that has no tiled windows on it. Nothing else is disturbed.
+- [ ] With `workspaces-only-on-primary` enabled, unplug a display. One tree per monitor remains and
+      no tree is orphaned.
+- [ ] Unplug a display while a window is floating. The floating window is unaffected and does not
+      consume a workspace slot.
+- [ ] Unplug a display during the ~2s debounce window, then plug it back. The layout settles
+      correctly and no duplicate workspaces appear.
+- [ ] Unplug a display during an active drag/resize. The operation completes and the layout is
+      preserved.
+- [ ] After any unplug, check `Mosaic` in the journal: no `more than one tree wants workspace 0`
+      warning unless `workspaces-only-on-primary` is on.
+- [ ] After any unplug, switching to each migrated workspace shows a fully tiled tree. No workspace
+      is left empty or half-tiled.
+
 ### Window Titles
 
 - [ ] Disabling window titles using global (GNOME Mosaic) option works for Shell Shortcuts, LibreOffice, etc.

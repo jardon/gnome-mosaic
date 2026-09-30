@@ -14,7 +14,6 @@ import * as Settings from './settings.js';
 import * as Tiling from './tiling.js';
 import * as Window from './window.js';
 import * as auto_tiler from './auto_tiler.js';
-import * as node from './node.js';
 import * as utils from './utils.js';
 import * as Executor from './executor.js';
 import * as movement from './movement.js';
@@ -93,7 +92,8 @@ interface DeferredTile {
     moved_once: boolean;
 }
 
-type Migration = [Fork, number, Rectangle, boolean];
+/** A pending re-homing of a toplevel tree onto a [monitor, workspace] slot */
+type Migration = [Fork, MonitorID, WorkspaceID, Rectangle];
 
 export class Ext extends Ecs.System<ExtEvent> {
     /** Mechanism for managing keybindings */
@@ -181,8 +181,6 @@ export class Ext extends Ecs.System<ExtEvent> {
     init: boolean = true;
 
     migration_exec: exec.OnceExecutor<Migration, Migration[]> | null = null;
-
-    migrations: Array<Migration> = new Array();
 
     /** Set when a window is being moved by the mouse */
     moved_by_mouse: boolean = false;
@@ -771,48 +769,6 @@ export class Ext extends Ecs.System<ExtEvent> {
         return [primary, this.displays[1].get(primary) as Display];
     }
 
-    find_unused_workspace(monitor: number): [number, any] {
-        if (!this.auto_tiler) return [0, wom.get_workspace_by_index(0)];
-
-        let id = 0;
-
-        const tiled_windows = new Array<Window.ShellWindow>();
-
-        for (const [window] of this.auto_tiler.attached.iter()) {
-            if (!this.auto_tiler.attached.contains(window)) continue;
-
-            const win = this.windows.get(window);
-
-            if (win && !win.reassignment && win.meta.get_monitor() === monitor)
-                tiled_windows.push(win);
-        }
-
-        cancel: while (true) {
-            for (const window of tiled_windows) {
-                if (window.workspace_id() === id) {
-                    id += 1;
-                    continue cancel;
-                }
-            }
-
-            break;
-        }
-
-        let new_work;
-
-        if (id + 1 === wom.get_n_workspaces()) {
-            id += 1;
-            new_work = wom.append_new_workspace(
-                true,
-                global.get_current_time()
-            );
-        } else {
-            new_work = wom.get_workspace_by_index(id);
-        }
-
-        return [id, new_work];
-    }
-
     focus_left() {
         this.activate_window(this.focus_selector.left(this, null));
     }
@@ -874,7 +830,16 @@ export class Ext extends Ecs.System<ExtEvent> {
             .get_active_workspace()
             .get_work_area_for_monitor(monitor);
 
-        return Rect.Rectangle.from_meta(meta as Rectangular);
+        if (meta) return Rect.Rectangle.from_meta(meta as Rectangular);
+
+        // Mutter reports no work area for a monitor that is mid-reconfiguration
+        // or already gone. Fall back to the full monitor geometry so callers
+        // still receive a usable rectangle.
+        const geometry = display.get_monitor_geometry(monitor);
+
+        if (geometry) return Rect.Rectangle.from_meta(geometry as Rectangular);
+
+        return new Rect.Rectangle([0, 0, 0, 0]);
     }
 
     monitor_area(monitor: number): Rectangle | null {
@@ -2767,7 +2732,15 @@ export class Ext extends Ecs.System<ExtEvent> {
             for (const f of this.auto_tiler.forest.forks.values()) {
                 if (!f.is_toplevel) continue;
 
-                const display = this.monitor_work_area(f.monitor);
+                // A fork whose monitor is gone has not been re-homed yet. Hold
+                // it on the primary's work area until its migration runs,
+                // rather than reading geometry for a monitor that no longer
+                // exists.
+                const monitor = this.displays[1].has(f.monitor)
+                    ? f.monitor
+                    : this.displays[0];
+
+                const display = this.monitor_work_area(monitor);
 
                 if (display) {
                     const area = new Rect.Rectangle([
@@ -2782,44 +2755,34 @@ export class Ext extends Ecs.System<ExtEvent> {
                     this.auto_tiler.update_toplevel(
                         this,
                         f,
-                        f.monitor,
+                        monitor,
                         this.settings.smart_gaps()
                     );
                 }
             }
         };
 
-        const apply_migrations = (assigned_monitors: Set<number>) => {
-            if (!this.migrations) return;
-
+        const apply_migrations = (batch: Migration[]) => {
             if (this.migration_exec) {
                 this.migration_exec.stop();
                 this.migration_exec = null;
             }
-            this.migration_exec = new exec.OnceExecutor<Migration, Migration[]>(
-                this.migrations
-            );
-            this.migration_exec.start(
+
+            if (batch.length === 0) {
+                update_tiling();
+                return;
+            }
+
+            const runner = new exec.OnceExecutor<Migration, Migration[]>(batch);
+            this.migration_exec = runner;
+
+            runner.start(
                 500,
-                ([fork, new_monitor, workspace, find_workspace]) => {
-                    let new_workspace;
-
-                    if (find_workspace) {
-                        if (assigned_monitors.has(new_monitor)) {
-                            [new_workspace] =
-                                this.find_unused_workspace(new_monitor);
-                        } else {
-                            assigned_monitors.add(new_monitor);
-                            new_workspace = 0;
-                        }
-                    } else {
-                        new_workspace = fork.workspace;
-                    }
-
+                ([fork, new_monitor, new_workspace, work_area]) => {
                     fork.migrate(
                         this,
                         forest,
-                        workspace,
+                        work_area,
                         new_monitor,
                         new_workspace
                     );
@@ -2827,39 +2790,20 @@ export class Ext extends Ecs.System<ExtEvent> {
 
                     return true;
                 },
-                () => update_tiling()
+                () => {
+                    // Appending workspaces sets `ignore_display_update`, which
+                    // would otherwise swallow the `workareas-changed` that our
+                    // own workspace growth emits.
+                    this.ignore_display_update = false;
+                    update_tiling();
+                }
             );
         };
 
-        function mark_for_reassignment(ext: Ext, fork: Ecs.Entity) {
-            for (const win of forest.iter(fork, node.NodeKind.WINDOW)) {
-                if (win.inner.kind === 2) {
-                    const entity = win.inner.entity;
-                    const window = ext.windows.get(entity);
-                    if (window) window.reassignment = true;
-                }
-            }
-        }
-
         const [old_primary, old_displays] = this.displays;
 
-        const changes = new Map<number, number>();
-
-        // Records which display's windows were moved to what new display's ID
-        for (const [entity, w] of this.windows.iter()) {
-            if (!w.actor_exists()) continue;
-
-            this.monitors.with(entity, ([mon]) => {
-                const assignment =
-                    mon === old_primary
-                        ? primary_display
-                        : w.meta.get_monitor();
-                changes.set(mon, assignment);
-            });
-        }
-
         // Fetch a new list of monitors
-        const updated = new Map();
+        const updated = new Map<MonitorID, Display>();
 
         for (const monitor of layoutManager.monitors) {
             const mon = monitor as Monitor;
@@ -2875,19 +2819,81 @@ export class Ext extends Ecs.System<ExtEvent> {
             updated.set(mon.index, {area, ws});
         }
 
-        const forest = this.auto_tiler.forest;
+        // Maps every previously-known monitor index onto the index it has
+        // become. The display server renumbers monitors as they come and go,
+        // so this is keyed on geometry rather than on index alone.
+        const changes = new Map<MonitorID, MonitorID>();
+        const claimed = new Set<MonitorID>();
+        const new_indices = [...updated.keys()];
+        const old_indices = [...old_displays.keys()];
 
-        if (old_displays.size === updated.size) {
-            update_tiling();
+        for (const old of old_indices) {
+            const area = old_displays.get(old)?.area;
 
-            this.displays = [primary_display, updated];
+            if (!area) continue;
 
-            return;
+            const match = new_indices.find(
+                index =>
+                    !claimed.has(index) && updated.get(index)?.area.eq(area)
+            );
+
+            if (match === undefined) continue;
+
+            changes.set(old, match);
+            claimed.add(match);
         }
+
+        if (!changes.has(old_primary)) {
+            changes.set(old_primary, primary_display);
+            claimed.add(primary_display);
+        }
+
+        // Any monitor we have no match for has been disconnected.
+        for (const old of old_indices) {
+            if (!changes.has(old)) changes.set(old, primary_display);
+        }
+
+        const forest = this.auto_tiler.forest;
 
         this.displays = [primary_display, updated];
 
-        if (utils.map_eq(old_displays, updated)) {
+        const target_monitor = (monitor: MonitorID): MonitorID =>
+            changes.get(monitor) ?? primary_display;
+
+        // Snapshot every toplevel tree along with the slot it currently holds.
+        const trees: Array<[Fork, MonitorID, WorkspaceID]> = new Array();
+
+        for (const f of forest.forks.values()) {
+            if (f.is_toplevel) trees.push([f, f.monitor, f.workspace]);
+        }
+
+        // A tree whose monitor survived keeps its slot, and reserves it against
+        // the trees arriving from a monitor that did not.
+        const occupied = new Map<MonitorID, Set<WorkspaceID>>();
+        const movers = new Map<
+            MonitorID,
+            Array<[Fork, MonitorID, WorkspaceID]>
+        >();
+
+        for (const tree of trees) {
+            const [, monitor, workspace] = tree;
+            const target = target_monitor(monitor);
+
+            if (target === monitor) {
+                if (!occupied.has(target)) occupied.set(target, new Set());
+                occupied.get(target)?.add(workspace);
+                continue;
+            }
+
+            if (!movers.has(target)) movers.set(target, new Array());
+            movers.get(target)?.push(tree);
+        }
+
+        // Nothing is being re-homed. This covers resolution changes, panel
+        // changes, and rearranging monitors that all survived -- none of which
+        // need to disturb a tree's slot.
+        if (movers.size === 0) {
+            update_tiling();
             return;
         }
 
@@ -2909,63 +2915,71 @@ export class Ext extends Ecs.System<ExtEvent> {
                 (() => {
                     if (!this.auto_tiler) return;
 
-                    const toplevels = new Array();
-                    const assigned_monitors = new Set<number>();
+                    const displays = this.displays[1];
+                    const batch = new Array<Migration>();
 
-                    for (const [old_mon, new_mon] of changes) {
-                        if (old_mon === new_mon) assigned_monitors.add(new_mon);
-                    }
+                    for (const [monitor, group] of movers) {
+                        const display = displays.get(monitor);
 
-                    for (const f of forest.forks.values()) {
-                        if (f.is_toplevel) {
-                            toplevels.push(f);
+                        if (!display) continue;
 
-                            let migration:
-                                null | [Fork, number, Rectangle, boolean] =
-                                null;
+                        // Keep each original monitor's trees contiguous, and
+                        // each workspace's trees in the order they were laid
+                        // out, so the arrangement survives the re-homing.
+                        group.sort(
+                            (a, b) =>
+                                a[1] - b[1] ||
+                                a[2] - b[2] ||
+                                a[0].entity[0] - b[0].entity[0]
+                        );
 
-                            const displays = this.displays[1];
+                        const taken =
+                            occupied.get(monitor) ?? new Set<WorkspaceID>();
 
-                            for (const [old_monitor, new_monitor] of changes) {
-                                const display = displays.get(new_monitor);
+                        // `workspaces-only-on-primary` pins every non-primary
+                        // monitor to workspace 0, so only one tree can
+                        // legitimately live there.
+                        const pinned = this.should_ignore_workspace(monitor);
 
-                                if (!display) continue;
+                        let next = 0;
 
-                                if (f.monitor === old_monitor) {
-                                    f.monitor = new_monitor;
-                                    f.workspace = 0;
-                                    migration = [
-                                        f,
-                                        new_monitor,
-                                        display.ws,
-                                        true,
-                                    ];
+                        for (const [fork] of group) {
+                            let target_ws: WorkspaceID;
+
+                            if (pinned) {
+                                if (taken.has(0)) {
+                                    log.warn(
+                                        `Mosaic: two trees want workspace 0 ` +
+                                            `on monitor ${monitor}; skipping`
+                                    );
+                                    continue;
                                 }
+
+                                target_ws = 0;
+                            } else {
+                                while (taken.has(next)) next += 1;
+                                target_ws = next;
                             }
 
-                            if (!migration) {
-                                const display = displays.get(f.monitor);
-                                if (display) {
-                                    migration = [
-                                        f,
-                                        f.monitor,
-                                        display.ws,
-                                        false,
-                                    ];
-                                }
-                            }
+                            taken.add(target_ws);
 
-                            if (migration) {
-                                mark_for_reassignment(
-                                    this,
-                                    migration[0].entity
+                            if (target_ws >= wom.get_n_workspaces()) {
+                                wom.append_new_workspace(
+                                    false,
+                                    global.get_current_time()
                                 );
-                                this.migrations.push(migration);
                             }
+
+                            batch.push([
+                                fork,
+                                monitor,
+                                target_ws,
+                                display.ws.clone(),
+                            ]);
                         }
                     }
 
-                    apply_migrations(assigned_monitors);
+                    apply_migrations(batch);
 
                     return;
                 })();
