@@ -487,7 +487,7 @@ export class AutoTiler {
         const focused = ext.focus_window();
         if (!focused) return;
 
-        let wm_class = focused.meta.get_wm_class();
+        let wm_class = focused.identity(ext);
         let wm_title = focused.meta.get_title();
         let float_except = false;
 

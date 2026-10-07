@@ -288,7 +288,7 @@ export class Ext extends Ecs.System<ExtEvent> {
             const wins = new Array();
 
             for (const window of this.tab_list(Meta.TabList.NORMAL, null)) {
-                const string = window.window_app.get_id();
+                const string = window.window_app?.get_id();
                 wins.push([
                     window.entity,
                     window.title(this),
@@ -646,17 +646,13 @@ export class Ext extends Ecs.System<ExtEvent> {
             () => this.exception_dialog(),
             // this_app
             () => {
-                let wmclass = win.meta.get_wm_class();
-                if (wmclass !== null && wmclass.length === 0) {
-                    wmclass = win.name(this);
-                }
-
+                let wmclass = win.identity(this);
                 if (wmclass) this.conf.add_app_exception(wmclass);
                 this.exception_dialog();
             },
             // current-window
             () => {
-                let wmclass = win.meta.get_wm_class();
+                let wmclass = win.identity(this);
                 if (wmclass)
                     this.conf.add_window_exception(wmclass, win.title(this));
                 this.exception_dialog();
@@ -1007,7 +1003,7 @@ export class Ext extends Ecs.System<ExtEvent> {
         if (this.conf.log_on_focus) {
             let msg =
                 `focused Window(${win.entity}) {\n` +
-                `  class: "${win.meta.get_wm_class()}",\n` +
+                `  class: "${win.identity(this)}",\n` +
                 `  cmdline: ${win.cmdline()},\n` +
                 `  monitor: ${win.meta.get_monitor()},\n` +
                 `  name: ${win.name(this)},\n` +
@@ -3147,15 +3143,21 @@ export class Ext extends Ecs.System<ExtEvent> {
             const actor = meta.get_compositor_private();
             if (!actor) return null;
 
-            let window_app: any, name: string;
+            let window_app: any = null;
+            let name: string;
 
             try {
                 window_app =
                     Shell.WindowTracker.get_default().get_window_app(meta);
-                name = window_app.get_name().replace(/&/g, '&amp;');
             } catch (e) {
-                return null;
+                window_app = null;
             }
+
+            name = (
+                window_app?.get_name() ??
+                Window.fallback_identity(meta) ??
+                'unknown'
+            ).replace(/&/g, '&amp;');
 
             // Only permit normal, dialog, and modal dialogs
             const window_type = (meta as any).get_window_type();
@@ -3257,7 +3259,7 @@ export class Ext extends Ecs.System<ExtEvent> {
 
     is_floating(window: Window.ShellWindow): boolean {
         let shall_float: boolean = false;
-        let wm_class = window.meta.get_wm_class();
+        let wm_class = window.identity(this);
         let wm_title = window.meta.get_title();
 
         if (wm_class && wm_title) {
