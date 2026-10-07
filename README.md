@@ -22,7 +22,7 @@ With pop-shell as a starting point, this project is intended to implement mosaic
 
 ## Installation
 
-GNU Make and TypeScript are also required to build the project.
+GNU Make and Node.js are also required to build the project. Run `npm install` once to fetch the pinned TypeScript compiler into `node_modules`.
 
 Proper functionality of the shell requires modifying GNOME's default keyboard shortcuts. For a local installation, run `make local-install`.
 
@@ -140,9 +140,9 @@ Due to the risky nature of plain JavaScript, this GNOME Shell extension is writt
 
 Please install the following as dependencies when developing:
 
-- [`Node.js`](https://nodejs.org/en/) LTS+ (v12+)
+- [`Node.js`](https://nodejs.org/en/) LTS+ (v18+)
 - Latest `npm` (comes with NodeJS)
-- `npm install typescript@latest`
+- `npm install` to install the TypeScript version pinned in `package.json`
 
 While working on the shell, you can recompile, reconfigure, reinstall, and restart GNOME Shell with logging with `make debug`. Note that this only works reliably in X11 sessions, since Wayland will exit to the login screen on restarting the shell.
 

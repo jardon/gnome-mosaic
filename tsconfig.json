@@ -4,9 +4,9 @@
     "compilerOptions": {
         "target": "es2022",
         "strict": true,
+        "rootDir": "./src",
         "outDir": "./target",
         "forceConsistentCasingInFileNames": true,
-        "downlevelIteration": true,
         "lib": ["es2022", "dom"],
         "pretty": true,
         "removeComments": true,

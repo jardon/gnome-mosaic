@@ -1,3 +1,6 @@
 {
-    "type": "module"
+    "type": "module",
+    "dependencies": {
+        "typescript": "^6.0.3"
+    }
 }

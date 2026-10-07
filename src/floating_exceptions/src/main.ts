@@ -9,8 +9,8 @@ import Pango from 'gi://Pango';
 import Gettext from 'gettext';
 import * as config from './config.js';
 
-let app;
-let instance = null;
+let app: any;
+let instance: App | null = null;
 const _ = Gettext.gettext;
 const SYS_EXEMPTION_TITLE = _('System Exceptions');
 const SYS_EXCEPTION_DESC = _('Updated based on validated user reports.');

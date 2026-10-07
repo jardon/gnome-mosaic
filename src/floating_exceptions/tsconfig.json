@@ -2,7 +2,7 @@
     "compileOnSave": true,
     "compilerOptions": {
         "target": "es2015",
-        // "strict": true,
+        "strict": true,
         "outDir": "../../target/floating_exceptions",
         "rootDir": "./src",
         "forceConsistentCasingInFileNames": true,

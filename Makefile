@@ -69,9 +69,9 @@ debug: depcheck compile translations install configure enable restart-shell list
 
 depcheck:
 	@echo depcheck
-	@if ! command -v tsc >/dev/null; then \
+	@if [ ! -x node_modules/.bin/tsc ]; then \
 		echo \
-		echo 'You must install TypeScript >= 3.8 to transpile: (node-typescript on Debian systems)'; \
+		echo 'You must install the TypeScript compiler to transpile: run "npm install" in the repository root'; \
 		exit 1; \
 	fi
 
