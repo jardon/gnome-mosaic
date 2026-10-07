@@ -3,6 +3,14 @@ set -ex
 
 pwd=$(pwd)
 
+# TypeScript is pinned in package.json; use the project-local compiler
+tsc="${pwd}/node_modules/.bin/tsc"
+
+if [ ! -x "${tsc}" ]; then
+    echo "TypeScript compiler not found at ${tsc}: run 'npm install' first" >&2
+    exit 1
+fi
+
 # In goes standard JS. Out comes GJS-compatible JS
 transpile() {
     cp "${src}" "${dest}"
@@ -20,10 +28,10 @@ glib-compile-schemas schemas &
 
 for proj in ${PROJECTS}; do
     mkdir -p _build/"${proj}"
-    tsc --p src/"${proj}"
+    "${tsc}" --p src/"${proj}"
 done
 
-tsc
+"${tsc}"
 
 wait
 

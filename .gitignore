@@ -2,6 +2,7 @@
 *.swp
 _build
 target
+*.tsbuildinfo
 schemas/gschemas.compiled
 debian/*
 !debian/source
