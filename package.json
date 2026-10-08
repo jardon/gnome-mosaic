@@ -1,6 +1,7 @@
 {
+    "name": "gnome-mosaic",
     "type": "module",
     "dependencies": {
-        "typescript": "^6.0.3"
+        "typescript": "^7.0.2"
     }
 }
