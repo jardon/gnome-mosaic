@@ -3384,6 +3384,9 @@ export default class MosaicExtension extends Extension {
             }
             delete globalThis.MosaicExtension;
             ext.destroy_all_borders();
+
+            if (ext.settings.tile_by_default())
+                ext.settings.set_edge_tiling(true);
             ext.injections_remove();
             ext.timeouts_remove();
             ext.signals_remove();
