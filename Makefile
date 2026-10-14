@@ -44,13 +44,14 @@ all: depcheck compile translations
 
 clean:
 	rm -rf _build target
+	rm tsconfig.tsbuildinfo
 
 # Configure local settings on system
 configure:
 	sh scripts/configure.sh
 
 compile: $(sources) clean
-	env PROJECTS="$(PROJECTS)" ./scripts/transpile.sh
+	./node_modules/.bin/tsc --build --force
 
 # Main build target for translations
 translations: $(MO_FILES)
@@ -84,7 +85,7 @@ disable:
 listen:
 	journalctl -o cat -n 0 -f "$$(which gnome-shell)" | grep -v warning
 
-local-install: depcheck compile translations install configure restart-shell enable
+local-install: depcheck compile translations compile-schemas install configure restart-shell enable
 
 install: install-icon install-shortcut
 	rm -rf $(INSTALLBASE)/$(INSTALLNAME)
@@ -131,3 +132,7 @@ install-shortcut:
 
 uninstall-shortcut:
 	rm -f $(SHORTCUT_INSTALL_DIR)/$(SHORTCUT_NAME)
+
+compile-schemas:
+	mkdir -p _build/schemas
+	glib-compile-schemas schemas --targetdir=_build/schemas

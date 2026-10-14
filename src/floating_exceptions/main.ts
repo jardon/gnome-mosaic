@@ -7,7 +7,7 @@ import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 import Pango from 'gi://Pango';
 import Gettext from 'gettext';
-import * as config from './config.js';
+import * as config from '../config.js';
 
 let app: any;
 let instance: App | null = null;
