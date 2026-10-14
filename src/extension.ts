@@ -411,6 +411,7 @@ export class Ext extends Ecs.System<ExtEvent> {
             log.debug('CACHE SUCCESSFULLY RESTORED');
             return ext;
         } catch (error) {
+            created?.dbus.destroy();
             throw error;
         }
     }

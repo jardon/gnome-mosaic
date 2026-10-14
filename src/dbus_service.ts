@@ -57,6 +57,6 @@ export class Service {
 
     destroy() {
         Gio.bus_unown_name(this.id);
-        this.dbus.unexport();
+        if (this.dbus.get_object_path()) this.dbus.unexport();
     }
 }
