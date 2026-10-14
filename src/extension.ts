@@ -1078,6 +1078,13 @@ export class Ext extends Ecs.System<ExtEvent> {
                 win.destroy();
             }
         }
+        const group = global.window_group as any;
+        for (let i = group.get_n_children() - 1; i >= 0; i--) {
+            const child = group.get_child_at_index(i);
+            const style = child?.style_class;
+            if (typeof style === 'string' && style.includes('gnome-mosaic'))
+                child.destroy();
+        }
     }
 
     maximized_on_active_display(): boolean {
