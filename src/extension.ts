@@ -342,8 +342,10 @@ export class Ext extends Ecs.System<ExtEvent> {
             return windows.find(window => window.get_id() === id);
         }
 
+        let created: Ext | null = null;
         try {
             let ext = new Ext();
+            created = ext;
             ext.ids = Ecs.Storage.fromJSON<number>(data.ids.store, obj => obj);
             ext.monitors = Ecs.Storage.fromJSON<[number, number]>(
                 data.monitors.store,
@@ -3283,6 +3285,7 @@ export class Ext extends Ecs.System<ExtEvent> {
 let ext: Ext | null = null;
 let indicator: any = null;
 let sysIndicator: any = null;
+let enableSourceId = 0;
 
 declare global {
     var MosaicExtension: any;
@@ -3290,7 +3293,8 @@ declare global {
 
 export default class MosaicExtension extends Extension {
     enable() {
-        GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+        enableSourceId = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+            enableSourceId = 0;
             let restored = false;
             globalThis.MosaicExtension = this;
             const settings = globalThis.MosaicExtension.getSettings();
@@ -3324,7 +3328,7 @@ export default class MosaicExtension extends Extension {
 
             if (!ext) {
                 log.error('EXT IS NULL - CONFIGURATION SKIPPED');
-                return false;
+                return GLib.SOURCE_REMOVE;
             }
 
             log.debug('CONFIGURING EXTENSION');
@@ -3352,11 +3356,17 @@ export default class MosaicExtension extends Extension {
                 ext.auto_tile_on(restored);
             }
             if (sysIndicator) sysIndicator.update();
-            return true;
+            return GLib.SOURCE_REMOVE;
         });
     }
     disable() {
         log.info('disable');
+
+        if (enableSourceId) {
+            GLib.source_remove(enableSourceId);
+            enableSourceId = 0;
+            return;
+        }
 
         const settings = globalThis.MosaicExtension.getSettings();
         settings.set_string(MOSAIC_CACHED_STATE, '');
