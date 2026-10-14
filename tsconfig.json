@@ -5,7 +5,7 @@
         "target": "es2022",
         "strict": true,
         "rootDir": "./src",
-        "outDir": "./target",
+        "outDir": "./_build",
         "forceConsistentCasingInFileNames": true,
         "lib": ["es2022", "dom"],
         "pretty": true,
@@ -16,5 +16,5 @@
         "moduleResolution": "NodeNext",
         "module": "NodeNext"
     },
-    "include": ["src/*.ts"]
+    "include": ["src/**/*"]
 }

@@ -47,6 +47,11 @@ declare module 'gi://Gio' {
     export default Gio;
 }
 
+declare module 'gi://GioUnix' {
+    let GioUnix: any;
+    export default GioUnix;
+}
+
 declare module 'gi://St' {
     let St: any;
     export default St;
@@ -146,6 +151,9 @@ declare module 'gi://GLib' {
 
         get_user_config_dir(): string;
         file_get_contents(filename: string): string;
+
+        set_prgname(name: string): void;
+        set_application_name(name: string): void;
     }
     let gLib: GLib;
     export default gLib;
@@ -455,4 +463,17 @@ declare namespace St {
     interface Icon extends Widget {
         icon_name: string;
     }
+}
+
+declare module 'gettext' {
+    const Gettext: {
+        gettext(msgid: string): string;
+        dgettext(domainName: string | null, msgid: string): string;
+        ngettext(msgid1: string, msgid2: string, n: number): string;
+        textdomain(domainName: string): void;
+        bindtextdomain(domainName: string, dirName: string): void;
+        domain(domainName: string): any;
+    };
+
+    export default Gettext;
 }
