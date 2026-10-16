@@ -44,7 +44,7 @@ all: depcheck compile translations
 
 clean:
 	rm -rf _build target
-	rm tsconfig.tsbuildinfo
+	rm -f tsconfig.tsbuildinfo
 
 # Configure local settings on system
 configure:
