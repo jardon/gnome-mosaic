@@ -52,7 +52,7 @@ configure:
 
 compile: $(sources) clean
 	./node_modules/.bin/tsc --build --force
-	cp -r metadata.json icons *.css _build
+	cp -r metadata.json icons *.css schemas _build
 
 # Main build target for translations
 translations: $(MO_FILES)
