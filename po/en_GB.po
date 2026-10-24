@@ -3,19 +3,21 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome_mosaic\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-21 22:53+0000\n"
-"PO-Revision-Date: 2026-09-23 11:47-0400\n"
-"Last-Translator: Jarred Wilson <jarred.wilson12@gmail.com>\n"
-"Language-Team:\n"
+"PO-Revision-Date: 2026-10-25 16:51+0000\n"
+"Last-Translator: Andi Chandler <andibing@users.noreply.hosted.weblate.org>\n"
+"Language-Team: English (United Kingdom) <https://hosted.weblate.org/projects/"
+"gnome-mosaic/gnome-extension/en_GB/>\n"
 "Language: en_GB\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2026.11.dev0\n"
 
 #: panel_settings.js:15
 msgid "Mosaic"
@@ -142,12 +144,10 @@ msgid "Toggle resize mode"
 msgstr "Toggle resize mode"
 
 #: prefs.js:63
-#, fuzzy
 msgid "Grow window left"
 msgstr "Grow window left"
 
 #: prefs.js:64
-#, fuzzy
 msgid "Shrink window left"
 msgstr "Shrink window left"
 
@@ -160,7 +160,6 @@ msgid "Shrink window up"
 msgstr "Shrink window up"
 
 #: prefs.js:67
-#, fuzzy
 msgid "Grow window right"
 msgstr "Grow window right"
 
@@ -177,12 +176,10 @@ msgid "Shrink window down"
 msgstr "Shrink window down"
 
 #: prefs.js:73
-#, fuzzy
 msgid "Window Management"
 msgstr "Window Management"
 
 #: prefs.js:77
-#, fuzzy
 msgid "Swap window left"
 msgstr "Swap window left"
 
@@ -195,7 +192,6 @@ msgid "Swap window up"
 msgstr "Swap window up"
 
 #: prefs.js:80
-#, fuzzy
 msgid "Swap window right"
 msgstr "Swap window right"
 
