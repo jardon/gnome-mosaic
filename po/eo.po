@@ -8,14 +8,17 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2026-09-21 22:53+0000\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: Automatically generated\n"
-"Language-Team: none\n"
+"PO-Revision-Date: 2026-11-02 18:51+0000\n"
+"Last-Translator: phlostically <phlostically@users.noreply.hosted.weblate.org>"
+"\n"
+"Language-Team: Esperanto <https://hosted.weblate.org/projects/gnome-mosaic/"
+"gnome-extension/eo/>\n"
 "Language: eo\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Weblate 2026.11.1.dev0\n"
 
 #: panel_settings.js:15
 msgid "Mosaic"
@@ -27,11 +30,11 @@ msgstr ""
 
 #: panel_settings.js:51 prefs.js:140
 msgid "Smart Gaps"
-msgstr ""
+msgstr "Saĝaj fendoj"
 
 #: panel_settings.js:58 prefs.js:111
 msgid "Show Active Hint"
-msgstr ""
+msgstr "Montri aktivan konsileton"
 
 #: panel_settings.js:65
 msgid "Move Pointer With Focus"
@@ -43,7 +46,7 @@ msgstr ""
 
 #: panel_settings.js:79
 msgid "Settings"
-msgstr ""
+msgstr "Agordoj"
 
 #: prefs.js:20
 msgid "Keybindings"
@@ -51,23 +54,23 @@ msgstr ""
 
 #: prefs.js:24
 msgid "Focus"
-msgstr ""
+msgstr "Fokuso"
 
 #: prefs.js:28
 msgid "Focus left window"
-msgstr ""
+msgstr "Enfokusigi maldekstran fenestron"
 
 #: prefs.js:29
 msgid "Focus down window"
-msgstr ""
+msgstr "Enfokusigi malsupran fenestron"
 
 #: prefs.js:30
 msgid "Focus up window"
-msgstr ""
+msgstr "Enfokusigi supran fenestron"
 
 #: prefs.js:31
 msgid "Focus right window"
-msgstr ""
+msgstr "Enfokusigi dekstran fenestron"
 
 #: prefs.js:32
 msgid "Toggle auto-tiling"
@@ -103,19 +106,19 @@ msgstr ""
 
 #: prefs.js:48
 msgid "Move window left"
-msgstr ""
+msgstr "Movi fenestron maldekstren"
 
 #: prefs.js:49
 msgid "Move window down"
-msgstr ""
+msgstr "Movi fenestron malsupren"
 
 #: prefs.js:50
 msgid "Move window up"
-msgstr ""
+msgstr "Movi fenestron supren"
 
 #: prefs.js:51
 msgid "Move window right"
-msgstr ""
+msgstr "Movi fenestron dekstren"
 
 #: prefs.js:52
 msgid "Move window left (global)"
@@ -223,15 +226,15 @@ msgstr ""
 
 #: prefs.js:103
 msgid "General"
-msgstr ""
+msgstr "Ĝenerala"
 
 #: prefs.js:107
 msgid "Appearance"
-msgstr ""
+msgstr "Aspekto"
 
 #: prefs.js:116
 msgid "Show Window Titles"
-msgstr ""
+msgstr "Montri fenestrajn titolojn"
 
 #: prefs.js:121
 msgid "Show Indicator Panel"
@@ -243,7 +246,7 @@ msgstr ""
 
 #: prefs.js:131
 msgid "Behavior"
-msgstr ""
+msgstr "Konduto"
 
 #: prefs.js:135
 msgid "Snap to Grid (Floating Mode)"
@@ -259,7 +262,7 @@ msgstr ""
 
 #: prefs.js:158
 msgid "Layout"
-msgstr ""
+msgstr "Aranĝo"
 
 #: prefs.js:162
 msgid "Active Hint Width"
@@ -267,7 +270,7 @@ msgstr ""
 
 #: prefs.js:172
 msgid "Gap Width"
-msgstr ""
+msgstr "Larĝo de fendo"
 
 #: prefs.js:185
 msgid "Advanced"
