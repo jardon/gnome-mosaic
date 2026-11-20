@@ -87,6 +87,9 @@ export class ShellWindow {
     /** Contains SourceID of an active hint operation. */
     active_hint_show_id: number | null = null;
 
+    /** Handler ID of the `restacked` signal on `global.display`. */
+    private restack_id: number | null = null;
+
     // Awaiting reassignment after a display update
     reassignment: boolean = false;
 
@@ -197,10 +200,25 @@ export class ShellWindow {
     }
 
     destroy() {
+        this.disconnect_display_signals();
         if (this.border) {
-            global.window_group.remove_child(this.border);
-            this.border.destroy();
+            const border = this.border;
             this.border = null;
+            global.window_group.remove_child(border);
+            border.destroy();
+        }
+    }
+
+    /**
+     * Disconnects the signals this window holds on `global.display`.
+     *
+     * These can't live in `ext.window_signals`, because those are
+     * disconnected from `this.meta`, which doesn't own them.
+     */
+    disconnect_display_signals() {
+        if (this.restack_id !== null) {
+            global.display.disconnect(this.restack_id);
+            this.restack_id = null;
         }
     }
 
@@ -230,11 +248,13 @@ export class ShellWindow {
                 }),
                 this.meta.connect('raised', () => {
                     this.window_raised(ext);
-                }),
-                global.display.connect('restacked', () => {
-                    this.restack();
                 })
             );
+
+        this.disconnect_display_signals();
+        this.restack_id = global.display.connect('restacked', () => {
+            if (!this.destroying) this.restack();
+        });
     }
 
     private bind_hint_events(ext: Ext) {
@@ -244,8 +264,17 @@ export class ShellWindow {
             return false;
         });
 
-        this.border.connect('destroy', () => {
+        const border = this.border;
+        border.connect('destroy', () => {
             ext.settings.ext.disconnect(change_id);
+
+            // The border may be destroyed elsewhere (e.g. by
+            // `destroy_all_borders`), so drop the reference to avoid
+            // touching a disposed actor later on.
+            if (this.border === border) {
+                this.border = null;
+                this.last_border_rect = null;
+            }
         });
         this.border.connect('style-changed', () => {
             this.on_style_changed(ext);
@@ -745,6 +774,8 @@ export class ShellWindow {
             // Place at the top of the stack
             // The border is transparent except for the border itself (CSS)
             const actor = this.meta.get_compositor_private();
+            if (!actor || actor.get_parent() !== global.window_group)
+                return false;
             global.window_group.set_child_above_sibling(this.border, actor);
             return true;
         }

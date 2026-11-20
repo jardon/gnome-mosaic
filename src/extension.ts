@@ -908,6 +908,7 @@ export class Ext extends Ecs.System<ExtEvent> {
         const window = this.windows.get(win);
         if (window) {
             window.destroying = true;
+            window.disconnect_display_signals();
 
             this.size_requests.delete(window.meta);
 
@@ -2466,6 +2467,7 @@ export class Ext extends Ecs.System<ExtEvent> {
 
         for (const window of this.windows.values()) {
             window.timeouts_remove();
+            window.disconnect_display_signals();
         }
 
         for (const [, entry] of this.deferred_tiles) {
@@ -2480,7 +2482,7 @@ export class Ext extends Ecs.System<ExtEvent> {
 
         for (const [entity, _] of this.window_signals.iter()) {
             const window = this.windows.get(entity);
-            if (!window) return;
+            if (!window) continue;
 
             this.window_signals.take_with(entity, signals => {
                 for (const signal of signals) {
