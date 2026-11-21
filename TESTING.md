@@ -53,6 +53,8 @@ Tasks for a tester to verify when approving a patch. Use complex window layouts 
 - [ ] Active hint is present on the new workspace and once the window is returned to its previous workspace
 - [ ] Floating windows move across workspaces
 - [ ] Remove windows from the 2nd worspace in a 3 workspace setup. The 3rd workspace becomes the 2nd workspace, and tiling is unaffected by the move.
+- [ ] Reorder workspaces by dragging them in the overview. Each workspace keeps its own layout; layouts are not swapped or merged.
+- [ ] Reorder a workspace that was created after Mosaic started. Its layout follows it to the new index.
 
 ### Displays
 

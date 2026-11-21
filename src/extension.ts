@@ -171,6 +171,9 @@ export class Ext extends Ecs.System<ExtEvent> {
     /** A display config update is triggered on a workspace addition */
     ignore_display_update: boolean = false;
 
+    /** Last known workspace indices, for translating layouts on reorder */
+    workspace_indices: Map<Meta.Workspace, number> = new Map();
+
     /** Functions replaced in GNOME */
     injections: Array<Injection> = new Array();
 
@@ -1990,6 +1993,7 @@ export class Ext extends Ecs.System<ExtEvent> {
 
     on_workspace_added(_number: number) {
         this.ignore_display_update = true;
+        this.sync_workspace_indices();
     }
 
     /** Handle workspace change events */
@@ -2014,10 +2018,38 @@ export class Ext extends Ecs.System<ExtEvent> {
         }
     }
 
-    on_workspace_index_changed(prev: number, next: number) {
+    /** Refresh the cached workspace indices. */
+    sync_workspace_indices() {
+        this.workspace_indices.clear();
+        for (const [, ws] of iter_workspaces(wom)) {
+            this.workspace_indices.set(ws, ws.index());
+        }
+    }
+
+    /** Remap all layouts in one pass: GNOME emits one index notification per
+     * workspace before `workspaces-reordered`, so per-signal remaps cascade. */
+    on_workspaces_reordered() {
+        const previous = this.workspace_indices;
+        const current = new Map<Meta.Workspace, number>();
+        const remap = new Map<number, number>();
+
+        for (const [, ws] of iter_workspaces(wom)) {
+            const index = ws.index();
+            current.set(ws, index);
+
+            const old_index = previous.get(ws);
+            if (old_index !== undefined && old_index !== index) {
+                remap.set(old_index, index);
+            }
+        }
+
+        this.workspace_indices = current;
+
+        if (remap.size === 0) return;
+
         this.on_workspace_modify(
-            current => current == prev,
-            _ => next
+            index => remap.has(index),
+            index => remap.get(index)!
         );
     }
 
@@ -2098,6 +2130,7 @@ export class Ext extends Ecs.System<ExtEvent> {
             current => current > number,
             prev => prev - 1
         );
+        this.sync_workspace_indices();
     }
 
     set_gap_inner(gap: number) {
@@ -2148,17 +2181,7 @@ export class Ext extends Ecs.System<ExtEvent> {
 
         const workspace_manager = wom;
 
-        for (const [, ws] of iter_workspaces(workspace_manager)) {
-            let index = ws.index();
-
-            this.connect(ws, 'notify::workspace-index', () => {
-                if (ws !== null) {
-                    let new_index = ws.index();
-                    this.on_workspace_index_changed(index, new_index);
-                    index = new_index;
-                }
-            });
-        }
+        this.sync_workspace_indices();
 
         this.connect(display, 'workareas-changed', () => {
             this.update_display_configuration(true);
@@ -2394,6 +2417,10 @@ export class Ext extends Ecs.System<ExtEvent> {
 
         this.connect(workspace_manager, 'workspace-added', (_, number) => {
             this.on_workspace_added(number);
+        });
+
+        this.connect(workspace_manager, 'workspaces-reordered', () => {
+            this.on_workspaces_reordered();
         });
 
         // Bind show desktop and remove the active hint
